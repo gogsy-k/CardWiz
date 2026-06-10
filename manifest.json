@@ -1,0 +1,47 @@
+{
+  "manifest_version": 3,
+  "name": "SmartCard Saver — Best Card & Bill Reminders",
+  "version": "1.0",
+  "description": "Checkout pe sabse zyada bachat dene wala card bataye + bill due-date reminders. Privacy-first, India-first.",
+  "author": "SmartCard Saver",
+  "homepage_url": "https://github.com/",
+  "action": {
+    "default_popup": "popup-smartcard.html",
+    "default_title": "SmartCard Saver — best card batao",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icon16.png",
+    "48": "icon48.png",
+    "128": "icon128.png"
+  },
+  "permissions": ["storage", "alarms", "notifications"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.amazon.in/*",
+        "*://*.flipkart.com/*",
+        "*://*.myntra.com/*"
+      ],
+      "js": ["recommend.js", "offers.js", "captracker.js", "affiliate.js", "content-detect.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["data/cards.json"],
+      "matches": [
+        "*://*.amazon.in/*",
+        "*://*.flipkart.com/*",
+        "*://*.myntra.com/*"
+      ]
+    }
+  ]
+}

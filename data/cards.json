@@ -1,0 +1,329 @@
+{
+  "schemaVersion": 1,
+  "lastUpdated": "2026-06-09",
+  "currency": "INR",
+  "_doc": {
+    "purpose": "SmartCard Saver ka 'brain' — India ke top cards ki reward rules. Recommender ise padh kar best card rank karta hai.",
+    "howRankingWorks": "Diye gaye category + amount pe: har card ke liye matching rule ka effectiveRate lo (agar category exclusions mein hai to 0), value = amount * effectiveRate/100, monthlyCapValue se cap karo, phir cards ko value ke hisaab se rank karo.",
+    "effectiveRate": "Sab kuch ek hi unit (%) mein normalize kiya hai taaki cashback/points/miles cards directly compare ho saken. Points/miles cards ke liye effectiveRate = (reward per rupee) * pointValueINR * 100, conservative pointValue ke saath. Asli raw rule 'rawRate' mein transparency ke liye rakhi hai.",
+    "monthlyCapValue": "Reward value ka monthly cap RUPEES mein (cashback-equivalent). null = no cap / unlimited.",
+    "assumptions": "Points/mile values redemption pe depend karte hain; humne conservative average liya hai. Reward rules banks frequently change karte hain — 'lastVerified' aur SOURCES.md check karein."
+  },
+  "categories": [
+    "amazon", "flipkart", "myntra", "online_shopping", "food_delivery",
+    "dining", "grocery", "instamart", "travel", "flights", "hotels",
+    "fuel", "utilities", "rent", "education", "insurance", "wallet",
+    "uber", "cab", "entertainment", "upi", "offline", "government", "gaming"
+  ],
+  "cards": [
+    {
+      "id": "sbi-cashback",
+      "name": "SBI Cashback Card",
+      "bank": "SBI",
+      "network": "Visa/Mastercard",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 999,
+      "feeWaiverSpend": 200000,
+      "baseRate": 1,
+      "baseMonthlyCapValue": 2000,
+      "rules": [
+        {
+          "categories": ["online_shopping", "amazon", "flipkart", "myntra", "food_delivery", "dining", "entertainment"],
+          "effectiveRate": 5,
+          "rawRate": "5% on all online spends",
+          "monthlyCapValue": 2000,
+          "note": "5% online cashback, cap ₹2000/statement cycle (April 2026 se ghata)"
+        }
+      ],
+      "exclusions": ["fuel", "rent", "wallet", "utilities", "insurance", "education", "government", "gaming"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "hdfc-millennia",
+      "name": "HDFC Millennia Credit Card",
+      "bank": "HDFC",
+      "network": "Visa/Mastercard",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 1000,
+      "feeWaiverSpend": 100000,
+      "baseRate": 1,
+      "baseMonthlyCapValue": 1000,
+      "rules": [
+        {
+          "categories": ["amazon", "flipkart", "myntra", "food_delivery", "uber", "entertainment", "online_shopping"],
+          "effectiveRate": 5,
+          "rawRate": "5% CashPoints on 10 partner brands (Amazon, Flipkart, Myntra, Swiggy, Zomato, Uber, Cult.fit, BookMyShow, SonyLIV, TataCliq)",
+          "monthlyCapValue": 1000,
+          "note": "5% cap 1000 CashPoints/month (1 CashPoint = ₹1)"
+        }
+      ],
+      "exclusions": ["wallet", "rent", "fuel"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "axis-ace",
+      "name": "Axis Bank ACE Credit Card",
+      "bank": "Axis",
+      "network": "Visa",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 499,
+      "feeWaiverSpend": 200000,
+      "baseRate": 1.5,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        {
+          "categories": ["utilities"],
+          "effectiveRate": 5,
+          "rawRate": "5% on bill payments & recharges via Google Pay (Android only)",
+          "monthlyCapValue": 500,
+          "capGroup": "ace-accelerated",
+          "note": "5% GPay bills + 4% Swiggy/Zomato/Ola share ek combined ₹500/month cap"
+        },
+        {
+          "categories": ["food_delivery", "cab", "uber"],
+          "effectiveRate": 4,
+          "rawRate": "4% on Swiggy, Zomato, Ola",
+          "monthlyCapValue": 500,
+          "capGroup": "ace-accelerated",
+          "note": "Shares the ₹500/month cap with the 5% GPay category"
+        }
+      ],
+      "exclusions": ["fuel", "rent", "wallet", "insurance", "government", "gaming"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "amazon-pay-icici",
+      "name": "Amazon Pay ICICI Credit Card",
+      "bank": "ICICI",
+      "network": "Visa",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 0,
+      "feeWaiverSpend": 0,
+      "baseRate": 1,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        {
+          "categories": ["amazon"],
+          "effectiveRate": 5,
+          "rawRate": "5% on Amazon.in for Prime members (3% non-Prime)",
+          "monthlyCapValue": null,
+          "note": "Unlimited. Prime member assume kiya; non-Prime ke liye 3%"
+        },
+        {
+          "categories": ["online_shopping"],
+          "effectiveRate": 2,
+          "rawRate": "2% at 100+ Amazon Pay partner merchants",
+          "monthlyCapValue": null
+        }
+      ],
+      "exclusions": [],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "flipkart-axis",
+      "name": "Flipkart Axis Bank Credit Card",
+      "bank": "Axis",
+      "network": "Mastercard",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 500,
+      "feeWaiverSpend": 350000,
+      "baseRate": 1,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        {
+          "categories": ["myntra"],
+          "effectiveRate": 7.5,
+          "rawRate": "7.5% on Myntra",
+          "monthlyCapValue": 1333,
+          "note": "Cap ~₹4000/quarter (≈₹1333/month) per platform"
+        },
+        {
+          "categories": ["flipkart", "travel"],
+          "effectiveRate": 5,
+          "rawRate": "5% on Flipkart & Cleartrip",
+          "monthlyCapValue": 1333,
+          "note": "Cap ₹4000/quarter per platform"
+        },
+        {
+          "categories": ["food_delivery", "uber", "cab", "entertainment"],
+          "effectiveRate": 4,
+          "rawRate": "4% on Swiggy, Uber, PVR, cult.fit",
+          "monthlyCapValue": 1333,
+          "note": "Cap ₹4000/quarter"
+        }
+      ],
+      "exclusions": ["utilities", "fuel", "rent", "wallet", "insurance", "education", "government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "tataneu-infinity-hdfc",
+      "name": "Tata Neu Infinity HDFC Bank Credit Card",
+      "bank": "HDFC",
+      "network": "Visa/RuPay",
+      "type": "points",
+      "pointValueINR": 1,
+      "annualFee": 1499,
+      "feeWaiverSpend": 300000,
+      "baseRate": 1.5,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        {
+          "categories": ["online_shopping"],
+          "effectiveRate": 10,
+          "rawRate": "Up to 10% NeuCoins on Tata Neu app/website (with NeuPass)",
+          "monthlyCapValue": null,
+          "note": "1 NeuCoin = ₹1. Tata Neu ecosystem spends"
+        },
+        {
+          "categories": ["grocery"],
+          "effectiveRate": 5,
+          "rawRate": "5% NeuCoins on partner Tata brands (BigBasket etc.)",
+          "monthlyCapValue": 2000,
+          "note": "Grocery NeuCoins cap 2000/month"
+        },
+        {
+          "categories": ["upi"],
+          "effectiveRate": 1.5,
+          "rawRate": "Up to 1.5% NeuCoins on RuPay UPI (0.5% base)",
+          "monthlyCapValue": null
+        }
+      ],
+      "exclusions": ["fuel", "wallet", "rent", "government", "gaming"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "idfc-first-wealth",
+      "name": "IDFC FIRST Wealth Credit Card",
+      "bank": "IDFC FIRST",
+      "network": "Visa/Mastercard",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 0,
+      "feeWaiverSpend": 0,
+      "baseRate": 0.375,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        {
+          "categories": ["online_shopping", "amazon", "flipkart", "myntra", "dining", "food_delivery", "rent", "education", "utilities", "insurance"],
+          "effectiveRate": 1.25,
+          "rawRate": "10 RP per ₹200 above ₹20k/month spend (3 RP per ₹200 below). 1 RP = ₹0.25",
+          "monthlyCapValue": null,
+          "note": "Per-₹200 base effective 18 Jan 2026 se. Rent/education/utilities pe bhi rewards (rare!). Above-₹20k tier assume kiya"
+        }
+      ],
+      "exclusions": ["fuel", "wallet"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "axis-atlas",
+      "name": "Axis Bank Atlas Credit Card",
+      "bank": "Axis",
+      "network": "Visa",
+      "type": "miles",
+      "pointValueINR": 1,
+      "annualFee": 5000,
+      "feeWaiverSpend": 0,
+      "baseRate": 2,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        {
+          "categories": ["travel", "flights", "hotels"],
+          "effectiveRate": 5,
+          "rawRate": "5 EDGE Miles per ₹100 on travel (2/₹100 others)",
+          "monthlyCapValue": 10000,
+          "note": "Accelerated miles cumulative ₹2L/month tak. 1 mile ≈ ₹1 (1:1 travel, up to 1:2 transfer pe zyada)"
+        }
+      ],
+      "exclusions": ["fuel", "rent", "wallet", "insurance", "government", "gaming"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "hdfc-infinia",
+      "name": "HDFC Infinia Credit Card (Metal)",
+      "bank": "HDFC",
+      "network": "Visa",
+      "type": "points",
+      "pointValueINR": 1,
+      "annualFee": 12500,
+      "feeWaiverSpend": 1000000,
+      "baseRate": 3.3,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        {
+          "categories": ["travel", "flights", "hotels", "online_shopping"],
+          "effectiveRate": 3.3,
+          "rawRate": "5 RP per ₹150 (3.3%); up to 10X via SmartBuy",
+          "monthlyCapValue": 15000,
+          "note": "1 RP ≈ ₹1 via SmartBuy flights/hotels 1:1. SmartBuy accelerated cap 15000 points/month"
+        }
+      ],
+      "exclusions": ["fuel", "rent", "wallet", "government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "hdfc-swiggy",
+      "name": "Swiggy HDFC Bank Credit Card",
+      "bank": "HDFC",
+      "network": "Mastercard",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 500,
+      "feeWaiverSpend": 200000,
+      "baseRate": 1,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        {
+          "categories": ["food_delivery", "instamart", "dining"],
+          "effectiveRate": 10,
+          "rawRate": "10% on Swiggy (Food, Instamart, Dineout, Genie)",
+          "monthlyCapValue": 1500,
+          "note": "Cap ₹1500/month. Har txn ≥ ₹249 hona chahiye (17 Apr 2026 se)"
+        },
+        {
+          "categories": ["travel", "flights", "hotels"],
+          "effectiveRate": 5,
+          "rawRate": "5% on Cleartrip flights/hotels",
+          "monthlyCapValue": 1500,
+          "note": "Cap ₹1500/billing cycle"
+        }
+      ],
+      "exclusions": ["wallet", "fuel", "rent"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "amex-smartearn",
+      "name": "American Express SmartEarn Credit Card",
+      "bank": "American Express",
+      "network": "Amex",
+      "type": "points",
+      "pointValueINR": 0.4,
+      "annualFee": 495,
+      "feeWaiverSpend": 40000,
+      "baseRate": 0.8,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        {
+          "categories": ["amazon", "flipkart", "uber"],
+          "effectiveRate": 8,
+          "rawRate": "10X MR points (10 points per ₹50). 1 MR point ≈ ₹0.40",
+          "monthlyCapValue": 200,
+          "note": "Cap 500 points/month jointly Amazon+Flipkart; separate 500 points/month Uber (~₹200 value each)"
+        },
+        {
+          "categories": ["food_delivery", "wallet", "entertainment"],
+          "effectiveRate": 4,
+          "rawRate": "5X MR points on Swiggy, Paytm wallet, BookMyShow",
+          "monthlyCapValue": 200
+        }
+      ],
+      "exclusions": ["fuel", "rent", "insurance", "government"],
+      "lastVerified": "2026-06-09"
+    }
+  ]
+}

@@ -1,0 +1,554 @@
+/*
+ * SmartCard Saver — Popup UI logic.
+ * recommend.js (engine) + data/cards.json (brain) + chrome.storage (wallet).
+ *
+ * Phase 1 (Card Wallet): user apne cards add/edit/delete kare. Har card:
+ *   { id, cardId, nickname, last4 }
+ * NOTE: full card number / CVV KABHI store nahi (plan ka core principle).
+ */
+
+const CATEGORY_LABELS = {
+  amazon: 'Amazon', flipkart: 'Flipkart', myntra: 'Myntra',
+  online_shopping: 'Online Shopping (general)',
+  food_delivery: 'Food Delivery (Swiggy/Zomato)', dining: 'Dining / Restaurant',
+  grocery: 'Grocery', instamart: 'Instamart / Quick grocery',
+  travel: 'Travel (general)', flights: 'Flights', hotels: 'Hotels',
+  fuel: 'Fuel / Petrol', utilities: 'Bills / Utilities / Recharge',
+  rent: 'Rent', education: 'Education / Fees', insurance: 'Insurance',
+  wallet: 'Wallet load (Paytm etc.)', uber: 'Uber', cab: 'Cab / Ola',
+  entertainment: 'Movies / Entertainment', upi: 'UPI payment',
+  offline: 'Offline shop (card swipe)', government: 'Government / Tax', gaming: 'Gaming',
+};
+
+// Bank -> bill-payment URL (best-effort official). Na mile to CRED fallback.
+// Hum payment NAHI karte — sirf user ko unke bank/CRED pe bhej dete hain.
+const CRED_URL = 'https://cred.club';
+const BANK_PAY_URLS = {
+  'HDFC': 'https://www.hdfcbank.com/personal/pay/cards/credit-cards/credit-card-bill-payment',
+  'SBI': 'https://www.sbicard.com/en/personal/manage-your-card/credit-card-bill-payment.page',
+  'ICICI': 'https://www.icicibank.com/personal-banking/cards/credit-card/credit-card-bill-payment',
+  'Axis': 'https://www.axisbank.com/retail/cards/credit-card/credit-card-payments',
+  'IDFC FIRST': 'https://www.idfcfirstbank.com/credit-card',
+  'American Express': 'https://www.americanexpress.com/in/account-management/login/',
+};
+
+const $ = (id) => document.getElementById(id);
+const els = {
+  category: $('category'), amount: $('amount'), goBtn: $('goBtn'),
+  onlyMine: $('onlyMine'), results: $('results'),
+  cardsList: $('cardsList'), addCardBtn: $('addCardBtn'),
+  cardForm: $('cardForm'), formCardId: $('formCardId'),
+  formNickname: $('formNickname'), formLast4: $('formLast4'),
+  formDueDay: $('formDueDay'), formRemindBefore: $('formRemindBefore'),
+  formErr: $('formErr'), saveCardBtn: $('saveCardBtn'), cancelCardBtn: $('cancelCardBtn'),
+  billsList: $('billsList'),
+  capsFoot: $('capsFoot'), capsPeriod: $('capsPeriod'), resetCapsBtn: $('resetCapsBtn'),
+  premiumStatus: $('premiumStatus'), premiumToggle: $('premiumToggle'),
+  analyticsBox: $('analyticsBox'), affDisclosure: $('affDisclosure'),
+};
+
+let DB = null;        // cards.json
+let myCards = [];     // wallet: [{id, cardId, nickname, last4, dueDay, reminderDaysBefore}]
+let capUsage = null;  // { period, used } — Phase 5 monthly cap tracking
+let isPremium = false;// Phase 6 premium flag (dev toggle)
+let editingId = null; // agar edit ho raha hai to uska wallet-entry id
+let lastRanked = [];  // last recommendation results (log button ke liye)
+
+// ---------- Init ----------
+async function init() {
+  DB = await fetch('data/cards.json').then((r) => r.json());
+  buildCategoryDropdown();
+  buildCardSelect();
+  await loadWallet();
+  await loadCapUsage();
+  await loadPremium();
+  renderMyCards();
+
+  // View switching
+  document.querySelectorAll('nav button').forEach((btn) => {
+    btn.addEventListener('click', () => switchView(btn.dataset.view));
+  });
+
+  els.goBtn.addEventListener('click', runRecommendation);
+  els.onlyMine.addEventListener('change', runRecommendation);
+  els.resetCapsBtn.addEventListener('click', resetCaps);
+  els.premiumToggle.addEventListener('click', togglePremium);
+
+  els.addCardBtn.addEventListener('click', () => openForm());
+  els.cancelCardBtn.addEventListener('click', closeForm);
+  els.saveCardBtn.addEventListener('click', saveCard);
+  // last4 = sirf digits
+  els.formLast4.addEventListener('input', () => {
+    els.formLast4.value = els.formLast4.value.replace(/\D/g, '').slice(0, 4);
+  });
+}
+
+function switchView(view) {
+  document.querySelectorAll('nav button').forEach((b) =>
+    b.classList.toggle('active', b.dataset.view === view));
+  $('view-suggest').hidden = view !== 'suggest';
+  $('view-mycards').hidden = view !== 'mycards';
+  $('view-bills').hidden = view !== 'bills';
+  $('view-more').hidden = view !== 'more';
+  if (view === 'bills') renderBills();
+  if (view === 'more') renderMore();
+}
+
+function buildCategoryDropdown() {
+  for (const cat of DB.categories) {
+    const opt = document.createElement('option');
+    opt.value = cat;
+    opt.textContent = CATEGORY_LABELS[cat] || cat;
+    els.category.appendChild(opt);
+  }
+}
+
+function buildCardSelect() {
+  els.formCardId.innerHTML = '';
+  for (const card of DB.cards) {
+    const opt = document.createElement('option');
+    opt.value = card.id;
+    opt.textContent = `${card.name} (${card.annualFee === 0 ? 'LTF' : '₹' + card.annualFee + '/yr'})`;
+    els.formCardId.appendChild(opt);
+  }
+}
+
+// ---------- Wallet storage ----------
+function loadWallet() {
+  return new Promise((resolve) => {
+    if (typeof chrome === 'undefined' || !chrome.storage) { myCards = []; return resolve(); }
+    chrome.storage.local.get(['myCards', 'ownedCardIds'], (res) => {
+      if (Array.isArray(res.myCards)) {
+        myCards = res.myCards;
+      } else if (Array.isArray(res.ownedCardIds)) {
+        // Purane "wallet lite" model se migrate karo.
+        myCards = res.ownedCardIds.map((cardId) => ({ id: uid(), cardId, nickname: '', last4: '' }));
+        saveWallet();
+      } else {
+        myCards = [];
+      }
+      resolve();
+    });
+  });
+}
+
+function saveWallet() {
+  if (typeof chrome !== 'undefined' && chrome.storage) {
+    chrome.storage.local.set({ myCards });
+  }
+}
+
+function uid() {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
+  return 'c_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+}
+
+// ---------- Cap usage storage (Phase 5) ----------
+function loadCapUsage() {
+  return new Promise((resolve) => {
+    const done = (raw) => {
+      // Load pe hi normalize → naya mahina ho to auto-reset.
+      capUsage = window.SmartCardCapTracker.normalize(raw, new Date());
+      if (!raw || raw.period !== capUsage.period) saveCapUsage(); // reset persist
+      resolve();
+    };
+    if (typeof chrome === 'undefined' || !chrome.storage) return done(null);
+    chrome.storage.local.get(['capUsage'], (r) => done(r.capUsage));
+  });
+}
+
+function saveCapUsage() {
+  if (typeof chrome !== 'undefined' && chrome.storage) chrome.storage.local.set({ capUsage });
+}
+
+function resetCaps() {
+  if (!confirm('Is mahine ka cap usage reset karein?')) return;
+  capUsage = window.SmartCardCapTracker.resetAll(new Date());
+  saveCapUsage();
+  runRecommendation();
+}
+
+// ---------- Premium (Phase 6) ----------
+function loadPremium() {
+  return new Promise((resolve) => {
+    if (typeof chrome === 'undefined' || !chrome.storage) { isPremium = false; return resolve(); }
+    chrome.storage.local.get(['isPremium'], (r) => { isPremium = !!r.isPremium; resolve(); });
+  });
+}
+
+function togglePremium() {
+  isPremium = !isPremium;
+  if (typeof chrome !== 'undefined' && chrome.storage) chrome.storage.local.set({ isPremium });
+  renderMore();
+  renderMyCards(); // card-limit gating refresh
+}
+
+function renderMore() {
+  const P = window.SmartCardPremium;
+  // Premium status + toggle
+  els.premiumStatus.innerHTML = isPremium
+    ? '<span class="pill pro">PREMIUM</span> Saari features unlocked. Shukriya! 🙏'
+    : `<span class="pill free">FREE</span> Upgrade ₹${P.PREMIUM_PRICE_INR}/year se — unlimited cards + analytics.`;
+  els.premiumToggle.textContent = isPremium ? '↩ Free pe wapas (dev)' : `⭐ Premium on karo (dev)`;
+
+  // Analytics (premium-gated)
+  renderAnalytics();
+
+  // Affiliate disclosure
+  els.affDisclosure.textContent = window.SmartCardAffiliate.DISCLOSURE +
+    ' Networks: Amazon Associates, Flipkart Affiliate, Cuelinks.';
+
+  // About: privacy link + version (manifest se).
+  const verEl = $('versionLabel');
+  const link = $('privacyLink');
+  if (typeof chrome !== 'undefined' && chrome.runtime) {
+    const mf = chrome.runtime.getManifest();
+    if (verEl) verEl.textContent = `v${mf.version}`;
+    if (link && !link.dataset.wired) {
+      link.dataset.wired = '1';
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.open(chrome.runtime.getURL('privacy.html'), '_blank');
+      });
+    }
+  }
+}
+
+function renderAnalytics() {
+  const P = window.SmartCardPremium;
+  if (!P.canUseFeature('spending_analytics', isPremium)) {
+    els.analyticsBox.innerHTML =
+      `<div class="upgrade-note">🔒 Premium feature<br>Is mahine kis card pe kitna reward kamaaya — dekho.
+       <button id="analyticsUpgrade">⭐ Premium on karo</button></div>`;
+    const b = $('analyticsUpgrade');
+    if (b) b.addEventListener('click', togglePremium);
+    return;
+  }
+  // Premium: capUsage se simple monthly reward summary.
+  const used = (capUsage && capUsage.used) || {};
+  const byCard = {};
+  for (const key of Object.keys(used)) {
+    const cardId = key.split('::')[0];
+    byCard[cardId] = (byCard[cardId] || 0) + used[key];
+  }
+  const entries = Object.entries(byCard).sort((a, b) => b[1] - a[1]);
+  if (entries.length === 0) {
+    els.analyticsBox.innerHTML = '<div class="more-sub">Abhi koi reward log nahi. Suggest tab pe "✓ Use kiya" se track karo.</div>';
+    return;
+  }
+  const total = entries.reduce((s, [, v]) => s + v, 0);
+  let html = `<div class="more-sub">Is mahine (${capUsage.period}) total reward: <b>₹${Math.round(total)}</b></div>`;
+  for (const [cardId, val] of entries) {
+    const cat = catalogCard(cardId);
+    html += `<div class="more-sub">• ${cat ? cat.name : cardId}: ₹${Math.round(val)}</div>`;
+  }
+  els.analyticsBox.innerHTML = html;
+}
+
+function catalogCard(cardId) {
+  return DB.cards.find((c) => c.id === cardId);
+}
+
+// ---------- My Cards view (CRUD) ----------
+function renderMyCards() {
+  const stale = $('limitNote');
+  if (stale) stale.remove();
+  els.cardsList.innerHTML = '';
+  if (myCards.length === 0) {
+    els.cardsList.innerHTML = '<div class="empty">Abhi koi card nahi. Neeche se add karo 👇</div>';
+    return;
+  }
+  for (const mc of myCards) {
+    const cat = catalogCard(mc.cardId);
+    if (!cat) continue; // catalog se hata diya gaya card (rare)
+
+    const row = document.createElement('div');
+    row.className = 'mycard';
+
+    const info = document.createElement('div');
+    info.className = 'info';
+    const nick = document.createElement('div');
+    nick.className = 'nick';
+    nick.textContent = mc.nickname ? `${mc.nickname}` : cat.name;
+    const meta = document.createElement('div');
+    meta.className = 'meta';
+    const last4 = mc.last4 ? ` · •••• ${mc.last4}` : '';
+    const dueInfo = mc.dueDay ? ` · 🔔 due ${mc.dueDay}` : '';
+    meta.textContent = (mc.nickname ? cat.name : cat.bank) + last4 + dueInfo;
+    info.appendChild(nick);
+    info.appendChild(meta);
+
+    const actions = document.createElement('div');
+    actions.className = 'actions';
+    const editBtn = document.createElement('button');
+    editBtn.className = 'edit';
+    editBtn.textContent = 'Edit';
+    editBtn.addEventListener('click', () => openForm(mc.id));
+    const delBtn = document.createElement('button');
+    delBtn.className = 'del';
+    delBtn.textContent = 'Delete';
+    delBtn.addEventListener('click', () => deleteCard(mc.id));
+    actions.appendChild(editBtn);
+    actions.appendChild(delBtn);
+
+    row.appendChild(info);
+    row.appendChild(actions);
+    els.cardsList.appendChild(row);
+  }
+}
+
+function openForm(editId = null) {
+  // Phase 6: free tier card-limit gate (sirf naye card pe, edit pe nahi).
+  if (!editId) {
+    const uniqueCount = ownedUniqueIds().length;
+    if (window.SmartCardPremium.cardLimitReached(myCards.length, isPremium)) {
+      const max = window.SmartCardPremium.FREE_LIMITS.maxCards;
+      els.cardsList.insertAdjacentHTML('afterend',
+        `<div class="upgrade-note" id="limitNote">🔒 Free tier mein ${max} cards tak. Unlimited ke liye Premium.
+         <button id="limitUpgrade">⭐ "More" tab pe Premium on karo</button></div>`);
+      const b = $('limitUpgrade');
+      if (b) b.addEventListener('click', () => { switchView('more'); const n = $('limitNote'); if (n) n.remove(); });
+      void uniqueCount;
+      return;
+    }
+  }
+  editingId = editId;
+  els.formErr.textContent = '';
+  if (editId) {
+    const mc = myCards.find((c) => c.id === editId);
+    els.formCardId.value = mc.cardId;
+    els.formNickname.value = mc.nickname || '';
+    els.formLast4.value = mc.last4 || '';
+    els.formDueDay.value = mc.dueDay || '';
+    els.formRemindBefore.value = mc.reminderDaysBefore != null ? mc.reminderDaysBefore : 3;
+    els.saveCardBtn.textContent = 'Update';
+  } else {
+    els.formNickname.value = '';
+    els.formLast4.value = '';
+    els.formDueDay.value = '';
+    els.formRemindBefore.value = 3;
+    els.saveCardBtn.textContent = 'Save';
+  }
+  els.cardForm.hidden = false;
+  els.addCardBtn.hidden = true;
+}
+
+function closeForm() {
+  els.cardForm.hidden = true;
+  els.addCardBtn.hidden = false;
+  editingId = null;
+}
+
+function saveCard() {
+  const cardId = els.formCardId.value;
+  const nickname = els.formNickname.value.trim();
+  const last4 = els.formLast4.value.trim();
+  const dueDayRaw = els.formDueDay.value.trim();
+  const remindRaw = els.formRemindBefore.value.trim();
+
+  // Validation: last4 optional, par agar diya to exactly 4 digits.
+  if (last4 && !/^\d{4}$/.test(last4)) {
+    els.formErr.textContent = 'Last 4 digits exactly 4 ank hone chahiye (ya khaali chhodo).';
+    return;
+  }
+  // dueDay optional, par agar diya to 1-31.
+  let dueDay = null;
+  if (dueDayRaw) {
+    const d = parseInt(dueDayRaw, 10);
+    if (isNaN(d) || d < 1 || d > 31) {
+      els.formErr.textContent = 'Due date 1 se 31 ke beech hona chahiye (ya khaali chhodo).';
+      return;
+    }
+    dueDay = d;
+  }
+  let reminderDaysBefore = 3;
+  if (remindRaw) {
+    const r = parseInt(remindRaw, 10);
+    if (!isNaN(r) && r >= 0 && r <= 15) reminderDaysBefore = r;
+  }
+
+  const fields = { cardId, nickname, last4, dueDay, reminderDaysBefore };
+  if (editingId) {
+    const mc = myCards.find((c) => c.id === editingId);
+    Object.assign(mc, fields);
+  } else {
+    myCards.push({ id: uid(), ...fields });
+  }
+  saveWallet();
+  renderMyCards();
+  closeForm();
+}
+
+function deleteCard(id) {
+  if (!confirm('Yeh card hata dein?')) return;
+  myCards = myCards.filter((c) => c.id !== id);
+  saveWallet();
+  renderMyCards();
+}
+
+// ---------- Bills dashboard (Phase 4) ----------
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+function renderBills() {
+  els.billsList.innerHTML = '';
+  const withDue = myCards.filter((c) => c.dueDay);
+
+  if (withDue.length === 0) {
+    els.billsList.innerHTML =
+      '<div class="empty">Kisi card pe due date set nahi.<br>"💼 Cards" mein card edit karke due date daalo.</div>';
+    return;
+  }
+
+  const today = new Date();
+  const R = window.SmartCardReminders;
+
+  // Sabse pehle jo due ho, woh upar.
+  const rows = withDue
+    .map((mc) => ({ mc, status: R.dueStatus(mc.dueDay, mc.reminderDaysBefore, today) }))
+    .sort((a, b) => a.status.days - b.status.days);
+
+  for (const { mc, status } of rows) {
+    const cat = catalogCard(mc.cardId);
+    if (!cat) continue;
+    const name = mc.nickname || cat.name;
+
+    const row = document.createElement('div');
+    row.className = `bill-row ${status.level}`;
+
+    const left = document.createElement('div');
+    const bname = document.createElement('div');
+    bname.className = 'bname';
+    bname.textContent = name;
+    const bmeta = document.createElement('div');
+    bmeta.className = 'bmeta';
+    const dueStr = `${status.due.getDate()} ${MONTHS[status.due.getMonth()]}`;
+    bmeta.textContent = `Due ${dueStr}${mc.last4 ? ' · •••• ' + mc.last4 : ''}`;
+    left.appendChild(bname);
+    left.appendChild(bmeta);
+
+    const right = document.createElement('div');
+    right.className = 'bill-right';
+    const bdays = document.createElement('div');
+    bdays.className = 'bdays';
+    bdays.textContent = status.days <= 0 ? 'Aaj due!' : status.days === 1 ? 'Kal due' : `${status.days} din`;
+    const pay = document.createElement('button');
+    pay.className = 'pay';
+    pay.textContent = 'Pay Now ↗';
+    pay.addEventListener('click', () => payNow(cat.bank));
+    right.appendChild(bdays);
+    right.appendChild(pay);
+
+    row.appendChild(left);
+    row.appendChild(right);
+    els.billsList.appendChild(row);
+  }
+}
+
+// Hum payment NAHI karte — bank/CRED ka bill-pay page kholte hain.
+function payNow(bank) {
+  const url = BANK_PAY_URLS[bank] || CRED_URL;
+  window.open(url, '_blank', 'noopener');
+}
+
+// ---------- Recommendation ----------
+function ownedUniqueIds() {
+  return [...new Set(myCards.map((c) => c.cardId))];
+}
+
+function runRecommendation() {
+  const category = els.category.value;
+  const amount = Number(els.amount.value) || 0;
+  const opts = { category, amount };
+
+  if (els.onlyMine.checked) {
+    const owned = ownedUniqueIds();
+    if (owned.length === 0) {
+      els.results.innerHTML =
+        '<div class="empty">Pehle "💼 Cards" mein apne cards add karo.</div>';
+      els.capsFoot.hidden = true;
+      return;
+    }
+    opts.ownedCardIds = owned;
+  }
+
+  // Phase 5: cap-aware ranking — used caps factor karo.
+  opts.getRemaining = window.SmartCardCapTracker.makeGetRemaining(capUsage, new Date());
+
+  const ranked = window.SmartCardEngine.recommend(DB, opts);
+  lastRanked = ranked;
+  renderResults(ranked);
+
+  // Caps footer: current period + reset.
+  els.capsPeriod.textContent = `📅 Caps period: ${capUsage.period}`;
+  els.capsFoot.hidden = false;
+}
+
+// "✓ Use kiya" — top card ka reward is mahine ke cap mein log karo.
+function logUsageFor(result) {
+  if (!result || !result.rule || result.savings <= 0) return;
+  capUsage = window.SmartCardCapTracker.logUsage(capUsage, result.id, result.rule, result.savings, new Date());
+  saveCapUsage();
+  runRecommendation(); // re-rank with updated caps
+}
+
+// myCards mein is cardId ka nickname (agar ho) — results mein dikhane ke liye.
+function nicknameFor(cardId) {
+  const mc = myCards.find((c) => c.cardId === cardId && c.nickname);
+  return mc ? mc.nickname : null;
+}
+
+function renderResults(ranked) {
+  els.results.innerHTML = '';
+  if (ranked.length === 0) {
+    els.results.innerHTML = '<div class="empty">Koi card nahi mila</div>';
+    return;
+  }
+
+  ranked.forEach((r, i) => {
+    const row = document.createElement('div');
+    row.className = 'card-row';
+    if (r.savings <= 0) row.classList.add('zero');
+    else if (i === 0) row.classList.add('best');
+    if (r.capExhausted) row.classList.add('exhausted');
+
+    const left = document.createElement('div');
+    const name = document.createElement('div');
+    name.className = 'name';
+    const nick = nicknameFor(r.id);
+    const star = i === 0 && r.savings > 0 ? '⭐ ' : '';
+    name.textContent = star + (nick ? `${nick}` : r.name);
+    const sub = document.createElement('div');
+    sub.className = 'sub';
+    sub.textContent = r.excluded ? 'Is category pe reward nahi' : (nick ? r.name : r.note);
+    left.appendChild(name);
+    left.appendChild(sub);
+
+    // Top card pe "✓ Use kiya" — reward ko cap mein log karta hai.
+    if (i === 0 && r.savings > 0 && !r.excluded) {
+      const logBtn = document.createElement('button');
+      logBtn.className = 'log-btn';
+      logBtn.textContent = '✓ Ye card use kiya';
+      logBtn.addEventListener('click', () => logUsageFor(r));
+      left.appendChild(logBtn);
+    }
+
+    const right = document.createElement('div');
+    const save = document.createElement('div');
+    save.className = 'save';
+    let badge = '';
+    if (r.capExhausted) badge = '<span class="badge khatam">cap khatam</span>';
+    else if (r.capped) badge = '<span class="badge">cap</span>';
+    save.innerHTML = r.savings > 0 ? `₹${r.savings}${badge}` : '—';
+    const rate = document.createElement('div');
+    rate.className = 'rate';
+    rate.textContent = r.savings > 0 ? `${r.rate}% reward` : '';
+    right.appendChild(save);
+    right.appendChild(rate);
+
+    row.appendChild(left);
+    row.appendChild(right);
+    els.results.appendChild(row);
+  });
+}
+
+init();

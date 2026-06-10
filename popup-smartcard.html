@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 360px;
+      padding: 16px;
+      font-family: 'Segoe UI', sans-serif;
+      background: #1e1e2e;
+      color: #cdd6f4;
+    }
+    h2 { font-size: 16px; color: #cba6f7; display: flex; align-items: center; gap: 6px; }
+
+    /* Top nav (view switch) */
+    nav { display: flex; gap: 6px; margin: 10px 0 12px; }
+    nav button {
+      flex: 1; background: #313244; color: #a6adc8; border: 1px solid #45475a;
+      border-radius: 8px; padding: 7px; font-size: 12px; cursor: pointer; font-weight: 600;
+    }
+    nav button.active { background: #cba6f7; color: #1e1e2e; border-color: #cba6f7; }
+
+    .privacy { font-size: 10px; color: #6c7086; margin: 0 0 12px; line-height: 1.5; }
+
+    label { font-size: 11px; color: #a6adc8; display: block; margin-bottom: 4px; }
+    select, input {
+      width: 100%; background: #313244; color: #cdd6f4; border: 1px solid #45475a;
+      border-radius: 8px; padding: 9px 10px; font-size: 13px; outline: none;
+    }
+    select:focus, input:focus { border-color: #cba6f7; }
+    .row { display: flex; gap: 10px; margin-bottom: 10px; }
+    .row > div { flex: 1; }
+
+    button.primary {
+      width: 100%; background: #a6e3a1; color: #1e1e2e; border: none; padding: 10px;
+      border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; margin-top: 4px;
+    }
+    button.primary:hover { background: #94e2d5; }
+    button.ghost {
+      width: 100%; background: transparent; color: #cba6f7; border: 1px dashed #45475a;
+      padding: 9px; border-radius: 8px; font-size: 12px; cursor: pointer; font-weight: 600;
+    }
+    button.ghost:hover { border-color: #cba6f7; }
+
+    .toggle { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #a6adc8; margin: 12px 0 6px; }
+    .toggle input { width: auto; }
+
+    .results { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+    .card-row {
+      background: #313244; border: 1px solid #45475a; border-radius: 10px; padding: 10px 12px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .card-row.best { border-color: #a6e3a1; background: #2a3a2e; }
+    .card-row .name { font-size: 12px; font-weight: 600; }
+    .card-row .sub { font-size: 10px; color: #6c7086; margin-top: 2px; }
+    .card-row .save { font-size: 14px; font-weight: 700; color: #a6e3a1; text-align: right; white-space: nowrap; }
+    .card-row .rate { font-size: 10px; color: #89b4fa; }
+    .card-row.zero .save { color: #6c7086; }
+    .card-row.exhausted { border-color: #f38ba8; opacity: 0.8; }
+    .badge { font-size: 9px; background: #f9e2af; color: #1e1e2e; padding: 1px 5px; border-radius: 4px; margin-left: 4px; }
+    .badge.khatam { background: #f38ba8; }
+    .log-btn {
+      background: #45475a; color: #cdd6f4; border: none; border-radius: 6px;
+      padding: 4px 8px; font-size: 10px; cursor: pointer; margin-top: 4px; white-space: nowrap;
+    }
+    .log-btn:hover { background: #a6e3a1; color: #1e1e2e; }
+    .empty { font-size: 11px; color: #6c7086; text-align: center; padding: 16px 0; }
+    .caps-foot {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 10px; padding-top: 8px; border-top: 1px solid #313244;
+      font-size: 10px; color: #6c7086;
+    }
+    .caps-foot button {
+      background: transparent; color: #f38ba8; border: 1px solid #45475a;
+      border-radius: 6px; padding: 3px 8px; font-size: 10px; cursor: pointer;
+    }
+    .caps-foot button:hover { border-color: #f38ba8; }
+
+    /* More / Premium */
+    .more-card {
+      background: #313244; border: 1px solid #45475a; border-radius: 12px;
+      padding: 12px; margin-bottom: 10px;
+    }
+    .more-title { font-size: 13px; font-weight: 700; color: #cba6f7; margin-bottom: 4px; }
+    .more-sub { font-size: 11px; color: #a6adc8; line-height: 1.5; }
+    .perks { list-style: none; margin: 8px 0; padding: 0; }
+    .perks li { font-size: 11px; color: #cdd6f4; padding: 3px 0; }
+    .more-card .hint { font-size: 9px; color: #6c7086; margin-top: 6px; text-align: center; }
+    .pill { display:inline-block; font-size:9px; padding:2px 8px; border-radius:10px; font-weight:700; }
+    .pill.free { background:#45475a; color:#cdd6f4; }
+    .pill.pro { background:#a6e3a1; color:#1e1e2e; }
+    .upgrade-note {
+      background: #45475a; border-radius: 8px; padding: 10px; font-size: 11px;
+      color: #f9e2af; text-align: center; margin-top: 8px;
+    }
+    .upgrade-note button {
+      display:block; width:100%; margin-top:8px; background:#f9e2af; color:#1e1e2e;
+      border:none; border-radius:6px; padding:7px; font-size:11px; font-weight:700; cursor:pointer;
+    }
+
+    /* My Cards list */
+    .mycard {
+      background: #313244; border: 1px solid #45475a; border-radius: 10px; padding: 10px 12px;
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;
+    }
+    .mycard .info .nick { font-size: 12px; font-weight: 600; }
+    .mycard .info .meta { font-size: 10px; color: #6c7086; margin-top: 2px; }
+    .mycard .actions { display: flex; gap: 6px; }
+    .mycard .actions button {
+      background: #45475a; color: #cdd6f4; border: none; border-radius: 6px;
+      padding: 4px 8px; font-size: 11px; cursor: pointer;
+    }
+    .mycard .actions button.del:hover { background: #f38ba8; color: #1e1e2e; }
+    .mycard .actions button.edit:hover { background: #89b4fa; color: #1e1e2e; }
+
+    /* Add/Edit form */
+    #cardForm { background: #181825; border: 1px solid #45475a; border-radius: 10px; padding: 12px; margin-top: 10px; }
+    #cardForm .field { margin-bottom: 10px; }
+    #cardForm .hint { font-size: 9px; color: #6c7086; margin-top: 3px; }
+    #cardForm .form-actions { display: flex; gap: 8px; margin-top: 4px; }
+    #cardForm .form-actions button {
+      flex: 1; border: none; border-radius: 8px; padding: 9px; font-size: 12px; font-weight: 600; cursor: pointer;
+    }
+    #saveCardBtn { background: #a6e3a1; color: #1e1e2e; }
+    #cancelCardBtn { background: #45475a; color: #cdd6f4; }
+    .err { color: #f38ba8; font-size: 10px; margin-top: 4px; min-height: 12px; }
+
+    /* Bills dashboard */
+    .bill-row {
+      background: #313244; border: 1px solid #45475a; border-left-width: 4px;
+      border-radius: 10px; padding: 10px 12px; margin-bottom: 8px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .bill-row.today { border-left-color: #f38ba8; }
+    .bill-row.soon  { border-left-color: #f9e2af; }
+    .bill-row.ok    { border-left-color: #a6e3a1; }
+    .bill-row .bname { font-size: 12px; font-weight: 600; }
+    .bill-row .bmeta { font-size: 10px; color: #6c7086; margin-top: 2px; }
+    .bill-row .bdays { font-size: 11px; font-weight: 700; }
+    .bill-row.today .bdays { color: #f38ba8; }
+    .bill-row.soon  .bdays { color: #f9e2af; }
+    .bill-row.ok    .bdays { color: #a6e3a1; }
+    .bill-row .pay {
+      background: #cba6f7; color: #1e1e2e; border: none; border-radius: 6px;
+      padding: 5px 10px; font-size: 11px; font-weight: 700; cursor: pointer; margin-top: 6px;
+    }
+    .bill-row .pay:hover { background: #b4befe; }
+    .bill-right { text-align: right; display: flex; flex-direction: column; align-items: flex-end; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <h2>💳 SmartCard Saver</h2>
+  <nav>
+    <button data-view="suggest" class="active">💡 Suggest</button>
+    <button data-view="mycards">💼 Cards</button>
+    <button data-view="bills">🔔 Bills</button>
+    <button data-view="more">⭐ More</button>
+  </nav>
+
+  <!-- ============ SUGGEST VIEW ============ -->
+  <section id="view-suggest">
+    <div class="privacy">🔒 Aapka data sirf is device pe hai — hamare server pe nahi.</div>
+
+    <div class="row">
+      <div>
+        <label>Kya khareed rahe ho?</label>
+        <select id="category"></select>
+      </div>
+      <div style="max-width: 110px;">
+        <label>Amount (₹)</label>
+        <input id="amount" type="number" min="0" placeholder="1000" value="1000">
+      </div>
+    </div>
+
+    <button class="primary" id="goBtn">Best card batao →</button>
+
+    <div class="toggle">
+      <input type="checkbox" id="onlyMine">
+      <label for="onlyMine" style="margin:0; cursor:pointer;">Sirf mere cards dikhao</label>
+    </div>
+
+    <div class="results" id="results">
+      <div class="empty">Category chuno aur "Best card batao" dabao 👆</div>
+    </div>
+
+    <div class="caps-foot" id="capsFoot" hidden>
+      <span id="capsPeriod"></span>
+      <button id="resetCapsBtn">Caps reset</button>
+    </div>
+  </section>
+
+  <!-- ============ MY CARDS VIEW ============ -->
+  <section id="view-mycards" hidden>
+    <div class="privacy">
+      🔒 Aapki details <b>sirf is device pe</b> save hain.<br>
+      Hum full card number ya CVV <b>kabhi</b> nahi maangte/store karte.
+    </div>
+
+    <div id="cardsList"></div>
+
+    <button class="ghost" id="addCardBtn">+ Naya card add karo</button>
+
+    <!-- Add / Edit form -->
+    <div id="cardForm" hidden>
+      <div class="field">
+        <label>Card chuno</label>
+        <select id="formCardId"></select>
+      </div>
+      <div class="field">
+        <label>Nickname (optional)</label>
+        <input id="formNickname" placeholder="jaise 'Salary card' ya 'Travel wala'" maxlength="30">
+      </div>
+      <div class="field">
+        <label>Last 4 digits (optional)</label>
+        <input id="formLast4" placeholder="4521" maxlength="4" inputmode="numeric">
+        <div class="hint">Sirf pehchaanne ke liye. Poora number kabhi mat daalo.</div>
+      </div>
+      <div class="row">
+        <div class="field" style="flex:1;">
+          <label>Bill due — mahine ka din (optional)</label>
+          <input id="formDueDay" type="number" min="1" max="31" placeholder="5" inputmode="numeric">
+        </div>
+        <div class="field" style="max-width:120px;">
+          <label>Kitne din pehle?</label>
+          <input id="formRemindBefore" type="number" min="0" max="15" placeholder="3" value="3" inputmode="numeric">
+        </div>
+      </div>
+      <div class="hint" style="margin-top:-4px;">Jaise har mahine ki 5 tareekh due → 3 din pehle reminder.</div>
+      <div class="err" id="formErr"></div>
+      <div class="form-actions">
+        <button id="saveCardBtn">Save</button>
+        <button id="cancelCardBtn">Cancel</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MORE VIEW (Premium / About) ============ -->
+  <section id="view-more" hidden>
+    <div class="more-card" id="premiumCard">
+      <div class="more-title">⭐ Premium</div>
+      <div class="more-sub" id="premiumStatus"></div>
+      <ul class="perks">
+        <li>♾️ Unlimited cards (free: 3 tak)</li>
+        <li>📊 Spending analytics</li>
+        <li>🚀 Future advanced features</li>
+      </ul>
+      <button class="primary" id="premiumToggle"></button>
+      <div class="hint" id="premiumDevNote">Dev toggle — abhi koi real payment nahi.</div>
+    </div>
+
+    <div class="more-card">
+      <div class="more-title">📊 Spending Analytics</div>
+      <div id="analyticsBox"></div>
+    </div>
+
+    <div class="more-card">
+      <div class="more-title">🤝 Disclosure</div>
+      <div class="more-sub" id="affDisclosure"></div>
+    </div>
+
+    <div class="more-card">
+      <div class="more-title">ℹ️ About</div>
+      <div class="more-sub">
+        🔒 India-first, privacy-first. Aapka data sirf is device pe. Hum payment nahi karte,
+        card number/CVV nahi maangte.
+      </div>
+      <div class="more-sub" style="margin-top:8px;">
+        <a href="#" id="privacyLink" style="color:#89b4fa;">📄 Privacy Policy</a>
+        &nbsp;·&nbsp; <span id="versionLabel" style="color:#6c7086;"></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BILLS VIEW ============ -->
+  <section id="view-bills" hidden>
+    <div class="privacy">
+      🔒 Due dates <b>sirf is device pe</b>. Hum payment <b>NAHI</b> karte — sirf yaad
+      dilate hain aur "Pay Now" pe aapke bank/CRED pe bhej dete hain.
+    </div>
+    <div id="billsList"></div>
+  </section>
+
+  <script src="recommend.js"></script>
+  <script src="reminders.js"></script>
+  <script src="captracker.js"></script>
+  <script src="affiliate.js"></script>
+  <script src="premium.js"></script>
+  <script src="popup-smartcard.js"></script>
+</body>
+</html>

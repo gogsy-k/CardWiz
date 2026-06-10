@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      width: 320px;
+      padding: 16px;
+      font-family: 'Segoe UI', sans-serif;
+      background: #1e1e2e;
+      color: #cdd6f4;
+    }
+    h2 {
+      font-size: 14px;
+      margin-bottom: 10px;
+      color: #cba6f7;
+    }
+    textarea {
+      width: 100%;
+      height: 200px;
+      background: #313244;
+      color: #cdd6f4;
+      border: 1px solid #45475a;
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 13px;
+      resize: none;
+      outline: none;
+      line-height: 1.6;
+    }
+    textarea:focus { border-color: #cba6f7; }
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+    }
+    .status { font-size: 11px; color: #6c7086; }
+    button {
+      background: #f38ba8;
+      color: #1e1e2e;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    button:hover { background: #eba0ac; }
+  </style>
+</head>
+<body>
+  <h2>📝 Quick Notes</h2>
+  <textarea id="notes" placeholder="Yahan kuch bhi likho..."></textarea>
+  <div class="footer">
+    <span class="status" id="status">Saved ✓</span>
+    <button id="clearBtn">Clear</button>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
