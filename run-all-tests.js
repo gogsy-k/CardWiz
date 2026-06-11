@@ -12,6 +12,7 @@ const SUITES = [
   'captracker.test.js',
   'affiliate.test.js',
   'premium.test.js',
+  'sync.test.js',
 ];
 
 let totalPassed = 0;

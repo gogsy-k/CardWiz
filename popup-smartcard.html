@@ -212,7 +212,7 @@
 
   <!-- ============ MY CARDS VIEW ============ -->
   <section id="view-mycards" hidden>
-    <div class="privacy">
+    <div class="privacy" id="cardsPrivacy">
       🔒 Aapki details <b>sirf is device pe</b> save hain.<br>
       Hum full card number ya CVV <b>kabhi</b> nahi maangte/store karte.
     </div>
@@ -261,6 +261,12 @@
     <div class="more-card" id="accountCard">
       <div class="more-title">👤 Account</div>
       <div id="accountBox"></div>
+    </div>
+
+    <!-- Cloud Sync (Phase 10) -->
+    <div class="more-card" id="syncCard">
+      <div class="more-title">☁️ Cloud Sync</div>
+      <div id="syncBox"></div>
     </div>
 
     <div class="more-card" id="premiumCard">
@@ -313,6 +319,7 @@
   <script src="affiliate.js"></script>
   <script src="premium.js"></script>
   <script src="auth.js"></script>
+  <script src="sync.js"></script>
   <script src="popup-smartcard.js"></script>
 </body>
 </html>

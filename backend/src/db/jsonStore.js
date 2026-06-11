@@ -25,6 +25,7 @@ function load() {
   } catch {
     cache = { users: [] }; // file nahi hai / corrupt -> fresh
   }
+  if (!cache.cardsByUser || typeof cache.cardsByUser !== 'object') cache.cardsByUser = {};
   return cache;
 }
 
@@ -81,4 +82,17 @@ async function updatePlan(id, plan) {
   return u;
 }
 
-module.exports = { kind: 'json', init, upsertByGoogleId, findById, updatePlan };
+// ---- Cards (synced wallet) ----
+async function listCards(userId) {
+  load();
+  return cache.cardsByUser[userId] || [];
+}
+
+async function replaceCards(userId, cards) {
+  load();
+  cache.cardsByUser[userId] = cards;
+  persist();
+  return cache.cardsByUser[userId];
+}
+
+module.exports = { kind: 'json', init, upsertByGoogleId, findById, updatePlan, listCards, replaceCards };

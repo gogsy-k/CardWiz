@@ -122,10 +122,22 @@ async function fetchMe() {
   }
 }
 
+// ---------- authed fetch helper (Phase 10) ----------
+// Bearer token inject karo; 401 pe auto sign-out + throw. Card sync isi pe chalta hai.
+async function authedFetch(path, opts = {}) {
+  const a = await getStoredAuth();
+  if (!a || !a.token) throw new Error('Not signed in');
+  const headers = { ...(opts.headers || {}), Authorization: `Bearer ${a.token}` };
+  if (opts.body && !headers['Content-Type']) headers['Content-Type'] = 'application/json';
+  const res = await fetch(`${BACKEND_URL}${path}`, { ...opts, headers });
+  if (res.status === 401) { await clearStoredAuth(); throw new Error('Session expired'); }
+  return res;
+}
+
 // ---------- exports ----------
 const authApi = {
   BACKEND_URL,
-  signIn, signOut, fetchMe, isSignedIn, getStoredAuth,
+  signIn, signOut, fetchMe, isSignedIn, getStoredAuth, authedFetch,
 };
 if (typeof module !== 'undefined' && module.exports) module.exports = authApi;
 if (typeof globalThis !== 'undefined') globalThis.SmartCardAuth = authApi;

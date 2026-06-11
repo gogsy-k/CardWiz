@@ -160,7 +160,9 @@ Ye 3 cheezon ka best ek jagah laata hai:
 > card-*type*/nickname/last-4/due-date sync. Cards ka logic aur recommendations
 > device pe hi rehte hain. Code: `backend/` folder (Node.js + Express).
 
-### Phase 8 — Backend Foundation + Google SSO (Accounts) 🟡 CODE DONE (setup manual)
+> **▶ Agreed build order (Jun 2026):** Phase 9 (Supabase DB) → Phase 10 (Card Sync) → Phase 11 (Payments).
+
+### Phase 8 — Backend Foundation + Google SSO (Accounts) ✅ LIVE
 **Goal:** User accounts + Google sign-in, taaki plan/payment handle ho sake.
 - [x] Express backend scaffold — `backend/` (config, CORS, health check)
 - [x] DB layer: JSON-file store default (zero setup) + Postgres/Supabase optional — `backend/src/db/`
@@ -171,20 +173,35 @@ Ye 3 cheezon ka best ek jagah laata hai:
 - [x] Extension side: `auth.js` (chrome.identity `launchWebAuthFlow` → backend → JWT)
 - [x] Manifest: `identity` permission + localhost host permission
 - [x] Popup "More" tab: Sign in with Google + account card; plan account se sync
-- [ ] **Manual setup:** Google Cloud OAuth client banao + `GOOGLE_CLIENT_ID`/`JWT_SECRET`
-      bharo (`backend/README.md` follow karo). Tab tak SSO live nahi hoga.
+- [x] **Manual setup DONE:** Google OAuth client banaya, `GOOGLE_CLIENT_ID` + `JWT_SECRET`
+      set, sign-in end-to-end test ho gaya (user JSON store mein aaya). ✅ SSO LIVE.
 
-### Phase 9 — Payment Integration (Razorpay) ⏳ NEXT
+### Phase 9 — Real Database (Supabase Postgres) ✅ LIVE
+**Goal:** JSON-file store se managed Postgres pe move — users reliable, backed-up table mein.
+- [x] Supabase project (ap-south-1 Mumbai) + DB password
+- [x] `DATABASE_URL` `backend/.env` mein (Session Pooler, IPv4; password `@`→`%40` encoded)
+- [x] Backend `[db] driver: postgres`; `users` table auto-create; sign-in se user Postgres mein verified
+- Code change ZERO (pluggable db layer); sirf config + manual setup.
+- Note: purana JSON `users.json` ab unused (gitignored hi tha).
+
+### Phase 10 — Card Sync (cross-device) — DEFAULT ON, opt-out ✅ LIVE
+**Goal:** Signed-in user ke cards account se sync → kisi bhi browser pe login = cards ready.
+- [x] `cards` table (user_id FK, UNIQUE(user_id, client_id)) + auto-create — `schema.sql`, `pgStore.js`
+- [x] `GET /cards` + `PUT /cards` (full-set replace, Bearer auth) — `routes/cards.js`
+- [x] Store ONLY: card type, nickname, last-4, due-date, reminder-days. **Full number/CVV NAHI**
+      (server-side defense: last4 ko digits-only + last-4 tak truncate — e2e verified)
+- [x] Extension `sync.js`: `mergeCards` (union by id, newer updatedAt jeete) + pull/push/syncNow
+- [x] `auth.js` `authedFetch` (Bearer + 401 auto sign-out); popup: init/sign-in pe sync, change pe push
+- [x] **Cloud Sync toggle — default ON**, More tab se OFF (signed-in pe hi active)
+- [x] Cards-tab privacy line sync-aware; `privacy.html` honestly update (account + sync disclose)
+- [x] `sync.test.js` (9 tests) — merge logic; suite 96 green
+
+### Phase 11 — Payment Integration (Razorpay)
 **Goal:** Real premium upgrade — `users.plan` ko payment se `premium` karna.
 - [ ] Razorpay account + test keys
 - [ ] `POST /payment/order` (order create) + `POST /payment/webhook` (verify → plan update)
 - [ ] Extension: Razorpay checkout + premium unlock after success
 - [ ] `premium.js`/popup ko local toggle se hata kar account-plan pe poora migrate
-
-### Phase 10 — Cards DB on Server (optional, powerful)
-**Goal:** `cards.json` server se serve — naye cards bina Chrome Store republish ke.
-- [ ] `GET /cards` endpoint + extension startup pe fetch + cache
-- [ ] (Optional) card-*type*/nickname/last-4/due-date cross-device sync (number/CVV NAHI)
 
 ---
 

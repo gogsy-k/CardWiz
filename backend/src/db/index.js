@@ -27,4 +27,9 @@ const users = {
   updatePlan: (...a) => driver.updatePlan(...a),
 };
 
-module.exports = { init, users, get kind() { return driver && driver.kind; } };
+const cards = {
+  list: (...a) => driver.listCards(...a),
+  replace: (...a) => driver.replaceCards(...a),
+};
+
+module.exports = { init, users, cards, get kind() { return driver && driver.kind; } };

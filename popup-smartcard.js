@@ -53,6 +53,7 @@ let myCards = [];     // wallet: [{id, cardId, nickname, last4, dueDay, reminder
 let capUsage = null;  // { period, used } — Phase 5 monthly cap tracking
 let isPremium = false;// Phase 6 premium flag (dev toggle / backend-synced)
 let currentUser = null;// Phase 8: signed-in Google user, ya null
+let syncEnabled = true;// Phase 10: cloud sync (default ON; signed-in pe hi active)
 let editingId = null; // agar edit ho raha hai to uska wallet-entry id
 let lastRanked = [];  // last recommendation results (log button ke liye)
 
@@ -65,6 +66,8 @@ async function init() {
   await loadCapUsage();
   await loadPremium();
   await loadAuth(); // Phase 8: signed-in user + plan sync (backend)
+  await loadSyncPref(); // Phase 10: cloud sync pref (default ON)
+  if (currentUser && syncEnabled) await doSyncNow(); // pull+merge+push cards
   renderMyCards();
 
   // View switching
@@ -253,6 +256,7 @@ async function doSignIn() {
   try {
     currentUser = await SmartCardAuth.signIn();
     applyAuthToPremium();
+    if (syncEnabled) await doSyncNow(); // Phase 10: local cards ko cloud mein merge
     renderMore();
     renderMyCards(); // card-limit gating refresh
   } catch (e) {
@@ -280,11 +284,85 @@ function escapeHtml(s) {
     ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
+// ---------- Cloud Sync (Phase 10) ----------
+function loadSyncPref() {
+  return new Promise((resolve) => {
+    if (typeof chrome === 'undefined' || !chrome.storage) { syncEnabled = true; return resolve(); }
+    chrome.storage.local.get(['syncEnabled'], (r) => {
+      syncEnabled = r.syncEnabled !== false; // undefined -> true (default ON)
+      resolve();
+    });
+  });
+}
+
+function saveSyncPref() {
+  if (typeof chrome !== 'undefined' && chrome.storage) chrome.storage.local.set({ syncEnabled });
+}
+
+// Pull + merge + push — local aur cloud dono consistent, bina kisi device ka data khoye.
+async function doSyncNow() {
+  if (!currentUser || !syncEnabled || typeof SmartCardSync === 'undefined') return;
+  try {
+    const merged = await SmartCardSync.syncNow(myCards);
+    myCards = merged;
+    saveWallet();
+    renderMyCards();
+  } catch (e) { /* offline / token expired — local rehne do */ }
+}
+
+// Local change ke baad cloud update (best-effort, signed-in + sync-on pe hi).
+function pushIfSyncing() {
+  if (!currentUser || !syncEnabled || typeof SmartCardSync === 'undefined') return;
+  SmartCardSync.push(myCards).catch(() => {});
+}
+
+async function toggleSync() {
+  syncEnabled = !syncEnabled;
+  saveSyncPref();
+  if (syncEnabled && currentUser) await doSyncNow(); // ON karte hi sync
+  renderMore();
+  renderMyCards();
+}
+
+function renderSync() {
+  const box = $('syncBox');
+  if (!box) return;
+  if (!currentUser) {
+    box.innerHTML =
+      '<div class="more-sub">Sign in karke cloud sync on karo — phir kisi bhi browser pe login karo, cards apne aap ready. 🔒 Sirf last-4, poora number nahi.</div>';
+    return;
+  }
+  if (syncEnabled) {
+    box.innerHTML =
+      `<div class="more-sub">✅ <b>ON</b> — aapke cards account se synced. Kahin bhi login karo, sab kuch wahin.
+         <br>🔒 Sirf card type, nickname, last-4 (poora number nahi) aur due date.</div>
+       <button class="ghost" id="syncToggle" style="margin-top:8px;">Cloud sync OFF karo</button>`;
+  } else {
+    box.innerHTML =
+      `<div class="more-sub">Cloud sync <b>OFF</b> — cards sirf is device pe. On karo to har browser pe milenge.</div>
+       <button class="signin-btn" id="syncToggle" style="margin-top:8px;">☁️ Cloud sync ON karo</button>`;
+  }
+  const b = $('syncToggle');
+  if (b) b.addEventListener('click', toggleSync);
+}
+
+// Cards-tab privacy line — sync state ke hisaab se honest message.
+function updateCardsPrivacy() {
+  const el = $('cardsPrivacy');
+  if (!el) return;
+  if (currentUser && syncEnabled) {
+    el.innerHTML = '☁️ Aapke cards account se <b>synced</b> (sirf last-4, poora number nahi). More tab se off kar sakte ho.';
+  } else {
+    el.innerHTML = '🔒 Aapki details <b>sirf is device pe</b> save hain.<br>Hum full card number ya CVV <b>kabhi</b> nahi maangte/store karte.';
+  }
+}
+
 function renderMore() {
   const P = window.SmartCardPremium;
 
   // Account / SSO (Phase 8) — sabse upar.
   renderAccount();
+  renderSync(); // Cloud Sync card (Phase 10)
 
   // Premium status + toggle
   els.premiumStatus.innerHTML = isPremium
@@ -361,6 +439,7 @@ function catalogCard(cardId) {
 
 // ---------- My Cards view (CRUD) ----------
 function renderMyCards() {
+  updateCardsPrivacy(); // sync-aware privacy line (Phase 10)
   const stale = $('limitNote');
   if (stale) stale.remove();
   els.cardsList.innerHTML = '';
@@ -477,7 +556,7 @@ function saveCard() {
     if (!isNaN(r) && r >= 0 && r <= 15) reminderDaysBefore = r;
   }
 
-  const fields = { cardId, nickname, last4, dueDay, reminderDaysBefore };
+  const fields = { cardId, nickname, last4, dueDay, reminderDaysBefore, updatedAt: new Date().toISOString() };
   if (editingId) {
     const mc = myCards.find((c) => c.id === editingId);
     Object.assign(mc, fields);
@@ -485,6 +564,7 @@ function saveCard() {
     myCards.push({ id: uid(), ...fields });
   }
   saveWallet();
+  pushIfSyncing(); // Phase 10: cloud update
   renderMyCards();
   closeForm();
 }
@@ -493,6 +573,7 @@ function deleteCard(id) {
   if (!confirm('Yeh card hata dein?')) return;
   myCards = myCards.filter((c) => c.id !== id);
   saveWallet();
+  pushIfSyncing(); // Phase 10: cloud update
   renderMyCards();
 }
 

@@ -27,12 +27,15 @@
 <body>
   <div class="wrap">
     <h1>💳 RewardXtra — Privacy Policy</h1>
-    <div class="updated">Last updated: 9 June 2026</div>
+    <div class="updated">Last updated: 12 June 2026</div>
 
     <div class="tldr">
-      <b>TL;DR —</b> Aapka saara data <b>sirf aapke device pe</b> rehta hai (browser ke local
-      storage mein). Hum koi data apne server pe nahi bhejte, kyunki <b>hamara koi server hi nahi
-      hai</b>. Koi tracking nahi, koi analytics server nahi.
+      <b>TL;DR —</b> By default aapka saara data <b>sirf aapke device pe</b> rehta hai. Agar aap
+      <b>Google se sign in</b> karte ho, ek account banta hai aur <b>Cloud Sync</b> (default ON, jise
+      aap off kar sakte ho) aapke cards ki <b>limited details</b> — card type, nickname,
+      <b>last-4 (poora number nahi)</b>, due-date — hamare secure server pe sync karta hai, taaki kisi
+      bhi browser pe login karke wahi cards mil sakein. Koi tracking/ads nahi. Poora card number /
+      CVV <b>kabhi nahi</b>.
     </div>
 
     <div class="never">
@@ -55,9 +58,26 @@
       <li>Cap usage jo aap manually log karte ho ("✓ Use kiya")</li>
       <li>Premium on/off setting</li>
     </ul>
-    <p>Ye data kabhi aapke device se bahar nahi jaata. Hum tak nahi pahुंchta.</p>
+    <p>Signed out ho to ye data kabhi aapke device se bahar nahi jaata. Signed in + Cloud Sync ON ho
+       to upar batayi limited card details (last-4 tak, poora number nahi) hamare server pe sync hoti
+       hain — niche section 2 dekho.</p>
 
-    <h2>2. Shopping sites pe kya hota hai</h2>
+    <h2>2. Account &amp; Cloud Sync (optional)</h2>
+    <p>Agar aap <b>Google se sign in</b> karte ho, hum ek account banakar secure server pe store karte
+       hain: aapka <b>email, naam, Google account id</b>, aur plan (free/premium). Sign-in optional
+       hai — bina iske bhi extension poora kaam karta hai.</p>
+    <p><b>Cloud Sync</b> (default ON, "More" tab se OFF kar sakte ho): signed-in hone pe aapke cards ki
+       limited details server pe sync hoti hain taaki kisi bhi browser pe login karke wahi cards milein.
+       Sync hota hai sirf:</p>
+    <ul>
+      <li>Card type/naam aur nickname</li>
+      <li>Last 4 digits (poora number nahi)</li>
+      <li>Due date + reminder preference</li>
+    </ul>
+    <p>Server pe bhi <b>poora card number / CVV / bank login KABHI nahi</b> jaata. Cloud Sync OFF
+       karoge to cards sirf is device pe rehte hain.</p>
+
+    <h2>3. Shopping sites pe kya hota hai</h2>
     <p>Amazon.in, Flipkart.com aur Myntra.com ke <b>cart/checkout pages</b> pe extension
        <b>read-only</b> taur pe ye padhta hai:</p>
     <ul>
@@ -68,35 +88,38 @@
        Ye jaankari kahin transmit nahi hoti. Extension koi form fill nahi karta, koi card number
        enter nahi karta.</p>
 
-    <h2>3. Notifications</h2>
+    <h2>4. Notifications</h2>
     <p>Bill reminders ke liye browser notifications use hoti hain. Ye aapke device pe locally
        schedule hoti hain (<code>chrome.alarms</code>) — koi external push service nahi.</p>
 
-    <h2>4. Affiliate links</h2>
+    <h2>5. Affiliate links</h2>
     <p>"Buy via our link" dabane pe, link mein hamara affiliate tag add hota hai. Agar aap kuch
        khareedte ho, to hame chhota commission milta hai — <b>aapko koi extra cost nahi</b>, price
        wahi rehta hai. Affiliate network (jaise Amazon Associates) ko sirf standard click-referral
        jaati hai; hum aapki koi personal jaankari unke saath share nahi karte.</p>
 
-    <h2>5. Permissions kyun chahiye</h2>
+    <h2>6. Permissions kyun chahiye</h2>
     <ul>
       <li><code>storage</code> — aapke cards/settings device pe save karne ke liye</li>
       <li><code>alarms</code> — bill reminder check schedule karne ke liye</li>
       <li><code>notifications</code> — bill due reminders dikhane ke liye</li>
+      <li><code>identity</code> — optional Google sign-in (account + cloud sync) ke liye</li>
       <li>Amazon/Flipkart/Myntra access — checkout pe best card recommend karne ke liye (read-only)</li>
     </ul>
 
-    <h2>6. Data delete kaise karein</h2>
+    <h2>7. Data delete kaise karein</h2>
     <p>Extension uninstall karte hi saara local data delete ho jaata hai. Aap "Clear" / "Caps reset"
-       buttons se bhi data hata sakte ho.</p>
+       buttons se bhi data hata sakte ho. Agar aap signed in the, to synced cards hatane ke liye saare
+       cards delete kar do (empty set server pe chala jaata hai), ya account/data deletion ke liye
+       <a href="mailto:gurpreetsj8871@gmail.com">humein likho</a>.</p>
 
-    <h2>7. Bachchon ke liye</h2>
+    <h2>8. Bachchon ke liye</h2>
     <p>Ye extension financial tool hai, 18+ users ke liye intended hai.</p>
 
-    <h2>8. Changes</h2>
+    <h2>9. Changes</h2>
     <p>Policy update hone pe yahaan "Last updated" date badlegi.</p>
 
-    <h2>9. Contact</h2>
+    <h2>10. Contact</h2>
     <p>Sawaal ho to: <a href="mailto:gurpreetsj8871@gmail.com">gurpreetsj8871@gmail.com</a></p>
 
     <div class="foot">

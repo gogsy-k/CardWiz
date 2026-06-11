@@ -31,6 +31,22 @@ async function init(databaseUrl) {
       updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
     );
   `);
+
+  // Cards table — synced wallet entries. NOTE: sirf last4, NEVER full PAN/CVV.
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS cards (
+      id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      user_id       UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      client_id     TEXT NOT NULL,
+      card_id       TEXT NOT NULL,
+      nickname      TEXT,
+      last4         TEXT,
+      due_day       INT,
+      reminder_days_before INT,
+      updated_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+      UNIQUE (user_id, client_id)
+    );
+  `);
 }
 
 // DB row -> humara user shape (camelCase, consistent JSON store ke saath).
@@ -76,4 +92,47 @@ async function updatePlan(id, plan) {
   return rowToUser(res.rows[0]);
 }
 
-module.exports = { kind: 'postgres', init, upsertByGoogleId, findById, updatePlan };
+// ---- Cards (synced wallet) ----
+function rowToCard(r) {
+  return {
+    id: r.client_id,
+    cardId: r.card_id,
+    nickname: r.nickname || '',
+    last4: r.last4 || '',
+    dueDay: r.due_day,
+    reminderDaysBefore: r.reminder_days_before,
+    updatedAt: r.updated_at,
+  };
+}
+
+async function listCards(userId) {
+  const res = await pool.query(
+    'SELECT * FROM cards WHERE user_id = $1 ORDER BY updated_at', [userId]);
+  return res.rows.map(rowToCard);
+}
+
+// Full-set replace (transaction): user ke saare cards is set se replace kar do.
+async function replaceCards(userId, cards) {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    await client.query('DELETE FROM cards WHERE user_id = $1', [userId]);
+    for (const c of cards) {
+      await client.query(
+        `INSERT INTO cards (user_id, client_id, card_id, nickname, last4, due_day, reminder_days_before, updated_at)
+         VALUES ($1,$2,$3,$4,$5,$6,$7, COALESCE($8::timestamptz, now()))`,
+        [userId, c.id, c.cardId, c.nickname || null, c.last4 || null,
+         c.dueDay ?? null, c.reminderDaysBefore ?? null, c.updatedAt || null]
+      );
+    }
+    await client.query('COMMIT');
+  } catch (e) {
+    await client.query('ROLLBACK');
+    throw e;
+  } finally {
+    client.release();
+  }
+  return listCards(userId);
+}
+
+module.exports = { kind: 'postgres', init, upsertByGoogleId, findById, updatePlan, listCards, replaceCards };
