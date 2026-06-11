@@ -1,5 +1,5 @@
 /*
- * SmartCard Saver — Single test runner.  Chalao:  node run-all-tests.js  (ya `npm test`)
+ * RewardXtra — Single test runner.  Chalao:  node run-all-tests.js  (ya `npm test`)
  * Saare suites sequentially chalata hai aur ek combined summary deta hai.
  */
 const { execFileSync } = require('child_process');
@@ -18,7 +18,7 @@ let totalPassed = 0;
 let failedSuites = 0;
 
 console.log('\n╔════════════════════════════════════════════╗');
-console.log('║   SmartCard Saver — Full Test Suite        ║');
+console.log('║   RewardXtra — Full Test Suite        ║');
 console.log('╚════════════════════════════════════════════╝\n');
 
 for (const suite of SUITES) {

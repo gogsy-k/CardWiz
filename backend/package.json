@@ -1,0 +1,25 @@
+{
+  "name": "smartcard-saver-backend",
+  "version": "0.1.0",
+  "description": "RewardXtra backend — Google SSO, user accounts, premium status. Phase 8. Koi full card number / CVV yahan bhi store nahi.",
+  "private": true,
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "google-auth-library": "^9.14.1",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "optionalDependencies": {
+    "pg": "^8.12.0"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT"
+}

@@ -3,7 +3,7 @@
   "lastUpdated": "2026-06-09",
   "currency": "INR",
   "_doc": {
-    "purpose": "SmartCard Saver ka 'brain' — India ke top cards ki reward rules. Recommender ise padh kar best card rank karta hai.",
+    "purpose": "RewardXtra ka 'brain' — India ke top cards ki reward rules. Recommender ise padh kar best card rank karta hai.",
     "howRankingWorks": "Diye gaye category + amount pe: har card ke liye matching rule ka effectiveRate lo (agar category exclusions mein hai to 0), value = amount * effectiveRate/100, monthlyCapValue se cap karo, phir cards ko value ke hisaab se rank karo.",
     "effectiveRate": "Sab kuch ek hi unit (%) mein normalize kiya hai taaki cashback/points/miles cards directly compare ho saken. Points/miles cards ke liye effectiveRate = (reward per rupee) * pointValueINR * 100, conservative pointValue ke saath. Asli raw rule 'rawRate' mein transparency ke liye rakhi hai.",
     "monthlyCapValue": "Reward value ka monthly cap RUPEES mein (cashback-equivalent). null = no cap / unlimited.",

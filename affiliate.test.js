@@ -10,7 +10,7 @@ function test(name, fn) {
   catch (e) { console.error(`  ✗ ${name}\n      ${e.message}`); process.exitCode = 1; }
 }
 
-console.log('SmartCard Saver — Affiliate Tests\n');
+console.log('RewardXtra — Affiliate Tests\n');
 
 test('amazonLink adds tag', () => {
   const u = amazonLink('https://www.amazon.in/dp/B0XYZ', 'mytag-21');

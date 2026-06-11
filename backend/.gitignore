@@ -1,0 +1,12 @@
+# Secrets — kabhi commit mat karo
+.env
+
+# Dependencies
+node_modules/
+
+# JSON-file DB store (dev) — user data, commit nahi
+data/
+
+# Logs
+*.log
+npm-debug.log*

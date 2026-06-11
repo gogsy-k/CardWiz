@@ -1,5 +1,5 @@
 /*
- * SmartCard Saver — Content Script (Phase 3: Auto Checkout Detection)
+ * RewardXtra — Content Script (Phase 3: Auto Checkout Detection)
  * ------------------------------------------------------------------
  * Amazon / Flipkart / Myntra pe chalkar:
  *   1. merchant -> category map karta hai (read-only)
@@ -285,7 +285,7 @@ function renderWidget(site, amount, ranked, usingWallet, otherOffers) {
     </style>
     <div class="box">
       <div class="hd">
-        <span class="title">💳 SmartCard Saver</span>
+        <span class="title">💳 RewardXtra</span>
         <button class="x" title="Band karo">✕</button>
       </div>
       <div class="headline">${escapeHtml(headline)}</div>

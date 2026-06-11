@@ -1,4 +1,4 @@
-# 💳 SmartCard Saver
+# 💳 RewardXtra
 
 > India ka **privacy-first** browser extension — checkout pe sabse zyada bachat dene wala
 > credit card bataye, aur bill due-dates yaad rakhe. **Bina** card number/CVV ya bank login ke.
@@ -115,7 +115,7 @@ Packaging ke liye [PACKAGING.md](PACKAGING.md).
 ## ⚠️ Disclaimer
 Reward calculations estimates hain (point/mile values redemption pe depend karte hain). Actual
 benefit aapke spends aur card terms pe depend karta hai. Apne card ke latest terms verify karo.
-SmartCard Saver kisi bank se affiliated nahi hai.
+RewardXtra kisi bank se affiliated nahi hai.
 
 ## License
 MIT

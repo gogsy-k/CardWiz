@@ -1,5 +1,5 @@
 /*
- * SmartCard Saver — Background Service Worker (Phase 4)
+ * RewardXtra — Background Service Worker (Phase 4)
  * ----------------------------------------------------
  * Roz do baar (chrome.alarms) bills check karta hai aur due-soon cards ke liye
  * browser notification deta hai. Ek din mein ek card pe ek hi notification.
@@ -47,7 +47,7 @@ async function checkBills() {
     chrome.notifications.create(`bill-${mc.id}-${todayKey}`, {
       type: 'basic',
       iconUrl: 'icon128.png',
-      title: '💳 SmartCard Saver — Bill Reminder',
+      title: '💳 RewardXtra — Bill Reminder',
       message: R.reminderMessage(name, days),
       priority: 2,
     });

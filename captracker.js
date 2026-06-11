@@ -1,5 +1,5 @@
 /*
- * SmartCard Saver — Monthly Cap Tracker (Phase 5)
+ * RewardXtra — Monthly Cap Tracker (Phase 5)
  * -----------------------------------------------
  * Har card ke har reward-rule ka monthly cap kitna "use" ho chuka hai, ye track
  * karta hai. Naye mahine pe khud reset. Engine isse "remaining cap" puchta hai

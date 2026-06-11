@@ -1,4 +1,4 @@
-# 📦 SmartCard Saver — Packaging Guide
+# 📦 RewardXtra — Packaging Guide
 
 Web Store ke liye clean zip banane ka tareeka. Sirf runtime files include karo —
 tests, docs, dev scripts, aur purane Quick Notes files exclude.

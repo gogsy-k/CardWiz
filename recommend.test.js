@@ -22,7 +22,7 @@ function test(name, fn) {
   }
 }
 
-console.log('SmartCard Saver — Engine Tests\n');
+console.log('RewardXtra — Engine Tests\n');
 
 // --- evaluateCard ---
 const sbi = db.cards.find((c) => c.id === 'sbi-cashback');

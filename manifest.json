@@ -1,13 +1,13 @@
 {
   "manifest_version": 3,
-  "name": "SmartCard Saver — Best Card & Bill Reminders",
+  "name": "RewardXtra — Best Card & Bill Reminders",
   "version": "1.0",
   "description": "Checkout pe sabse zyada bachat dene wala card bataye + bill due-date reminders. Privacy-first, India-first.",
-  "author": "SmartCard Saver",
+  "author": "RewardXtra",
   "homepage_url": "https://github.com/",
   "action": {
     "default_popup": "popup-smartcard.html",
-    "default_title": "SmartCard Saver — best card batao",
+    "default_title": "RewardXtra — best card batao",
     "default_icon": {
       "16": "icon16.png",
       "48": "icon48.png",
@@ -19,7 +19,10 @@
     "48": "icon48.png",
     "128": "icon128.png"
   },
-  "permissions": ["storage", "alarms", "notifications"],
+  "permissions": ["storage", "alarms", "notifications", "identity"],
+  "host_permissions": [
+    "http://localhost:3000/*"
+  ],
   "background": {
     "service_worker": "background.js"
   },

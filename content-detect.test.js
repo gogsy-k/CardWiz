@@ -10,7 +10,7 @@ function test(name, fn) {
   catch (e) { console.error(`  ✗ ${name}\n      ${e.message}`); process.exitCode = 1; }
 }
 
-console.log('SmartCard Saver — Content Detection Tests\n');
+console.log('RewardXtra — Content Detection Tests\n');
 
 // --- detectSite ---
 test('amazon.in -> amazon', () => {

@@ -1,5 +1,5 @@
 /*
- * SmartCard Saver — Bank Offer Parser (Phase 3 extension)
+ * RewardXtra — Bank Offer Parser (Phase 3 extension)
  * -------------------------------------------------------
  * Checkout page pe dikhne wale "Bank Offers / No Cost EMI" text ko parse karta hai:
  *   "10% Instant Discount up to ₹1,500 on HDFC Bank Credit Card EMI Transactions"

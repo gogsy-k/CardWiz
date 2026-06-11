@@ -1,4 +1,4 @@
-# 💳 SmartCard Saver — Project Roadmap & Master Plan
+# 💳 RewardXtra — Project Roadmap & Master Plan
 
 > India-first browser extension jo checkout pe best card batata hai aur credit card
 > bill due-dates yaad rakhta hai — bina kisi card number ya bank login ke.
@@ -150,6 +150,41 @@ Ye 3 cheezon ka best ek jagah laata hai:
 - [x] Packaging guide — `PACKAGING.md` (clean zip, dev files exclude)
 - [ ] Chrome Web Store publish ($5 fee) — manual step (STORE.md follow karo)
 - [ ] Edge + Firefox publish — manual step
+
+---
+
+## 🔐 BACKEND PHASES (Accounts + Payments)
+
+> Yahan se ek lightweight backend judta hai. **Core principle wahi:** full card
+> number / CVV / bank login backend pe BHI kabhi nahi. Sirf account + plan + (future)
+> card-*type*/nickname/last-4/due-date sync. Cards ka logic aur recommendations
+> device pe hi rehte hain. Code: `backend/` folder (Node.js + Express).
+
+### Phase 8 — Backend Foundation + Google SSO (Accounts) 🟡 CODE DONE (setup manual)
+**Goal:** User accounts + Google sign-in, taaki plan/payment handle ho sake.
+- [x] Express backend scaffold — `backend/` (config, CORS, health check)
+- [x] DB layer: JSON-file store default (zero setup) + Postgres/Supabase optional — `backend/src/db/`
+- [x] User table/schema: id, google_id, email, name, plan (free/premium) — `schema.sql`
+- [x] Google ID-token verify (`google-auth-library`) — `services/googleVerify.js`
+- [x] Session tokens (JWT) + `requireAuth` middleware — `services/jwt.js`, `middleware/auth.js`
+- [x] Routes: `POST /auth/google`, `GET /auth/me` — `routes/auth.js`
+- [x] Extension side: `auth.js` (chrome.identity `launchWebAuthFlow` → backend → JWT)
+- [x] Manifest: `identity` permission + localhost host permission
+- [x] Popup "More" tab: Sign in with Google + account card; plan account se sync
+- [ ] **Manual setup:** Google Cloud OAuth client banao + `GOOGLE_CLIENT_ID`/`JWT_SECRET`
+      bharo (`backend/README.md` follow karo). Tab tak SSO live nahi hoga.
+
+### Phase 9 — Payment Integration (Razorpay) ⏳ NEXT
+**Goal:** Real premium upgrade — `users.plan` ko payment se `premium` karna.
+- [ ] Razorpay account + test keys
+- [ ] `POST /payment/order` (order create) + `POST /payment/webhook` (verify → plan update)
+- [ ] Extension: Razorpay checkout + premium unlock after success
+- [ ] `premium.js`/popup ko local toggle se hata kar account-plan pe poora migrate
+
+### Phase 10 — Cards DB on Server (optional, powerful)
+**Goal:** `cards.json` server se serve — naye cards bina Chrome Store republish ke.
+- [ ] `GET /cards` endpoint + extension startup pe fetch + cache
+- [ ] (Optional) card-*type*/nickname/last-4/due-date cross-device sync (number/CVV NAHI)
 
 ---
 

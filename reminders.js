@@ -1,5 +1,5 @@
 /*
- * SmartCard Saver — Bill Reminder Logic (Phase 4)
+ * RewardXtra — Bill Reminder Logic (Phase 4)
  * -----------------------------------------------
  * Pure date math. Koi DOM/chrome API nahi — popup, background worker, aur Node
  * test, teeno mein same file chalti hai.

@@ -1,4 +1,4 @@
-# 💳 SmartCard Saver — Privacy Policy
+# 💳 RewardXtra — Privacy Policy
 
 **Last updated:** 9 June 2026
 

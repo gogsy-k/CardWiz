@@ -1,5 +1,5 @@
 /*
- * SmartCard Saver — Popup UI logic.
+ * RewardXtra — Popup UI logic.
  * recommend.js (engine) + data/cards.json (brain) + chrome.storage (wallet).
  *
  * Phase 1 (Card Wallet): user apne cards add/edit/delete kare. Har card:
@@ -45,12 +45,14 @@ const els = {
   capsFoot: $('capsFoot'), capsPeriod: $('capsPeriod'), resetCapsBtn: $('resetCapsBtn'),
   premiumStatus: $('premiumStatus'), premiumToggle: $('premiumToggle'),
   analyticsBox: $('analyticsBox'), affDisclosure: $('affDisclosure'),
+  accountBox: $('accountBox'),
 };
 
 let DB = null;        // cards.json
 let myCards = [];     // wallet: [{id, cardId, nickname, last4, dueDay, reminderDaysBefore}]
 let capUsage = null;  // { period, used } — Phase 5 monthly cap tracking
-let isPremium = false;// Phase 6 premium flag (dev toggle)
+let isPremium = false;// Phase 6 premium flag (dev toggle / backend-synced)
+let currentUser = null;// Phase 8: signed-in Google user, ya null
 let editingId = null; // agar edit ho raha hai to uska wallet-entry id
 let lastRanked = [];  // last recommendation results (log button ke liye)
 
@@ -62,6 +64,7 @@ async function init() {
   await loadWallet();
   await loadCapUsage();
   await loadPremium();
+  await loadAuth(); // Phase 8: signed-in user + plan sync (backend)
   renderMyCards();
 
   // View switching
@@ -177,19 +180,126 @@ function loadPremium() {
 }
 
 function togglePremium() {
+  // Signed in ho to plan backend se aata hai — dev toggle band.
+  if (currentUser) {
+    alert('Aap signed in ho — plan account se sync hota hai. Real upgrade Phase 9 (payment) mein aayega.');
+    return;
+  }
   isPremium = !isPremium;
   if (typeof chrome !== 'undefined' && chrome.storage) chrome.storage.local.set({ isPremium });
   renderMore();
   renderMyCards(); // card-limit gating refresh
 }
 
+// ---------- Account / Google SSO (Phase 8) ----------
+function loadAuth() {
+  return new Promise(async (resolve) => {
+    if (typeof SmartCardAuth === 'undefined') return resolve();
+    try {
+      currentUser = await SmartCardAuth.fetchMe(); // null = signed out / token expired
+    } catch {
+      currentUser = null;
+    }
+    applyAuthToPremium();
+    resolve();
+  });
+}
+
+// Signed in -> plan backend se authoritative. Signed out -> local dev flag chalta hai.
+function applyAuthToPremium() {
+  if (currentUser) isPremium = currentUser.plan === 'premium';
+}
+
+function renderAccount() {
+  const box = els.accountBox;
+  if (!box) return;
+  if (typeof SmartCardAuth === 'undefined') {
+    box.innerHTML = '<div class="more-sub">Auth module load nahi hua.</div>';
+    return;
+  }
+
+  if (currentUser) {
+    const initial = (currentUser.name || currentUser.email || '?').charAt(0).toUpperCase();
+    const pic = safePictureUrl(currentUser.picture);
+    const avatar = pic ? `<img src="${pic}" alt="">` : escapeHtml(initial);
+    box.innerHTML =
+      `<div class="acct-row">
+         <div class="acct-avatar">${avatar}</div>
+         <div class="acct-info">
+           <div class="acct-name">${escapeHtml(currentUser.name || 'User')}</div>
+           <div class="acct-email">${escapeHtml(currentUser.email || '')}</div>
+         </div>
+         <span class="pill ${isPremium ? 'pro' : 'free'}">${isPremium ? 'PREMIUM' : 'FREE'}</span>
+       </div>
+       <button class="ghost" id="signOutBtn" style="margin-top:10px;">Sign out</button>`;
+    const b = $('signOutBtn');
+    if (b) b.addEventListener('click', doSignOut);
+  } else {
+    box.innerHTML =
+      `<div class="more-sub">Sign in karke apna plan sync karo + cross-device. Hum sirf
+        naam/email lete hain — card number/CVV <b>kabhi nahi</b>.</div>
+       <button class="signin-btn" id="signInBtn">🔵 Sign in with Google</button>
+       <div class="acct-err" id="acctErr"></div>`;
+    const b = $('signInBtn');
+    if (b) b.addEventListener('click', doSignIn);
+  }
+}
+
+async function doSignIn() {
+  const btn = $('signInBtn');
+  const err = $('acctErr');
+  if (btn) { btn.disabled = true; btn.textContent = 'Sign in ho raha hai…'; }
+  if (err) err.textContent = '';
+  try {
+    currentUser = await SmartCardAuth.signIn();
+    applyAuthToPremium();
+    renderMore();
+    renderMyCards(); // card-limit gating refresh
+  } catch (e) {
+    if (err) err.textContent = (e && e.message) || 'Sign-in fail ho gaya';
+    if (btn) { btn.disabled = false; btn.textContent = '🔵 Sign in with Google'; }
+  }
+}
+
+async function doSignOut() {
+  if (typeof SmartCardAuth !== 'undefined') await SmartCardAuth.signOut();
+  currentUser = null;
+  await loadPremium();   // signed out -> wapas local dev premium flag pe
+  renderMore();
+  renderMyCards();
+}
+
+// Sirf https Google avatar allow — innerHTML injection guard.
+function safePictureUrl(url) {
+  if (typeof url !== 'string') return '';
+  return /^https:\/\//.test(url) ? url.replace(/"/g, '%22') : '';
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) =>
+    ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
 function renderMore() {
   const P = window.SmartCardPremium;
+
+  // Account / SSO (Phase 8) — sabse upar.
+  renderAccount();
+
   // Premium status + toggle
   els.premiumStatus.innerHTML = isPremium
     ? '<span class="pill pro">PREMIUM</span> Saari features unlocked. Shukriya! 🙏'
     : `<span class="pill free">FREE</span> Upgrade ₹${P.PREMIUM_PRICE_INR}/year se — unlimited cards + analytics.`;
   els.premiumToggle.textContent = isPremium ? '↩ Free pe wapas (dev)' : `⭐ Premium on karo (dev)`;
+
+  // Signed in -> plan account se sync; dev toggle chhupa do. Signed out -> dev toggle.
+  const devNote = $('premiumDevNote');
+  els.premiumToggle.hidden = !!currentUser;
+  if (devNote) {
+    devNote.textContent = currentUser
+      ? 'Plan aapke account se sync hota hai. Real upgrade Phase 9 (payment) mein.'
+      : 'Dev toggle — abhi koi real payment nahi. (Sign in karke account-based plan aayega.)';
+  }
 
   // Analytics (premium-gated)
   renderAnalytics();

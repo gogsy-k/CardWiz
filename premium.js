@@ -1,5 +1,5 @@
 /*
- * SmartCard Saver — Premium Tier Gating (Phase 6)
+ * RewardXtra — Premium Tier Gating (Phase 6)
  * -----------------------------------------------
  * Free vs Premium feature gates. Pure logic — abhi koi payment backend nahi,
  * to premium ek storage flag hai (dev toggle se test kar sakte ho). Payment

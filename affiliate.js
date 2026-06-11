@@ -1,5 +1,5 @@
 /*
- * SmartCard Saver — Affiliate Link Builder (Phase 6)
+ * RewardXtra — Affiliate Link Builder (Phase 6)
  * --------------------------------------------------
  * Merchant + page URL -> affiliate-tagged URL. Free tier ka revenue source.
  *

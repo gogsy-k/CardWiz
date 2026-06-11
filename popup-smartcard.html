@@ -99,6 +99,25 @@
       border:none; border-radius:6px; padding:7px; font-size:11px; font-weight:700; cursor:pointer;
     }
 
+    /* Account / SSO */
+    .acct-row { display: flex; align-items: center; gap: 10px; }
+    .acct-avatar {
+      width: 34px; height: 34px; border-radius: 50%; background: #45475a;
+      display: flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0;
+    }
+    .acct-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+    .acct-info { flex: 1; min-width: 0; }
+    .acct-name { font-size: 12px; font-weight: 600; }
+    .acct-email { font-size: 10px; color: #6c7086; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .signin-btn {
+      width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
+      background: #fff; color: #1f1f1f; border: none; border-radius: 8px;
+      padding: 9px; font-size: 12px; font-weight: 600; cursor: pointer; margin-top: 4px;
+    }
+    .signin-btn:hover { background: #e8eaed; }
+    .signin-btn:disabled { opacity: 0.6; cursor: default; }
+    .acct-err { color: #f38ba8; font-size: 10px; margin-top: 6px; min-height: 12px; }
+
     /* My Cards list */
     .mycard {
       background: #313244; border: 1px solid #45475a; border-radius: 10px; padding: 10px 12px;
@@ -151,7 +170,7 @@
   </style>
 </head>
 <body>
-  <h2>💳 SmartCard Saver</h2>
+  <h2>💳 RewardXtra</h2>
   <nav>
     <button data-view="suggest" class="active">💡 Suggest</button>
     <button data-view="mycards">💼 Cards</button>
@@ -238,6 +257,12 @@
 
   <!-- ============ MORE VIEW (Premium / About) ============ -->
   <section id="view-more" hidden>
+    <!-- Account / Google SSO (Phase 8) -->
+    <div class="more-card" id="accountCard">
+      <div class="more-title">👤 Account</div>
+      <div id="accountBox"></div>
+    </div>
+
     <div class="more-card" id="premiumCard">
       <div class="more-title">⭐ Premium</div>
       <div class="more-sub" id="premiumStatus"></div>
@@ -287,6 +312,7 @@
   <script src="captracker.js"></script>
   <script src="affiliate.js"></script>
   <script src="premium.js"></script>
+  <script src="auth.js"></script>
   <script src="popup-smartcard.js"></script>
 </body>
 </html>

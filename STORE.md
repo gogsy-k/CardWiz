@@ -1,4 +1,4 @@
-# 🏪 SmartCard Saver — Store Listing & Publishing Guide
+# 🏪 RewardXtra — Store Listing & Publishing Guide
 
 Chrome Web Store / Edge Add-ons / Firefox ke liye ready-to-paste content + steps.
 
@@ -7,7 +7,7 @@ Chrome Web Store / Edge Add-ons / Firefox ke liye ready-to-paste content + steps
 ## 📝 Listing copy
 
 ### Name
-`SmartCard Saver — Best Card & Bill Reminders`
+`RewardXtra — Best Card & Bill Reminders`
 
 ### Short description (≤132 chars)
 `Checkout pe sabse zyada bachat dene wala credit card bataye + bill due-date reminders. Privacy-first, India-first.`
@@ -17,7 +17,7 @@ Chrome Web Store / Edge Add-ons / Firefox ke liye ready-to-paste content + steps
 
 ### Detailed description
 ```
-SmartCard Saver India ka privacy-first browser extension hai jo aapko har purchase pe
+RewardXtra India ka privacy-first browser extension hai jo aapko har purchase pe
 sabse zyada cashback/rewards dene wala credit card batata hai — aur aapke bill due-dates
 bhi yaad rakhta hai.
 

@@ -10,7 +10,7 @@ function test(name, fn) {
   catch (e) { console.error(`  ✗ ${name}\n      ${e.message}`); process.exitCode = 1; }
 }
 
-console.log('SmartCard Saver — Premium Gating Tests\n');
+console.log('RewardXtra — Premium Gating Tests\n');
 
 test('isPremiumFeature: unlimited_cards = premium', () => {
   assert.strictEqual(P.isPremiumFeature('unlimited_cards'), true);

@@ -21,7 +21,7 @@ function test(name, fn) {
   catch (e) { console.error(`  ✗ ${name}\n      ${e.message}`); process.exitCode = 1; }
 }
 
-console.log('SmartCard Saver — Cap Tracker Tests\n');
+console.log('RewardXtra — Cap Tracker Tests\n');
 
 test('currentPeriod format YYYY-MM', () => {
   assert.strictEqual(C.currentPeriod(today), '2026-06');
