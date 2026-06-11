@@ -2,8 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(git check-ignore *)",
-      "Bash(git rm *)",
-      "Bash(git add *)"
+      "Bash(node run-all-tests.js)",
+      "Bash(curl -s http://localhost:3000/health)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }
