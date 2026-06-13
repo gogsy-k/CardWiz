@@ -55,6 +55,7 @@ let isPremium = false;// Phase 6 premium flag (dev toggle / backend-synced)
 let currentUser = null;// Phase 8: signed-in Google user, ya null
 let syncEnabled = true;// Phase 10: cloud sync (default ON; signed-in pe hi active)
 let editingId = null; // agar edit ho raha hai to uska wallet-entry id
+let cardsTab = 'credit'; // Cards section ka active tab: 'credit' | 'debit'
 let lastRanked = [];  // last recommendation results (log button ke liye)
 
 // ---------- Init ----------
@@ -75,6 +76,11 @@ async function init() {
   // View switching
   document.querySelectorAll('nav button').forEach((btn) => {
     btn.addEventListener('click', () => switchView(btn.dataset.view));
+  });
+
+  // Cards section ke Debit/Credit toggle tabs
+  document.querySelectorAll('.cards-tabs button').forEach((btn) => {
+    btn.addEventListener('click', () => { cardsTab = btn.dataset.cardtype; renderMyCards(); });
   });
 
   els.goBtn.addEventListener('click', runRecommendation);
@@ -539,33 +545,26 @@ function renderMyCards() {
   updateCardsPrivacy(); // sync-aware privacy line (Phase 10)
   const stale = $('limitNote');
   if (stale) stale.remove();
-  els.cardsList.innerHTML = '';
-  if (myCards.length === 0) {
-    els.cardsList.innerHTML = '<div class="empty">Abhi koi card nahi. Neeche se add karo 👇</div>';
-    return;
-  }
+  // Tab toggle ka active state set karo.
+  document.querySelectorAll('.cards-tabs button').forEach((b) =>
+    b.classList.toggle('active', b.dataset.cardtype === cardsTab));
 
-  // Credit / Debit ke hisaab se group karke sections mein dikhao.
-  const groups = { credit: [], debit: [] };
+  els.cardsList.innerHTML = '';
+
+  // Sirf active tab (credit ya debit) ke cards dikhao.
+  const items = [];
   for (const mc of myCards) {
     const cat = catalogCard(mc.cardId);
     if (!cat) continue; // catalog se hata diya gaya card (rare)
-    groups[cardTypeOf(cat)].push({ mc, cat });
+    if (cardTypeOf(cat) === cardsTab) items.push({ mc, cat });
   }
 
-  const sections = [
-    { key: 'credit', label: '💳 Credit Cards' },
-    { key: 'debit', label: '🏧 Debit Cards' },
-  ];
-  for (const sec of sections) {
-    const items = groups[sec.key];
-    if (!items.length) continue;
-    const head = document.createElement('div');
-    head.className = 'cards-section';
-    head.textContent = `${sec.label} (${items.length})`;
-    els.cardsList.appendChild(head);
-    for (const { mc, cat } of items) els.cardsList.appendChild(makeCardRow(mc, cat));
+  if (items.length === 0) {
+    els.cardsList.innerHTML =
+      `<div class="empty">Koi ${cardsTab} card nahi. Neeche se add karo 👇</div>`;
+    return;
   }
+  for (const { mc, cat } of items) els.cardsList.appendChild(makeCardRow(mc, cat));
 }
 
 // Ek wallet-card ka row banao (credit + debit dono ke liye same).
@@ -693,6 +692,7 @@ function saveCard() {
   } else {
     myCards.push({ id: uid(), ...fields });
   }
+  cardsTab = cardTypeOf(catalogCard(cardId)); // added/edited card ke tab pe switch
   saveWallet();
   pushIfSyncing(); // Phase 10: cloud update
   renderMyCards();
