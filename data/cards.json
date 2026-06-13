@@ -324,6 +324,62 @@
       ],
       "exclusions": ["fuel", "rent", "insurance", "government"],
       "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "hdfc-millennia-debit",
+      "name": "HDFC Millennia Debit Card",
+      "bank": "HDFC",
+      "network": "Visa/Mastercard",
+      "type": "cashback",
+      "cardType": "debit",
+      "pointValueINR": 1,
+      "annualFee": 0,
+      "feeWaiverSpend": 0,
+      "baseRate": 0.5,
+      "baseMonthlyCapValue": 250,
+      "rules": [
+        {
+          "categories": ["amazon", "flipkart", "myntra", "online_shopping", "food_delivery"],
+          "effectiveRate": 2.5,
+          "rawRate": "~2.5% cashback on online spends (PLACEHOLDER — verify)",
+          "monthlyCapValue": 250,
+          "note": "PLACEHOLDER — HDFC Millennia debit cashback bank se verify karo"
+        }
+      ],
+      "exclusions": ["fuel", "rent", "wallet", "utilities", "insurance"],
+      "lastVerified": ""
+    },
+    {
+      "id": "sbi-debit-platinum",
+      "name": "SBI Platinum Debit Card",
+      "bank": "SBI",
+      "network": "Visa/Mastercard",
+      "type": "cashback",
+      "cardType": "debit",
+      "pointValueINR": 1,
+      "annualFee": 0,
+      "feeWaiverSpend": 0,
+      "baseRate": 0,
+      "baseMonthlyCapValue": null,
+      "rules": [],
+      "exclusions": [],
+      "lastVerified": ""
+    },
+    {
+      "id": "icici-debit",
+      "name": "ICICI Bank Debit Card",
+      "bank": "ICICI",
+      "network": "Visa/Mastercard",
+      "type": "cashback",
+      "cardType": "debit",
+      "pointValueINR": 1,
+      "annualFee": 0,
+      "feeWaiverSpend": 0,
+      "baseRate": 0,
+      "baseMonthlyCapValue": null,
+      "rules": [],
+      "exclusions": [],
+      "lastVerified": ""
     }
   ]
 }

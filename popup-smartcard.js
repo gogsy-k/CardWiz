@@ -85,6 +85,7 @@ async function init() {
   els.addCardBtn.addEventListener('click', () => openForm());
   els.cancelCardBtn.addEventListener('click', closeForm);
   els.saveCardBtn.addEventListener('click', saveCard);
+  els.formCardId.addEventListener('change', updateFormForCardType);
   // last4 = sirf digits
   els.formLast4.addEventListener('input', () => {
     els.formLast4.value = els.formLast4.value.replace(/\D/g, '').slice(0, 4);
@@ -112,13 +113,31 @@ function buildCategoryDropdown() {
   }
 }
 
+// Card credit hai ya debit. cardType missing = 'credit' (purane cards sab credit the).
+function cardTypeOf(cat) {
+  return cat && cat.cardType === 'debit' ? 'debit' : 'credit';
+}
+
+// Add/Edit form ka dropdown — Credit / Debit optgroups mein.
 function buildCardSelect() {
   els.formCardId.innerHTML = '';
-  for (const card of DB.cards) {
-    const opt = document.createElement('option');
-    opt.value = card.id;
-    opt.textContent = `${card.name} (${card.annualFee === 0 ? 'LTF' : '₹' + card.annualFee + '/yr'})`;
-    els.formCardId.appendChild(opt);
+  const groups = [
+    { key: 'credit', label: 'Credit Cards' },
+    { key: 'debit', label: 'Debit Cards' },
+  ];
+  for (const g of groups) {
+    const cards = DB.cards.filter((c) => cardTypeOf(c) === g.key);
+    if (!cards.length) continue;
+    const og = document.createElement('optgroup');
+    og.label = g.label;
+    for (const card of cards) {
+      const opt = document.createElement('option');
+      opt.value = card.id;
+      const fee = card.annualFee === 0 ? 'LTF' : '₹' + card.annualFee + '/yr';
+      opt.textContent = `${card.name} (${fee})`;
+      og.appendChild(opt);
+    }
+    els.formCardId.appendChild(og);
   }
 }
 
@@ -525,43 +544,73 @@ function renderMyCards() {
     els.cardsList.innerHTML = '<div class="empty">Abhi koi card nahi. Neeche se add karo 👇</div>';
     return;
   }
+
+  // Credit / Debit ke hisaab se group karke sections mein dikhao.
+  const groups = { credit: [], debit: [] };
   for (const mc of myCards) {
     const cat = catalogCard(mc.cardId);
     if (!cat) continue; // catalog se hata diya gaya card (rare)
-
-    const row = document.createElement('div');
-    row.className = 'mycard';
-
-    const info = document.createElement('div');
-    info.className = 'info';
-    const nick = document.createElement('div');
-    nick.className = 'nick';
-    nick.textContent = mc.nickname ? `${mc.nickname}` : cat.name;
-    const meta = document.createElement('div');
-    meta.className = 'meta';
-    const last4 = mc.last4 ? ` · •••• ${mc.last4}` : '';
-    const dueInfo = mc.dueDay ? ` · 🔔 due ${mc.dueDay}` : '';
-    meta.textContent = (mc.nickname ? cat.name : cat.bank) + last4 + dueInfo;
-    info.appendChild(nick);
-    info.appendChild(meta);
-
-    const actions = document.createElement('div');
-    actions.className = 'actions';
-    const editBtn = document.createElement('button');
-    editBtn.className = 'edit';
-    editBtn.textContent = 'Edit';
-    editBtn.addEventListener('click', () => openForm(mc.id));
-    const delBtn = document.createElement('button');
-    delBtn.className = 'del';
-    delBtn.textContent = 'Delete';
-    delBtn.addEventListener('click', () => deleteCard(mc.id));
-    actions.appendChild(editBtn);
-    actions.appendChild(delBtn);
-
-    row.appendChild(info);
-    row.appendChild(actions);
-    els.cardsList.appendChild(row);
+    groups[cardTypeOf(cat)].push({ mc, cat });
   }
+
+  const sections = [
+    { key: 'credit', label: '💳 Credit Cards' },
+    { key: 'debit', label: '🏧 Debit Cards' },
+  ];
+  for (const sec of sections) {
+    const items = groups[sec.key];
+    if (!items.length) continue;
+    const head = document.createElement('div');
+    head.className = 'cards-section';
+    head.textContent = `${sec.label} (${items.length})`;
+    els.cardsList.appendChild(head);
+    for (const { mc, cat } of items) els.cardsList.appendChild(makeCardRow(mc, cat));
+  }
+}
+
+// Ek wallet-card ka row banao (credit + debit dono ke liye same).
+function makeCardRow(mc, cat) {
+  const row = document.createElement('div');
+  row.className = 'mycard';
+
+  const info = document.createElement('div');
+  info.className = 'info';
+  const nick = document.createElement('div');
+  nick.className = 'nick';
+  nick.textContent = mc.nickname ? `${mc.nickname}` : cat.name;
+  const meta = document.createElement('div');
+  meta.className = 'meta';
+  const last4 = mc.last4 ? ` · •••• ${mc.last4}` : '';
+  const dueInfo = mc.dueDay ? ` · 🔔 due ${mc.dueDay}` : '';
+  meta.textContent = (mc.nickname ? cat.name : cat.bank) + last4 + dueInfo;
+  info.appendChild(nick);
+  info.appendChild(meta);
+
+  const actions = document.createElement('div');
+  actions.className = 'actions';
+  const editBtn = document.createElement('button');
+  editBtn.className = 'edit';
+  editBtn.textContent = 'Edit';
+  editBtn.addEventListener('click', () => openForm(mc.id));
+  const delBtn = document.createElement('button');
+  delBtn.className = 'del';
+  delBtn.textContent = 'Delete';
+  delBtn.addEventListener('click', () => deleteCard(mc.id));
+  actions.appendChild(editBtn);
+  actions.appendChild(delBtn);
+
+  row.appendChild(info);
+  row.appendChild(actions);
+  return row;
+}
+
+// Debit card pe bill due/reminder fields hide (debit = no bill cycle).
+function updateFormForCardType() {
+  const box = $('dueDateFields');
+  if (!box) return;
+  const isDebit = cardTypeOf(catalogCard(els.formCardId.value)) === 'debit';
+  box.hidden = isDebit;
+  if (isDebit) els.formDueDay.value = ''; // saved value bhi clear
 }
 
 function openForm(editId = null) {
@@ -596,6 +645,7 @@ function openForm(editId = null) {
     els.formRemindBefore.value = 3;
     els.saveCardBtn.textContent = 'Save';
   }
+  updateFormForCardType(); // debit -> bill due fields hide
   els.cardForm.hidden = false;
   els.addCardBtn.hidden = true;
 }
@@ -634,6 +684,8 @@ function saveCard() {
     if (!isNaN(r) && r >= 0 && r <= 15) reminderDaysBefore = r;
   }
 
+  // Debit card pe bill due nahi — force null (defense, fields hidden hote hi hain).
+  if (cardTypeOf(catalogCard(cardId)) === 'debit') dueDay = null;
   const fields = { cardId, nickname, last4, dueDay, reminderDaysBefore, updatedAt: new Date().toISOString() };
   if (editingId) {
     const mc = myCards.find((c) => c.id === editingId);
@@ -788,6 +840,13 @@ function renderResults(ranked) {
     const nick = nicknameFor(r.id);
     const star = i === 0 && r.savings > 0 ? '⭐ ' : '';
     name.textContent = star + (nick ? `${nick}` : r.name);
+    // Debit card ho to chhota DEBIT tag (payment ke time clarity ke liye).
+    if (cardTypeOf(catalogCard(r.id)) === 'debit') {
+      const tag = document.createElement('span');
+      tag.className = 'type-tag';
+      tag.textContent = 'DEBIT';
+      name.appendChild(tag);
+    }
     const sub = document.createElement('div');
     sub.className = 'sub';
     sub.textContent = r.excluded ? 'Is category pe reward nahi' : (nick ? r.name : r.note);

@@ -158,6 +158,14 @@
     .mycard .actions button.del:hover { background: #f38ba8; color: #1e1e2e; }
     .mycard .actions button.edit:hover { background: #89b4fa; color: #1e1e2e; }
 
+    /* Credit/Debit section header + type tag */
+    .cards-section { font-size: 11px; font-weight: 700; color: #cba6f7; margin: 12px 0 6px; }
+    .cards-section:first-child { margin-top: 0; }
+    .type-tag {
+      font-size: 8px; background: #89b4fa; color: #1e1e2e; padding: 1px 5px;
+      border-radius: 4px; margin-left: 6px; font-weight: 700; vertical-align: middle;
+    }
+
     /* Add/Edit form */
     #cardForm { background: #181825; border: 1px solid #45475a; border-radius: 10px; padding: 12px; margin-top: 10px; }
     #cardForm .field { margin-bottom: 10px; }
@@ -264,17 +272,20 @@
         <input id="formLast4" placeholder="4521" maxlength="4" inputmode="numeric">
         <div class="hint">Sirf pehchaanne ke liye. Poora number kabhi mat daalo.</div>
       </div>
-      <div class="row">
-        <div class="field" style="flex:1;">
-          <label>Bill due — mahine ka din (optional)</label>
-          <input id="formDueDay" type="number" min="1" max="31" placeholder="5" inputmode="numeric">
+      <!-- Bill due fields — credit cards only (debit pe hide). -->
+      <div id="dueDateFields">
+        <div class="row">
+          <div class="field" style="flex:1;">
+            <label>Bill due — mahine ka din (optional)</label>
+            <input id="formDueDay" type="number" min="1" max="31" placeholder="5" inputmode="numeric">
+          </div>
+          <div class="field" style="max-width:120px;">
+            <label>Kitne din pehle?</label>
+            <input id="formRemindBefore" type="number" min="0" max="15" placeholder="3" value="3" inputmode="numeric">
+          </div>
         </div>
-        <div class="field" style="max-width:120px;">
-          <label>Kitne din pehle?</label>
-          <input id="formRemindBefore" type="number" min="0" max="15" placeholder="3" value="3" inputmode="numeric">
-        </div>
+        <div class="hint" style="margin-top:-4px;">Jaise har mahine ki 5 tareekh due → 3 din pehle reminder.</div>
       </div>
-      <div class="hint" style="margin-top:-4px;">Jaise har mahine ki 5 tareekh due → 3 din pehle reminder.</div>
       <div class="err" id="formErr"></div>
       <div class="form-actions">
         <button id="saveCardBtn">Save</button>
