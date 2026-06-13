@@ -196,12 +196,16 @@ Ye 3 cheezon ka best ek jagah laata hai:
 - [x] Cards-tab privacy line sync-aware; `privacy.html` honestly update (account + sync disclose)
 - [x] `sync.test.js` (9 tests) — merge logic; suite 96 green
 
-### Phase 11 — Payment Integration (Razorpay)
+### Phase 11 — Payment Integration (Razorpay) 🟡 CODE DONE (keys manual)
 **Goal:** Real premium upgrade — `users.plan` ko payment se `premium` karna.
-- [ ] Razorpay account + test keys
-- [ ] `POST /payment/order` (order create) + `POST /payment/webhook` (verify → plan update)
-- [ ] Extension: Razorpay checkout + premium unlock after success
-- [ ] `premium.js`/popup ko local toggle se hata kar account-plan pe poora migrate
+- [x] `payments` table (link/payment id, amount, status) — `schema.sql`, `pgStore`/`jsonStore`
+- [x] `services/razorpay.js` — Payment Links create/get + webhook signature verify (REST, no SDK)
+- [x] `POST /payment/order` (link banao) + `POST /payment/verify` (status poll → premium) — `routes/payment.js`
+- [x] Extension: "More" tab Upgrade ₹99 button → naye tab mein Razorpay page → "Maine pay kiya" → unlock
+- [x] Signed-in pe dev toggle hata, real upgrade button; plan backend se authoritative
+- [x] `razorpay.test.js` (5 tests, signature) — suite 101 green; routes smoke-tested (401/503/table)
+- [ ] **Manual:** Razorpay TEST account + `RAZORPAY_KEY_ID/SECRET` `.env` mein (README). Tab tak payments live nahi.
+- [ ] (Future) Webhook endpoint (production); annual expiry (`premium_until`)
 
 ---
 

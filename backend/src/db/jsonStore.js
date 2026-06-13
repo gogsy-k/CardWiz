@@ -26,6 +26,7 @@ function load() {
     cache = { users: [] }; // file nahi hai / corrupt -> fresh
   }
   if (!cache.cardsByUser || typeof cache.cardsByUser !== 'object') cache.cardsByUser = {};
+  if (!Array.isArray(cache.payments)) cache.payments = [];
   return cache;
 }
 
@@ -95,4 +96,35 @@ async function replaceCards(userId, cards) {
   return cache.cardsByUser[userId];
 }
 
-module.exports = { kind: 'json', init, upsertByGoogleId, findById, updatePlan, listCards, replaceCards };
+// ---- Payments (premium upgrade) ----
+async function createPayment(userId, linkId, amount) {
+  load();
+  const now = new Date().toISOString();
+  const p = { id: crypto.randomUUID(), userId, linkId, paymentId: null, amount, status: 'created', createdAt: now, updatedAt: now };
+  cache.payments.push(p);
+  persist();
+  return p;
+}
+
+async function findLatestPendingPayment(userId) {
+  load();
+  const list = cache.payments.filter((p) => p.userId === userId && p.status === 'created');
+  list.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1)); // newest first
+  return list[0] || null;
+}
+
+async function markPaymentPaid(id, paymentId) {
+  load();
+  const p = cache.payments.find((x) => x.id === id);
+  if (!p) return null;
+  p.status = 'paid';
+  p.paymentId = paymentId;
+  p.updatedAt = new Date().toISOString();
+  persist();
+  return p;
+}
+
+module.exports = {
+  kind: 'json', init, upsertByGoogleId, findById, updatePlan, listCards, replaceCards,
+  createPayment, findLatestPendingPayment, markPaymentPaid,
+};

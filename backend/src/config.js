@@ -17,7 +17,18 @@ const config = {
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean),
+  // Razorpay (Phase 11 — premium payments)
+  razorpayKeyId: process.env.RAZORPAY_KEY_ID || '',
+  razorpayKeySecret: process.env.RAZORPAY_KEY_SECRET || '',
+  razorpayWebhookSecret: process.env.RAZORPAY_WEBHOOK_SECRET || '',
+  premiumPriceInr: Number(process.env.PREMIUM_PRICE_INR) || 99,
+  baseUrl: process.env.BASE_URL || 'http://localhost:3000',
 };
+
+// Razorpay keys set hain? (payment routes isse guard karte hain)
+function razorpayConfigured() {
+  return !!(config.razorpayKeyId && config.razorpayKeySecret);
+}
 
 // Startup pe hi check — galat config silently chalne se accha hai abhi fail ho.
 function validate() {
@@ -28,7 +39,10 @@ function validate() {
   if (!config.jwtSecret || config.jwtSecret === 'change-me-to-a-long-random-string') {
     problems.push('JWT_SECRET set nahi — koi lamba random string daalo (README dekho).');
   }
+  if (!razorpayConfigured()) {
+    problems.push('RAZORPAY_KEY_ID/SECRET set nahi — premium payments ke liye test keys daalo (README). (Baaki sab chalega.)');
+  }
   return problems;
 }
 
-module.exports = { config, validate };
+module.exports = { config, validate, razorpayConfigured };

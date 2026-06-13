@@ -102,10 +102,37 @@ curl http://localhost:3000/health
 
 ---
 
-## Aage (next phases)
+## Razorpay (Phase 11 — premium payments)
 
-- **Phase 9 — Payments:** Razorpay order + webhook → `users.plan` ko `premium` karna.
-- **Phase 10 — Cards on server:** `cards.json` yahaan se serve karna (bina republish update).
+Premium upgrade Razorpay **Payment Links** se hota hai (extension MV3 ke liye sabse
+saaf — koi checkout.js popup mein load nahi karna padta). Setup:
+
+1. [dashboard.razorpay.com](https://dashboard.razorpay.com) pe account banao (free).
+2. **Test Mode** on karo (top toggle) — asli paisa nahi lagta.
+3. **Settings → API Keys → Generate Test Key** → `Key Id` (`rzp_test_...`) + `Key Secret` copy karo.
+4. `backend/.env` mein daalo:
+   ```ini
+   RAZORPAY_KEY_ID=rzp_test_xxxxx
+   RAZORPAY_KEY_SECRET=your_test_secret
+   ```
+5. Backend restart → "RAZORPAY..." warning chala jayega.
+
+**Flow:**
+- Extension "More" tab → **Upgrade ₹99/year** → backend payment link banata hai → naya tab khulta hai
+- Razorpay test page pe pay karo — [test cards](https://razorpay.com/docs/payments/payments/test-card-details/)
+  (e.g. `4111 1111 1111 1111`, koi future expiry, koi CVV; UPI: `success@razorpay`)
+- Extension pe wapas aakar **"✅ Maine pay kar diya"** → backend Razorpay se status verify → premium unlock
+
+**Endpoints:** `POST /payment/order`, `POST /payment/verify` (dono Bearer auth).
+Card number/CVV hamare server pe **kabhi nahi** — payment poora Razorpay ke page pe.
+
+---
+
+## Aage (future)
+
+- **Webhook** endpoint (production robustness — `verifyWebhookSignature` ready hai)
+- Annual expiry (`premium_until`) + renewal
+- `cards.json` server se serve (bina Chrome Store republish update)
 
 ## Files
 
@@ -121,10 +148,13 @@ backend/
     services/
       googleVerify.js    # Google ID token verify
       jwt.js             # humare session token sign/verify
+      razorpay.js        # payment links (create/get) + webhook signature
     middleware/
       auth.js            # requireAuth (Bearer)
     routes/
       auth.js            # /auth/google, /auth/me
-  schema.sql             # postgres schema
+      cards.js           # /cards (cross-device sync)
+      payment.js         # /payment/order, /payment/verify
+  schema.sql             # postgres schema (users, cards, payments)
   .env.example           # config template
 ```

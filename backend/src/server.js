@@ -13,6 +13,7 @@ const { config, validate } = require('./config');
 const db = require('./db');
 const authRoutes = require('./routes/auth');
 const cardsRoutes = require('./routes/cards');
+const paymentRoutes = require('./routes/payment');
 
 const app = express();
 
@@ -41,6 +42,7 @@ app.get('/health', (req, res) => {
 // --- Routes ---
 app.use('/auth', authRoutes);
 app.use('/cards', cardsRoutes);
+app.use('/payment', paymentRoutes);
 
 // 404 fallback
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));

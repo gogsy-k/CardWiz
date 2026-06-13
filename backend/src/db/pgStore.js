@@ -47,6 +47,20 @@ async function init(databaseUrl) {
       UNIQUE (user_id, client_id)
     );
   `);
+
+  // Payments — premium upgrade records (Razorpay). Koi card data nahi.
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS payments (
+      id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      user_id        UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      rzp_link_id    TEXT,
+      rzp_payment_id TEXT,
+      amount         INT NOT NULL,
+      status         TEXT NOT NULL DEFAULT 'created',
+      created_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
+      updated_at     TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+  `);
 }
 
 // DB row -> humara user shape (camelCase, consistent JSON store ke saath).
@@ -135,4 +149,37 @@ async function replaceCards(userId, cards) {
   return listCards(userId);
 }
 
-module.exports = { kind: 'postgres', init, upsertByGoogleId, findById, updatePlan, listCards, replaceCards };
+// ---- Payments (premium upgrade) ----
+function rowToPayment(r) {
+  if (!r) return null;
+  return {
+    id: r.id, userId: r.user_id, linkId: r.rzp_link_id, paymentId: r.rzp_payment_id,
+    amount: r.amount, status: r.status, createdAt: r.created_at,
+  };
+}
+
+async function createPayment(userId, linkId, amount) {
+  const res = await pool.query(
+    'INSERT INTO payments (user_id, rzp_link_id, amount) VALUES ($1,$2,$3) RETURNING *',
+    [userId, linkId, amount]);
+  return rowToPayment(res.rows[0]);
+}
+
+async function findLatestPendingPayment(userId) {
+  const res = await pool.query(
+    "SELECT * FROM payments WHERE user_id=$1 AND status='created' ORDER BY created_at DESC LIMIT 1",
+    [userId]);
+  return rowToPayment(res.rows[0]);
+}
+
+async function markPaymentPaid(id, paymentId) {
+  const res = await pool.query(
+    "UPDATE payments SET status='paid', rzp_payment_id=$2, updated_at=now() WHERE id=$1 RETURNING *",
+    [id, paymentId]);
+  return rowToPayment(res.rows[0]);
+}
+
+module.exports = {
+  kind: 'postgres', init, upsertByGoogleId, findById, updatePlan, listCards, replaceCards,
+  createPayment, findLatestPendingPayment, markPaymentPaid,
+};

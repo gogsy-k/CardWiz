@@ -13,6 +13,7 @@ const SUITES = [
   'affiliate.test.js',
   'premium.test.js',
   'sync.test.js',
+  'razorpay.test.js',
 ];
 
 let totalPassed = 0;

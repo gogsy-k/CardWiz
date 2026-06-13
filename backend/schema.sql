@@ -35,3 +35,17 @@ create table if not exists cards (
 );
 
 create index if not exists cards_user_idx on cards (user_id);
+
+-- Payments — premium upgrade records (Phase 11, Razorpay). Koi card data nahi.
+create table if not exists payments (
+  id             uuid primary key default gen_random_uuid(),
+  user_id        uuid not null references users(id) on delete cascade,
+  rzp_link_id    text,                          -- Razorpay payment link id (plink_...)
+  rzp_payment_id text,                          -- Razorpay payment id (pay_...)
+  amount         int not null,                  -- paise
+  status         text not null default 'created', -- created | paid | failed
+  created_at     timestamptz not null default now(),
+  updated_at     timestamptz not null default now()
+);
+create index if not exists payments_user_idx on payments (user_id);
+create index if not exists payments_link_idx on payments (rzp_link_id);

@@ -32,4 +32,10 @@ const cards = {
   replace: (...a) => driver.replaceCards(...a),
 };
 
-module.exports = { init, users, cards, get kind() { return driver && driver.kind; } };
+const payments = {
+  create: (...a) => driver.createPayment(...a),
+  findLatestPending: (...a) => driver.findLatestPendingPayment(...a),
+  markPaid: (...a) => driver.markPaymentPaid(...a),
+};
+
+module.exports = { init, users, cards, payments, get kind() { return driver && driver.kind; } };

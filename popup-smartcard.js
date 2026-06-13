@@ -183,15 +183,68 @@ function loadPremium() {
 }
 
 function togglePremium() {
-  // Signed in ho to plan backend se aata hai — dev toggle band.
+  // Signed in: free -> real Razorpay upgrade; premium -> kuch nahi.
   if (currentUser) {
-    alert('Aap signed in ho — plan account se sync hota hai. Real upgrade Phase 9 (payment) mein aayega.');
+    if (!isPremium) startUpgrade();
     return;
   }
+  // Signed out: dev toggle (local testing ke liye).
   isPremium = !isPremium;
   if (typeof chrome !== 'undefined' && chrome.storage) chrome.storage.local.set({ isPremium });
   renderMore();
   renderMyCards(); // card-limit gating refresh
+}
+
+// ---------- Premium upgrade (Phase 11 — Razorpay) ----------
+async function startUpgrade() {
+  const msg = $('upgradeMsg');
+  if (typeof SmartCardAuth === 'undefined') return;
+  if (msg) msg.innerHTML = '<div class="more-sub">Payment link ban raha hai…</div>';
+  try {
+    const res = await SmartCardAuth.authedFetch('/payment/order', { method: 'POST' });
+    if (!res.ok) {
+      throw new Error(res.status === 503
+        ? 'Payments abhi enable nahi — backend pe Razorpay keys daalo (README).'
+        : 'Order fail (' + res.status + ')');
+    }
+    const data = await res.json(); // { shortUrl, amount }
+    window.open(data.shortUrl, '_blank', 'noopener');
+    if (msg) {
+      msg.innerHTML =
+        `<div class="upgrade-note">Naye tab mein ₹${data.amount} ka payment poora karo.<br>
+         Ho jaye to dabao 👇
+         <button id="verifyPayBtn">✅ Maine pay kar diya</button></div>`;
+      const vb = $('verifyPayBtn');
+      if (vb) vb.addEventListener('click', verifyPayment);
+    }
+  } catch (e) {
+    if (msg) msg.innerHTML = `<div class="acct-err">${escapeHtml((e && e.message) || 'Upgrade fail')}</div>`;
+  }
+}
+
+async function verifyPayment() {
+  const msg = $('upgradeMsg');
+  const vb = $('verifyPayBtn');
+  if (vb) { vb.disabled = true; vb.textContent = 'Check kar rahe hain…'; }
+  try {
+    const res = await SmartCardAuth.authedFetch('/payment/verify', { method: 'POST' });
+    const data = await res.json(); // { status, plan }
+    if (data.status === 'paid' || data.plan === 'premium') {
+      currentUser = await SmartCardAuth.fetchMe(); // fresh plan
+      applyAuthToPremium();
+      if (msg) msg.innerHTML = '<div class="upgrade-note">🎉 Premium active! Shukriya. 🙏</div>';
+      renderMore();
+      renderMyCards();
+    } else if (data.status === 'pending') {
+      if (msg) msg.innerHTML =
+        '<div class="upgrade-note">Abhi confirm nahi hua. Payment ho gaya to thodi der baad dobara check karo.<br><button id="verifyPayBtn">🔄 Dobara check</button></div>';
+      const vb2 = $('verifyPayBtn'); if (vb2) vb2.addEventListener('click', verifyPayment);
+    } else {
+      if (msg) msg.innerHTML = '<div class="more-sub">Koi pending payment nahi mila. Upgrade dobara shuru karo.</div>';
+    }
+  } catch (e) {
+    if (msg) msg.innerHTML = `<div class="acct-err">${escapeHtml((e && e.message) || 'Check fail')}</div>`;
+  }
 }
 
 // ---------- Account / Google SSO (Phase 8) ----------
@@ -368,15 +421,20 @@ function renderMore() {
   els.premiumStatus.innerHTML = isPremium
     ? '<span class="pill pro">PREMIUM</span> Saari features unlocked. Shukriya! 🙏'
     : `<span class="pill free">FREE</span> Upgrade ₹${P.PREMIUM_PRICE_INR}/year se — unlimited cards + analytics.`;
-  els.premiumToggle.textContent = isPremium ? '↩ Free pe wapas (dev)' : `⭐ Premium on karo (dev)`;
-
-  // Signed in -> plan account se sync; dev toggle chhupa do. Signed out -> dev toggle.
+  // Action button — signed in free: real Razorpay upgrade; premium: hidden;
+  // signed out: dev toggle (local testing).
   const devNote = $('premiumDevNote');
-  els.premiumToggle.hidden = !!currentUser;
-  if (devNote) {
-    devNote.textContent = currentUser
-      ? 'Plan aapke account se sync hota hai. Real upgrade Phase 9 (payment) mein.'
-      : 'Dev toggle — abhi koi real payment nahi. (Sign in karke account-based plan aayega.)';
+  const btn = els.premiumToggle;
+  if (currentUser) {
+    btn.hidden = isPremium;
+    btn.textContent = `⭐ Upgrade ₹${P.PREMIUM_PRICE_INR}/year`;
+    if (devNote) devNote.textContent = isPremium
+      ? 'Premium active — account se synced, har device pe.'
+      : '🔒 Secure Razorpay payment. Hum card details nahi lete.';
+  } else {
+    btn.hidden = false;
+    btn.textContent = isPremium ? '↩ Free pe wapas (dev)' : '⭐ Premium on karo (dev)';
+    if (devNote) devNote.textContent = 'Sign in karke real upgrade — ya dev toggle (local test).';
   }
 
   // Analytics (premium-gated)
