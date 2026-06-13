@@ -68,6 +68,7 @@ async function init() {
   await loadAuth(); // Phase 8: signed-in user + plan sync (backend)
   await loadSyncPref(); // Phase 10: cloud sync pref (default ON)
   if (currentUser && syncEnabled) await doSyncNow(); // pull+merge+push cards
+  if (currentUser && !isPremium) await autoVerifyPayment(); // Phase 11: pending payment auto-detect
   renderMyCards();
 
   // View switching
@@ -196,6 +197,22 @@ function togglePremium() {
 }
 
 // ---------- Premium upgrade (Phase 11 — Razorpay) ----------
+// Popup khulte hi pending payment silently check — paid ho gaya to premium unlock.
+// (Popup ephemeral hai: payment ke baad reopen pe "Maine pay kiya" button gayab ho
+//  jaata hai, isliye yahan khud check kar lete hain.)
+async function autoVerifyPayment() {
+  if (!currentUser || isPremium || typeof SmartCardAuth === 'undefined') return;
+  try {
+    const res = await SmartCardAuth.authedFetch('/payment/verify', { method: 'POST' });
+    if (!res.ok) return;
+    const data = await res.json();
+    if (data.status === 'paid' || data.plan === 'premium') {
+      currentUser = await SmartCardAuth.fetchMe();
+      applyAuthToPremium();
+    }
+  } catch (e) { /* offline / koi pending nahi — ignore */ }
+}
+
 async function startUpgrade() {
   const msg = $('upgradeMsg');
   if (typeof SmartCardAuth === 'undefined') return;

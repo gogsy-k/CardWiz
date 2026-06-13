@@ -165,11 +165,11 @@ async function createPayment(userId, linkId, amount) {
   return rowToPayment(res.rows[0]);
 }
 
-async function findLatestPendingPayment(userId) {
+async function findPendingPayments(userId, limit = 5) {
   const res = await pool.query(
-    "SELECT * FROM payments WHERE user_id=$1 AND status='created' ORDER BY created_at DESC LIMIT 1",
-    [userId]);
-  return rowToPayment(res.rows[0]);
+    "SELECT * FROM payments WHERE user_id=$1 AND status='created' ORDER BY created_at DESC LIMIT $2",
+    [userId, limit]);
+  return res.rows.map(rowToPayment);
 }
 
 async function markPaymentPaid(id, paymentId) {
@@ -181,5 +181,5 @@ async function markPaymentPaid(id, paymentId) {
 
 module.exports = {
   kind: 'postgres', init, upsertByGoogleId, findById, updatePlan, listCards, replaceCards,
-  createPayment, findLatestPendingPayment, markPaymentPaid,
+  createPayment, findPendingPayments, markPaymentPaid,
 };

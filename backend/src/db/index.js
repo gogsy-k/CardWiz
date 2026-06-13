@@ -34,7 +34,7 @@ const cards = {
 
 const payments = {
   create: (...a) => driver.createPayment(...a),
-  findLatestPending: (...a) => driver.findLatestPendingPayment(...a),
+  findPending: (...a) => driver.findPendingPayments(...a),
   markPaid: (...a) => driver.markPaymentPaid(...a),
 };
 

@@ -106,11 +106,12 @@ async function createPayment(userId, linkId, amount) {
   return p;
 }
 
-async function findLatestPendingPayment(userId) {
+async function findPendingPayments(userId, limit = 5) {
   load();
-  const list = cache.payments.filter((p) => p.userId === userId && p.status === 'created');
-  list.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1)); // newest first
-  return list[0] || null;
+  return cache.payments
+    .filter((p) => p.userId === userId && p.status === 'created')
+    .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1)) // newest first
+    .slice(0, limit);
 }
 
 async function markPaymentPaid(id, paymentId) {
@@ -126,5 +127,5 @@ async function markPaymentPaid(id, paymentId) {
 
 module.exports = {
   kind: 'json', init, upsertByGoogleId, findById, updatePlan, listCards, replaceCards,
-  createPayment, findLatestPendingPayment, markPaymentPaid,
+  createPayment, findPendingPayments, markPaymentPaid,
 };

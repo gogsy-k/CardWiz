@@ -51,15 +51,19 @@ router.post('/order', requireAuth, async (req, res) => {
 router.post('/verify', requireAuth, async (req, res) => {
   if (!ensureConfigured(res)) return;
   try {
-    const pending = await db.payments.findLatestPending(req.user.id);
-    if (!pending) return res.json({ status: 'none', plan: req.user.plan });
+    const pending = await db.payments.findPending(req.user.id, 5);
+    if (!pending.length) return res.json({ status: 'none', plan: req.user.plan });
 
-    const link = await rzp.getPaymentLink(pending.linkId);
-    if (link.status === 'paid') {
-      const paymentId = (link.payments && link.payments[0] && link.payments[0].payment_id) || null;
-      await db.payments.markPaid(pending.id, paymentId);
-      const user = await db.users.updatePlan(req.user.id, 'premium');
-      return res.json({ status: 'paid', plan: user.plan });
+    // Recent pending links check karo — koi bhi 'paid' mile to premium.
+    // (User ne multiple Upgrade dabaye ho to bhi sahi link pakdega.)
+    for (const p of pending) {
+      const link = await rzp.getPaymentLink(p.linkId);
+      if (link.status === 'paid') {
+        const paymentId = (link.payments && link.payments[0] && link.payments[0].payment_id) || null;
+        await db.payments.markPaid(p.id, paymentId);
+        const user = await db.users.updatePlan(req.user.id, 'premium');
+        return res.json({ status: 'paid', plan: user.plan });
+      }
     }
     res.json({ status: 'pending', plan: req.user.plan });
   } catch (err) {
