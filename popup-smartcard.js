@@ -70,6 +70,7 @@ async function init() {
   if (currentUser && syncEnabled) await doSyncNow(); // pull+merge+push cards
   if (currentUser && !isPremium) await autoVerifyPayment(); // Phase 11: pending payment auto-detect
   renderMyCards();
+  renderFeatured(); // Phase 6.5: sponsored card (free users)
 
   // View switching
   document.querySelectorAll('nav button').forEach((btn) => {
@@ -99,6 +100,7 @@ function switchView(view) {
   $('view-more').hidden = view !== 'more';
   if (view === 'bills') renderBills();
   if (view === 'more') renderMore();
+  if (view === 'suggest') renderFeatured();
 }
 
 function buildCategoryDropdown() {
@@ -459,7 +461,8 @@ function renderMore() {
 
   // Affiliate disclosure
   els.affDisclosure.textContent = window.SmartCardAffiliate.DISCLOSURE +
-    ' Networks: Amazon Associates, Flipkart Affiliate, Cuelinks.';
+    (window.SmartCardReferral ? ' ' + window.SmartCardReferral.DISCLOSURE : '') +
+    ' Networks: Amazon Associates, Flipkart, Cuelinks, card-referral.';
 
   // About: privacy link + version (manifest se).
   const verEl = $('versionLabel');
@@ -770,6 +773,8 @@ function renderResults(ranked) {
     return;
   }
 
+  const ownedSet = new Set(ownedUniqueIds());
+
   ranked.forEach((r, i) => {
     const row = document.createElement('div');
     row.className = 'card-row';
@@ -789,13 +794,21 @@ function renderResults(ranked) {
     left.appendChild(name);
     left.appendChild(sub);
 
-    // Top card pe "✓ Use kiya" — reward ko cap mein log karta hai.
+    // Top card: owned -> "✓ Use kiya" (cap log); not owned -> "Apply" (referral).
     if (i === 0 && r.savings > 0 && !r.excluded) {
-      const logBtn = document.createElement('button');
-      logBtn.className = 'log-btn';
-      logBtn.textContent = '✓ Ye card use kiya';
-      logBtn.addEventListener('click', () => logUsageFor(r));
-      left.appendChild(logBtn);
+      if (ownedSet.has(r.id)) {
+        const logBtn = document.createElement('button');
+        logBtn.className = 'log-btn';
+        logBtn.textContent = '✓ Ye card use kiya';
+        logBtn.addEventListener('click', () => logUsageFor(r));
+        left.appendChild(logBtn);
+      } else {
+        const applyBtn = document.createElement('button');
+        applyBtn.className = 'apply-btn';
+        applyBtn.textContent = 'Apply for this card ↗';
+        applyBtn.addEventListener('click', () => openApply({ id: r.id, name: r.name }));
+        left.appendChild(applyBtn);
+      }
     }
 
     const right = document.createElement('div');
@@ -814,6 +827,37 @@ function renderResults(ranked) {
     row.appendChild(left);
     row.appendChild(right);
     els.results.appendChild(row);
+  });
+}
+
+// ---------- Referral / Sponsored (Phase 6.5 monetization) ----------
+function openApply(card) {
+  if (typeof SmartCardReferral === 'undefined') return;
+  const url = SmartCardReferral.getApplyUrl(card);
+  if (url) window.open(url, '_blank', 'noopener');
+}
+
+// Sponsored card — sirf FREE users ko (premium = ad-free). Catalog mein na ho to hide.
+function renderFeatured() {
+  const box = $('featuredBox');
+  if (!box) return;
+  const feat = (typeof SmartCardReferral !== 'undefined') ? SmartCardReferral.getFeatured() : null;
+  const cat = feat ? catalogCard(feat.cardId) : null;
+  if (isPremium || !feat || !cat) { box.hidden = true; box.innerHTML = ''; return; }
+
+  box.hidden = false;
+  box.innerHTML =
+    `<div class="featured">
+       <span class="spon-badge">SPONSORED</span>
+       <div class="featured-name">${escapeHtml(cat.name)}</div>
+       <div class="featured-blurb">${escapeHtml(feat.blurb)}</div>
+       <button class="featured-apply" id="featuredApply">Apply ↗</button>
+       <div class="featured-note">Referral — apply/approve pe hame commission, aapko extra cost nahi.</div>
+     </div>`;
+  const b = $('featuredApply');
+  if (b) b.addEventListener('click', () => {
+    const url = SmartCardReferral.getFeaturedApplyUrl({ id: feat.cardId, name: cat.name });
+    if (url) window.open(url, '_blank', 'noopener');
   });
 }
 

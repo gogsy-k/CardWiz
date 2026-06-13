@@ -211,18 +211,22 @@ Ye 3 cheezon ka best ek jagah laata hai:
 
 ## 💰 Monetization Model
 
-### Free Tier (affiliate-supported)
+### Free Tier (affiliate + referral supported — NO display ads)
 - Core features free: best-card recommendation, bill reminders
-- Revenue: affiliate commission ("Buy via our link", no extra cost to user)
-- Networks: Amazon Associates, Flipkart Affiliate, Cuelinks, INRDeals
-- **MUST disclose** affiliate behaviour (legal + Chrome Web Store policy)
+- Revenue:
+  - Purchase affiliate commission ("Buy via our link", no extra cost) — `affiliate.js`
+  - **Credit-card referral** ("Apply for this card" → bank/aggregator commission per approval) — `cardreferral.js`
+  - **Sponsored/featured card** (clearly "SPONSORED", FREE users only) — `cardreferral.js`
+- Networks: Amazon Associates, Flipkart, Cuelinks, INRDeals; card-referral via CardExpert/Cuelinks/direct bank
+- ❌ NO Google AdSense / display ads — AdSense extensions ko ban karta hai, Chrome policy risk, trust kharaab
+- **MUST disclose** affiliate/referral (legal + Chrome Web Store policy) — More tab + widget pe done
 
 ### Premium Tier (subscription — ₹99-299/year sweet spot)
 - Multiple-cards auto-comparison
 - Caps tracking + smart alerts
 - Detailed spending analytics
 - Unlimited cards
-- Ad-free experience
+- No sponsored card (clean, ad-free experience)
 
 ---
 

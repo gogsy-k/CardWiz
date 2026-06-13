@@ -14,6 +14,7 @@ const SUITES = [
   'premium.test.js',
   'sync.test.js',
   'razorpay.test.js',
+  'cardreferral.test.js',
 ];
 
 let totalPassed = 0;

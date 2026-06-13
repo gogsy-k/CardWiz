@@ -77,6 +77,31 @@
     }
     .caps-foot button:hover { border-color: #f38ba8; }
 
+    /* Apply (referral) button on a recommended card you don't own */
+    .apply-btn {
+      background: #89b4fa; color: #1e1e2e; border: none; border-radius: 6px;
+      padding: 4px 8px; font-size: 10px; cursor: pointer; margin-top: 4px; white-space: nowrap;
+    }
+    .apply-btn:hover { background: #74c7ec; }
+
+    /* Sponsored / featured card */
+    .featured {
+      background: #181825; border: 1px solid #45475a; border-radius: 12px;
+      padding: 12px; margin-top: 14px;
+    }
+    .spon-badge {
+      font-size: 9px; background: #f9e2af; color: #1e1e2e;
+      padding: 2px 7px; border-radius: 6px; font-weight: 700; letter-spacing: 0.3px;
+    }
+    .featured-name { font-size: 13px; font-weight: 700; color: #cba6f7; margin-top: 7px; }
+    .featured-blurb { font-size: 11px; color: #a6adc8; margin-top: 2px; line-height: 1.5; }
+    .featured-apply {
+      margin-top: 9px; width: 100%; background: #cba6f7; color: #1e1e2e; border: none;
+      border-radius: 8px; padding: 8px; font-size: 12px; font-weight: 700; cursor: pointer;
+    }
+    .featured-apply:hover { background: #b4befe; }
+    .featured-note { font-size: 9px; color: #6c7086; margin-top: 6px; text-align: center; }
+
     /* More / Premium */
     .more-card {
       background: #313244; border: 1px solid #45475a; border-radius: 12px;
@@ -208,6 +233,9 @@
       <span id="capsPeriod"></span>
       <button id="resetCapsBtn">Caps reset</button>
     </div>
+
+    <!-- Sponsored / featured card (Phase 6.5 monetization) — FREE users only -->
+    <div id="featuredBox" hidden></div>
   </section>
 
   <!-- ============ MY CARDS VIEW ============ -->
@@ -321,6 +349,7 @@
   <script src="premium.js"></script>
   <script src="auth.js"></script>
   <script src="sync.js"></script>
+  <script src="cardreferral.js"></script>
   <script src="popup-smartcard.js"></script>
 </body>
 </html>
