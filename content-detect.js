@@ -255,12 +255,15 @@ function renderWidget(site, amount, ranked, usingWallet, otherOffers, myCards) {
   let listHtml = '';
   top3.forEach((r, i) => {
     const star = i === 0 ? '⭐ ' : '';
-    const typeLabel = r.type === 'cashback' ? 'cashback' : r.type === 'miles' ? 'miles' : 'points';
-    const typeClass = r.type === 'cashback' ? 'tag-cash' : r.type === 'miles' ? 'tag-miles' : 'tag-pts';
+    const isCash = r.type === 'cashback';
+    const typeLabel = isCash ? 'cashback' : r.type === 'miles' ? 'in miles' : 'in points';
+    const typeClass = isCash ? 'tag-cash' : r.type === 'miles' ? 'tag-miles' : 'tag-pts';
+    // Cashback = asli ₹; points/miles = estimated ₹ value (≈ se signal).
+    const approx = isCash ? '' : '≈';
     let right;
     if (hasAmount) {
       const capTag = r.capExhausted ? '<em>cap khatam</em>' : (r.capped ? '<em>cap</em>' : '');
-      const rewardLine = `<span class="reward">₹${r.savings}${capTag}</span>`;
+      const rewardLine = `<span class="reward">${approx}₹${r.savings}${capTag}</span>`;
       const offerLine = r.offerValue > 0 ? `<span class="offer">+₹${r.offerValue} instant off</span>` : '';
       const pill = `<span class="pill ${typeClass}">${typeLabel}</span>`;
       right = rewardLine + offerLine + pill;
@@ -357,7 +360,7 @@ function renderWidget(site, amount, ranked, usingWallet, otherOffers, myCards) {
       ${listHtml}
       ${otherOffersHtml}
       ${affHtml}
-      <div class="ft"><b>${escapeHtml(sourceNote)}</b><br>🔒 Read-only · "offer" = page ka instant discount · data sirf is device pe</div>
+      <div class="ft"><b>${escapeHtml(sourceNote)}</b><br>≈ = points/miles ki estimated ₹ value · "offer" = instant discount<br>🔒 Read-only · data sirf is device pe</div>
     </div>
   `;
 
