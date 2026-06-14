@@ -263,12 +263,11 @@ function renderWidget(site, amount, ranked, usingWallet, otherOffers, myCards) {
     let right;
     if (hasAmount) {
       const capTag = r.capExhausted ? '<em>cap khatam</em>' : (r.capped ? '<em>cap</em>' : '');
-      const rewardLine = `<span class="reward">${approx}₹${r.savings}${capTag}</span>`;
+      const rewardRow = `<span class="rewardrow"><span class="reward">${approx}₹${r.savings}${capTag}</span><span class="pill ${typeClass}">${typeLabel}</span></span>`;
       const offerLine = r.offerValue > 0 ? `<span class="offer">+₹${r.offerValue} instant off</span>` : '';
-      const pill = `<span class="pill ${typeClass}">${typeLabel}</span>`;
-      right = rewardLine + offerLine + pill;
+      right = rewardRow + offerLine;
     } else {
-      right = `<span class="reward">${r.rate}%</span><span class="pill ${typeClass}">${typeLabel}</span>`;
+      right = `<span class="rewardrow"><span class="reward">${r.rate}%</span><span class="pill ${typeClass}">${typeLabel}</span></span>`;
     }
     const walletEntry = myCards && myCards.find((c) => c.cardId === r.id);
     let subtitle = '';
@@ -332,7 +331,8 @@ function renderWidget(site, amount, ranked, usingWallet, otherOffers, myCards) {
       .cleft { display:flex; flex-direction:column; min-width:0; }
       .cname { font-size:11px; font-weight:600; }
       .csub { font-size:9px; color:#6c7086; margin-top:2px; }
-      .csave { display:flex; flex-direction:column; align-items:flex-end; gap:3px; white-space:nowrap; flex-shrink:0; }
+      .csave { display:flex; flex-direction:column; align-items:flex-end; gap:5px; white-space:nowrap; flex-shrink:0; }
+      .csave .rewardrow { display:flex; align-items:center; gap:6px; }
       .csave .reward { font-size:14px; font-weight:800; color:#a6e3a1; line-height:1; }
       .csave .offer { font-size:11px; font-weight:800; color:#1e1e2e; background:#89b4fa;
                       padding:2px 7px; border-radius:5px; line-height:1.3; }
