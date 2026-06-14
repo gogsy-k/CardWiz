@@ -131,7 +131,7 @@ function getWalletState() {
     if (typeof chrome === 'undefined' || !chrome.storage) return resolve({ owned: [], capUsage: null });
     chrome.storage.local.get(['myCards', 'capUsage'], (r) => {
       const mc = r.myCards || [];
-      resolve({ owned: [...new Set(mc.map((c) => c.cardId))], capUsage: r.capUsage || null });
+      resolve({ owned: [...new Set(mc.map((c) => c.cardId))], capUsage: r.capUsage || null, myCards: mc });
     });
   });
 }
@@ -149,7 +149,7 @@ async function evaluateAndRender() {
   if (sessionStorage.getItem('scs-dismissed') === location.pathname) return;
 
   const DB = await window.CardWizCatalog.load();
-  const { owned, capUsage } = await getWalletState();
+  const { owned, capUsage, myCards } = await getWalletState();
   const amount = detectAmount(site.merchant);
 
   const opts = { category: site.category, amount: amount || 0 };
@@ -185,7 +185,7 @@ async function evaluateAndRender() {
   if (sig === lastSignature) return;
   lastSignature = sig;
 
-  renderWidget(site, amount, ranked, owned.length > 0, otherOffers);
+  renderWidget(site, amount, ranked, owned.length > 0, otherOffers, myCards);
 }
 
 // ---------- Shadow-DOM Widget ----------
@@ -195,7 +195,7 @@ function removeWidget() {
   if (host) host.remove();
 }
 
-function renderWidget(site, amount, ranked, usingWallet, otherOffers) {
+function renderWidget(site, amount, ranked, usingWallet, otherOffers, myCards) {
   removeWidget();
 
   const host = document.createElement('div');
@@ -213,7 +213,6 @@ function renderWidget(site, amount, ranked, usingWallet, otherOffers) {
     const star = i === 0 ? '⭐ ' : '';
     let right;
     if (hasAmount) {
-      // reward + offer breakdown
       const capTag = r.capExhausted ? '<em>cap khatam</em>' : (r.capped ? '<em>cap</em>' : '');
       const parts = [`₹${r.savings}${capTag}`];
       if (r.offerValue > 0) parts.push(`<o>+₹${r.offerValue} offer</o>`);
@@ -221,9 +220,17 @@ function renderWidget(site, amount, ranked, usingWallet, otherOffers) {
     } else {
       right = `${r.rate}%`;
     }
+    const walletEntry = myCards && myCards.find((c) => c.cardId === r.id);
+    const subParts = [];
+    if (walletEntry && walletEntry.nickname) subParts.push(walletEntry.nickname);
+    if (walletEntry && walletEntry.last4) subParts.push(`···${walletEntry.last4}`);
+    const subtitle = subParts.join(' · ');
     listHtml += `
       <div class="row ${i === 0 ? 'best' : ''} ${r.capExhausted ? 'exhausted' : ''}">
-        <span class="cname">${star}${escapeHtml(r.name)}</span>
+        <div class="cleft">
+          <span class="cname">${star}${escapeHtml(r.name)}</span>
+          ${subtitle ? `<span class="csub">${escapeHtml(subtitle)}</span>` : ''}
+        </div>
         <span class="csave">${right}</span>
       </div>`;
   });
@@ -269,7 +276,9 @@ function renderWidget(site, amount, ranked, usingWallet, otherOffers) {
              padding:7px 9px; margin-bottom:6px; }
       .row.best { border-color:#a6e3a1; background:#2a3a2e; }
       .row.exhausted { border-color:#f38ba8; opacity:.85; }
+      .cleft { display:flex; flex-direction:column; }
       .cname { font-size:11px; font-weight:600; }
+      .csub { font-size:9px; color:#6c7086; margin-top:1px; }
       .csave { font-size:12px; font-weight:700; color:#a6e3a1; white-space:nowrap; text-align:right; }
       .csave em { font-size:8px; background:#f9e2af; color:#1e1e2e; padding:0 4px; border-radius:3px; font-style:normal; margin-left:2px; }
       .csave o { font-size:9px; color:#89b4fa; font-weight:700; display:block; }
