@@ -22,7 +22,7 @@ const DEFAULT_AFFILIATE_CONFIG = {
 };
 
 const DISCLOSURE =
-  '💡 Hum affiliate link se chhota commission kamaate hain — aapko koi extra cost nahi.';
+  '💡 Hum affiliate link se chhota commission kamaate hain — aapko koi extra cost nahi. We donate 50% of affiliate earnings.';
 
 // URL pe ek query param safely set karo (existing params todhe bina).
 function setParam(url, key, value) {
