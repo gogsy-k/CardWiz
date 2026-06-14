@@ -38,4 +38,17 @@ const payments = {
   markPaid: (...a) => driver.markPaymentPaid(...a),
 };
 
-module.exports = { init, users, cards, payments, get kind() { return driver && driver.kind; } };
+const subscriptions = {
+  create: (...a) => driver.createSubscription(...a),
+  findPending: (...a) => driver.findPendingSubscriptions(...a),
+  markActive: (...a) => driver.markSubscriptionActive(...a),
+};
+
+const catalog = {
+  list:        (...a) => driver.listCatalog(...a),
+  count:       (...a) => driver.countCatalog(...a),
+  upsert:      (...a) => driver.upsertCard(...a),
+  deleteNotIn: (...a) => driver.deleteNotInCatalog(...a),
+};
+
+module.exports = { init, users, cards, payments, subscriptions, catalog, get kind() { return driver && driver.kind; } };

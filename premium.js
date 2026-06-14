@@ -16,7 +16,10 @@ const FREE_LIMITS = {
 // Premium-only features.
 const PREMIUM_FEATURES = ['unlimited_cards', 'spending_analytics', 'multi_compare_export'];
 
-const PREMIUM_PRICE_INR = 99; // plan: ₹99-299/year sweet spot
+const PREMIUM_MONTHLY_INR = 49;   // per month after trial
+const PREMIUM_YEARLY_INR  = 299;  // per year (save ₹289 vs monthly)
+const PREMIUM_TRIAL_DAYS  = 30;   // first month free
+const PREMIUM_PRICE_INR   = PREMIUM_MONTHLY_INR; // backward compat
 
 function isPremiumFeature(feature) {
   return PREMIUM_FEATURES.includes(feature);
@@ -42,7 +45,9 @@ function cardsRemaining(currentCount, isPremium) {
 // ---------- Exports (browser/worker/node) ----------
 // unique const naam — classic scripts shared global scope mein collide na ho.
 const premiumApi = {
-  FREE_LIMITS, PREMIUM_FEATURES, PREMIUM_PRICE_INR,
+  FREE_LIMITS, PREMIUM_FEATURES,
+  PREMIUM_MONTHLY_INR, PREMIUM_YEARLY_INR, PREMIUM_TRIAL_DAYS,
+  PREMIUM_PRICE_INR,
   isPremiumFeature, canUseFeature, cardLimitReached, cardsRemaining,
 };
 if (typeof module !== 'undefined' && module.exports) module.exports = premiumApi;

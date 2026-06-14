@@ -21,7 +21,11 @@ const config = {
   razorpayKeyId: process.env.RAZORPAY_KEY_ID || '',
   razorpayKeySecret: process.env.RAZORPAY_KEY_SECRET || '',
   razorpayWebhookSecret: process.env.RAZORPAY_WEBHOOK_SECRET || '',
-  premiumPriceInr: Number(process.env.PREMIUM_PRICE_INR) || 99,
+  premiumMonthlyInr: Number(process.env.PREMIUM_MONTHLY_INR) || 49,
+  premiumYearlyInr:  Number(process.env.PREMIUM_YEARLY_INR)  || 299,
+  premiumTrialDays:  Number(process.env.PREMIUM_TRIAL_DAYS)  || 30,
+  // backward compat
+  get premiumPriceInr() { return this.premiumMonthlyInr; },
   baseUrl: process.env.BASE_URL || 'http://localhost:3000',
 };
 

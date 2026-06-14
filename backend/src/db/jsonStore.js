@@ -27,6 +27,7 @@ function load() {
   }
   if (!cache.cardsByUser || typeof cache.cardsByUser !== 'object') cache.cardsByUser = {};
   if (!Array.isArray(cache.payments)) cache.payments = [];
+  if (!Array.isArray(cache.subscriptions)) cache.subscriptions = [];
   return cache;
 }
 
@@ -125,7 +126,56 @@ async function markPaymentPaid(id, paymentId) {
   return p;
 }
 
+// ---- Subscriptions (recurring + trial) ----
+async function createSubscription(userId, subId, plan) {
+  load();
+  const now = new Date().toISOString();
+  const s = { id: crypto.randomUUID(), userId, subId, plan, status: 'created', createdAt: now, updatedAt: now };
+  cache.subscriptions.push(s);
+  persist();
+  return s;
+}
+
+async function findPendingSubscriptions(userId, limit = 5) {
+  load();
+  return cache.subscriptions
+    .filter((s) => s.userId === userId && s.status === 'created')
+    .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
+    .slice(0, limit);
+}
+
+async function markSubscriptionActive(subId) {
+  load();
+  const s = cache.subscriptions.find((x) => x.subId === subId);
+  if (!s) return null;
+  s.status = 'active';
+  s.updatedAt = new Date().toISOString();
+  persist();
+  return s;
+}
+
+// ---- Card Catalog (dev fallback — reads bundled cards.json) ----
+const CARDS_JSON_PATH = path.join(__dirname, '..', '..', '..', '..', 'data', 'cards.json');
+
+async function listCatalog() {
+  try {
+    const db = JSON.parse(fs.readFileSync(CARDS_JSON_PATH, 'utf8'));
+    return db.cards || [];
+  } catch {
+    return [];
+  }
+}
+
+async function countCatalog() {
+  return 1; // always positive so auto-seed is skipped for json driver
+}
+
+async function upsertCard() { /* no-op — json driver mein seeding nahi hoti */ }
+async function deleteNotInCatalog() { return 0; /* no-op */ }
+
 module.exports = {
   kind: 'json', init, upsertByGoogleId, findById, updatePlan, listCards, replaceCards,
   createPayment, findPendingPayments, markPaymentPaid,
+  createSubscription, findPendingSubscriptions, markSubscriptionActive,
+  listCatalog, countCatalog, upsertCard, deleteNotInCatalog,
 };

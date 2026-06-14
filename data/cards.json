@@ -1,14 +1,7 @@
 {
-  "schemaVersion": 1,
-  "lastUpdated": "2026-06-09",
+  "schemaVersion": 2,
+  "lastUpdated": "2026-06-14",
   "currency": "INR",
-  "_doc": {
-    "purpose": "RewardXtra ka 'brain' — India ke top cards ki reward rules. Recommender ise padh kar best card rank karta hai.",
-    "howRankingWorks": "Diye gaye category + amount pe: har card ke liye matching rule ka effectiveRate lo (agar category exclusions mein hai to 0), value = amount * effectiveRate/100, monthlyCapValue se cap karo, phir cards ko value ke hisaab se rank karo.",
-    "effectiveRate": "Sab kuch ek hi unit (%) mein normalize kiya hai taaki cashback/points/miles cards directly compare ho saken. Points/miles cards ke liye effectiveRate = (reward per rupee) * pointValueINR * 100, conservative pointValue ke saath. Asli raw rule 'rawRate' mein transparency ke liye rakhi hai.",
-    "monthlyCapValue": "Reward value ka monthly cap RUPEES mein (cashback-equivalent). null = no cap / unlimited.",
-    "assumptions": "Points/mile values redemption pe depend karte hain; humne conservative average liya hai. Reward rules banks frequently change karte hain — 'lastVerified' aur SOURCES.md check karein."
-  },
   "categories": [
     "amazon", "flipkart", "myntra", "online_shopping", "food_delivery",
     "dining", "grocery", "instamart", "travel", "flights", "hotels",
@@ -17,26 +10,57 @@
   ],
   "cards": [
     {
-      "id": "sbi-cashback",
-      "name": "SBI Cashback Card",
-      "bank": "SBI",
-      "network": "Visa/Mastercard",
-      "type": "cashback",
+      "id": "hdfc-infinia",
+      "name": "HDFC Infinia Credit Card (Metal)",
+      "bank": "HDFC",
+      "network": "Visa",
+      "type": "points",
       "pointValueINR": 1,
-      "annualFee": 999,
-      "feeWaiverSpend": 200000,
-      "baseRate": 1,
-      "baseMonthlyCapValue": 2000,
+      "annualFee": 12500,
+      "feeWaiverSpend": 1000000,
+      "baseRate": 3.3,
+      "baseMonthlyCapValue": null,
       "rules": [
-        {
-          "categories": ["online_shopping", "amazon", "flipkart", "myntra", "food_delivery", "dining", "entertainment"],
-          "effectiveRate": 5,
-          "rawRate": "5% on all online spends",
-          "monthlyCapValue": 2000,
-          "note": "5% online cashback, cap ₹2000/statement cycle (April 2026 se ghata)"
-        }
+        { "categories": ["travel","flights","hotels","online_shopping"], "effectiveRate": 3.3, "rawRate": "5 RP per ₹150; up to 10X via SmartBuy", "monthlyCapValue": 15000 }
       ],
-      "exclusions": ["fuel", "rent", "wallet", "utilities", "insurance", "education", "government", "gaming"],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "hdfc-diners-black",
+      "name": "HDFC Diners Club Black Credit Card",
+      "bank": "HDFC",
+      "network": "Diners Club",
+      "type": "points",
+      "pointValueINR": 1,
+      "annualFee": 10000,
+      "feeWaiverSpend": 500000,
+      "baseRate": 3.3,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["travel","flights","hotels","dining","online_shopping"], "effectiveRate": 3.3, "rawRate": "5 RP per ₹150; 10X on SmartBuy partners", "monthlyCapValue": 15000 }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "hdfc-regalia-gold",
+      "name": "HDFC Regalia Gold Credit Card",
+      "bank": "HDFC",
+      "network": "Visa/Mastercard",
+      "type": "points",
+      "pointValueINR": 1,
+      "annualFee": 2500,
+      "feeWaiverSpend": 400000,
+      "baseRate": 2.67,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["dining","online_shopping","travel"], "effectiveRate": 2.67, "rawRate": "4 RP per ₹150 (1 RP = ₹1 via SmartBuy)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "fuelSurchargeWaiver": true,
       "lastVerified": "2026-06-09"
     },
     {
@@ -51,219 +75,44 @@
       "baseRate": 1,
       "baseMonthlyCapValue": 1000,
       "rules": [
-        {
-          "categories": ["amazon", "flipkart", "myntra", "food_delivery", "uber", "entertainment", "online_shopping"],
-          "effectiveRate": 5,
-          "rawRate": "5% CashPoints on 10 partner brands (Amazon, Flipkart, Myntra, Swiggy, Zomato, Uber, Cult.fit, BookMyShow, SonyLIV, TataCliq)",
-          "monthlyCapValue": 1000,
-          "note": "5% cap 1000 CashPoints/month (1 CashPoint = ₹1)"
-        }
+        { "categories": ["amazon","flipkart","myntra","food_delivery","uber","entertainment","online_shopping"], "effectiveRate": 5, "rawRate": "5% CashPoints on 10 partner brands", "monthlyCapValue": 1000 }
       ],
-      "exclusions": ["wallet", "rent", "fuel"],
+      "exclusions": ["wallet","rent","fuel"],
       "lastVerified": "2026-06-09"
     },
     {
-      "id": "axis-ace",
-      "name": "Axis Bank ACE Credit Card",
-      "bank": "Axis",
-      "network": "Visa",
+      "id": "hdfc-moneyback-plus",
+      "name": "HDFC MoneyBack+ Credit Card",
+      "bank": "HDFC",
+      "network": "Visa/Mastercard",
       "type": "cashback",
       "pointValueINR": 1,
-      "annualFee": 499,
-      "feeWaiverSpend": 200000,
-      "baseRate": 1.5,
+      "annualFee": 500,
+      "feeWaiverSpend": 50000,
+      "baseRate": 1.33,
       "baseMonthlyCapValue": null,
       "rules": [
-        {
-          "categories": ["utilities"],
-          "effectiveRate": 5,
-          "rawRate": "5% on bill payments & recharges via Google Pay (Android only)",
-          "monthlyCapValue": 500,
-          "capGroup": "ace-accelerated",
-          "note": "5% GPay bills + 4% Swiggy/Zomato/Ola share ek combined ₹500/month cap"
-        },
-        {
-          "categories": ["food_delivery", "cab", "uber"],
-          "effectiveRate": 4,
-          "rawRate": "4% on Swiggy, Zomato, Ola",
-          "monthlyCapValue": 500,
-          "capGroup": "ace-accelerated",
-          "note": "Shares the ₹500/month cap with the 5% GPay category"
-        }
+        { "categories": ["amazon","flipkart","food_delivery","dining"], "effectiveRate": 5.33, "rawRate": "4X CashPoints on Amazon/Flipkart/Swiggy/Zomato", "monthlyCapValue": 600 }
       ],
-      "exclusions": ["fuel", "rent", "wallet", "insurance", "government", "gaming"],
-      "lastVerified": "2026-06-09"
-    },
-    {
-      "id": "amazon-pay-icici",
-      "name": "Amazon Pay ICICI Credit Card",
-      "bank": "ICICI",
-      "network": "Visa",
-      "type": "cashback",
-      "pointValueINR": 1,
-      "annualFee": 0,
-      "feeWaiverSpend": 0,
-      "baseRate": 1,
-      "baseMonthlyCapValue": null,
-      "rules": [
-        {
-          "categories": ["amazon"],
-          "effectiveRate": 5,
-          "rawRate": "5% on Amazon.in for Prime members (3% non-Prime)",
-          "monthlyCapValue": null,
-          "note": "Unlimited. Prime member assume kiya; non-Prime ke liye 3%"
-        },
-        {
-          "categories": ["online_shopping"],
-          "effectiveRate": 2,
-          "rawRate": "2% at 100+ Amazon Pay partner merchants",
-          "monthlyCapValue": null
-        }
-      ],
-      "exclusions": [],
+      "exclusions": ["fuel","rent","wallet","government"],
       "fuelSurchargeWaiver": true,
       "lastVerified": "2026-06-09"
     },
     {
-      "id": "flipkart-axis",
-      "name": "Flipkart Axis Bank Credit Card",
-      "bank": "Axis",
+      "id": "hdfc-freedom",
+      "name": "HDFC Freedom Credit Card",
+      "bank": "HDFC",
       "network": "Mastercard",
       "type": "cashback",
       "pointValueINR": 1,
       "annualFee": 500,
-      "feeWaiverSpend": 350000,
-      "baseRate": 1,
+      "feeWaiverSpend": 50000,
+      "baseRate": 0.67,
       "baseMonthlyCapValue": null,
       "rules": [
-        {
-          "categories": ["myntra"],
-          "effectiveRate": 7.5,
-          "rawRate": "7.5% on Myntra",
-          "monthlyCapValue": 1333,
-          "note": "Cap ~₹4000/quarter (≈₹1333/month) per platform"
-        },
-        {
-          "categories": ["flipkart", "travel"],
-          "effectiveRate": 5,
-          "rawRate": "5% on Flipkart & Cleartrip",
-          "monthlyCapValue": 1333,
-          "note": "Cap ₹4000/quarter per platform"
-        },
-        {
-          "categories": ["food_delivery", "uber", "cab", "entertainment"],
-          "effectiveRate": 4,
-          "rawRate": "4% on Swiggy, Uber, PVR, cult.fit",
-          "monthlyCapValue": 1333,
-          "note": "Cap ₹4000/quarter"
-        }
+        { "categories": ["food_delivery","grocery","cab","entertainment","upi"], "effectiveRate": 3.33, "rawRate": "5 CashPoints/₹150 on Swiggy/BigBasket/McDonald's/Uber/BookMyShow/OTT", "monthlyCapValue": 500 }
       ],
-      "exclusions": ["utilities", "fuel", "rent", "wallet", "insurance", "education", "government"],
-      "lastVerified": "2026-06-09"
-    },
-    {
-      "id": "tataneu-infinity-hdfc",
-      "name": "Tata Neu Infinity HDFC Bank Credit Card",
-      "bank": "HDFC",
-      "network": "Visa/RuPay",
-      "type": "points",
-      "pointValueINR": 1,
-      "annualFee": 1499,
-      "feeWaiverSpend": 300000,
-      "baseRate": 1.5,
-      "baseMonthlyCapValue": null,
-      "rules": [
-        {
-          "categories": ["online_shopping"],
-          "effectiveRate": 10,
-          "rawRate": "Up to 10% NeuCoins on Tata Neu app/website (with NeuPass)",
-          "monthlyCapValue": null,
-          "note": "1 NeuCoin = ₹1. Tata Neu ecosystem spends"
-        },
-        {
-          "categories": ["grocery"],
-          "effectiveRate": 5,
-          "rawRate": "5% NeuCoins on partner Tata brands (BigBasket etc.)",
-          "monthlyCapValue": 2000,
-          "note": "Grocery NeuCoins cap 2000/month"
-        },
-        {
-          "categories": ["upi"],
-          "effectiveRate": 1.5,
-          "rawRate": "Up to 1.5% NeuCoins on RuPay UPI (0.5% base)",
-          "monthlyCapValue": null
-        }
-      ],
-      "exclusions": ["fuel", "wallet", "rent", "government", "gaming"],
-      "lastVerified": "2026-06-09"
-    },
-    {
-      "id": "idfc-first-wealth",
-      "name": "IDFC FIRST Wealth Credit Card",
-      "bank": "IDFC FIRST",
-      "network": "Visa/Mastercard",
-      "type": "points",
-      "pointValueINR": 0.25,
-      "annualFee": 0,
-      "feeWaiverSpend": 0,
-      "baseRate": 0.375,
-      "baseMonthlyCapValue": null,
-      "rules": [
-        {
-          "categories": ["online_shopping", "amazon", "flipkart", "myntra", "dining", "food_delivery", "rent", "education", "utilities", "insurance"],
-          "effectiveRate": 1.25,
-          "rawRate": "10 RP per ₹200 above ₹20k/month spend (3 RP per ₹200 below). 1 RP = ₹0.25",
-          "monthlyCapValue": null,
-          "note": "Per-₹200 base effective 18 Jan 2026 se. Rent/education/utilities pe bhi rewards (rare!). Above-₹20k tier assume kiya"
-        }
-      ],
-      "exclusions": ["fuel", "wallet"],
-      "lastVerified": "2026-06-09"
-    },
-    {
-      "id": "axis-atlas",
-      "name": "Axis Bank Atlas Credit Card",
-      "bank": "Axis",
-      "network": "Visa",
-      "type": "miles",
-      "pointValueINR": 1,
-      "annualFee": 5000,
-      "feeWaiverSpend": 0,
-      "baseRate": 2,
-      "baseMonthlyCapValue": null,
-      "rules": [
-        {
-          "categories": ["travel", "flights", "hotels"],
-          "effectiveRate": 5,
-          "rawRate": "5 EDGE Miles per ₹100 on travel (2/₹100 others)",
-          "monthlyCapValue": 10000,
-          "note": "Accelerated miles cumulative ₹2L/month tak. 1 mile ≈ ₹1 (1:1 travel, up to 1:2 transfer pe zyada)"
-        }
-      ],
-      "exclusions": ["fuel", "rent", "wallet", "insurance", "government", "gaming"],
-      "lastVerified": "2026-06-09"
-    },
-    {
-      "id": "hdfc-infinia",
-      "name": "HDFC Infinia Credit Card (Metal)",
-      "bank": "HDFC",
-      "network": "Visa",
-      "type": "points",
-      "pointValueINR": 1,
-      "annualFee": 12500,
-      "feeWaiverSpend": 1000000,
-      "baseRate": 3.3,
-      "baseMonthlyCapValue": null,
-      "rules": [
-        {
-          "categories": ["travel", "flights", "hotels", "online_shopping"],
-          "effectiveRate": 3.3,
-          "rawRate": "5 RP per ₹150 (3.3%); up to 10X via SmartBuy",
-          "monthlyCapValue": 15000,
-          "note": "1 RP ≈ ₹1 via SmartBuy flights/hotels 1:1. SmartBuy accelerated cap 15000 points/month"
-        }
-      ],
-      "exclusions": ["fuel", "rent", "wallet", "government"],
+      "exclusions": ["fuel","rent","wallet","government"],
       "lastVerified": "2026-06-09"
     },
     {
@@ -278,22 +127,961 @@
       "baseRate": 1,
       "baseMonthlyCapValue": null,
       "rules": [
-        {
-          "categories": ["food_delivery", "instamart", "dining"],
-          "effectiveRate": 10,
-          "rawRate": "10% on Swiggy (Food, Instamart, Dineout, Genie)",
-          "monthlyCapValue": 1500,
-          "note": "Cap ₹1500/month. Har txn ≥ ₹249 hona chahiye (17 Apr 2026 se)"
-        },
-        {
-          "categories": ["travel", "flights", "hotels"],
-          "effectiveRate": 5,
-          "rawRate": "5% on Cleartrip flights/hotels",
-          "monthlyCapValue": 1500,
-          "note": "Cap ₹1500/billing cycle"
-        }
+        { "categories": ["food_delivery","instamart","dining"], "effectiveRate": 10, "rawRate": "10% on Swiggy (Food/Instamart/Dineout)", "monthlyCapValue": 1500 },
+        { "categories": ["travel","flights","hotels"], "effectiveRate": 5, "rawRate": "5% on Cleartrip", "monthlyCapValue": 1500 }
       ],
-      "exclusions": ["wallet", "fuel", "rent"],
+      "exclusions": ["wallet","fuel","rent"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "tataneu-infinity-hdfc",
+      "name": "Tata Neu Infinity HDFC Bank Credit Card",
+      "bank": "HDFC",
+      "network": "Visa/RuPay",
+      "type": "points",
+      "pointValueINR": 1,
+      "annualFee": 1499,
+      "feeWaiverSpend": 300000,
+      "baseRate": 1.5,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["online_shopping"], "effectiveRate": 10, "rawRate": "Up to 10% NeuCoins on Tata Neu app (with NeuPass)", "monthlyCapValue": null },
+        { "categories": ["grocery"], "effectiveRate": 5, "rawRate": "5% NeuCoins on BigBasket etc.", "monthlyCapValue": 2000 },
+        { "categories": ["upi"], "effectiveRate": 1.5, "rawRate": "Up to 1.5% NeuCoins on RuPay UPI", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","wallet","rent","government","gaming"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "hdfc-tataneu-plus",
+      "name": "Tata Neu Plus HDFC Bank Credit Card",
+      "bank": "HDFC",
+      "network": "Visa/RuPay",
+      "type": "points",
+      "pointValueINR": 1,
+      "annualFee": 499,
+      "feeWaiverSpend": 100000,
+      "baseRate": 1,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["online_shopping","grocery"], "effectiveRate": 2, "rawRate": "2% NeuCoins on Tata ecosystem apps", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","wallet","rent","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "hdfc-diners-privilege",
+      "name": "HDFC Diners Club Privilege Credit Card",
+      "bank": "HDFC",
+      "network": "Diners Club",
+      "type": "points",
+      "pointValueINR": 1,
+      "annualFee": 2500,
+      "feeWaiverSpend": 300000,
+      "baseRate": 2.67,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["dining","travel","online_shopping"], "effectiveRate": 2.67, "rawRate": "4 RP per ₹150 (1 RP = ₹1 via SmartBuy)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "sbi-cashback",
+      "name": "SBI Cashback Card",
+      "bank": "SBI",
+      "network": "Visa/Mastercard",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 999,
+      "feeWaiverSpend": 200000,
+      "baseRate": 1,
+      "baseMonthlyCapValue": 2000,
+      "rules": [
+        { "categories": ["online_shopping","amazon","flipkart","myntra","food_delivery","dining","entertainment"], "effectiveRate": 5, "rawRate": "5% on all online spends", "monthlyCapValue": 2000 }
+      ],
+      "exclusions": ["fuel","rent","wallet","utilities","insurance","education","government","gaming"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "sbi-simplyclick",
+      "name": "SBI SimplyCLICK Credit Card",
+      "bank": "SBI",
+      "network": "Visa",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 499,
+      "feeWaiverSpend": 100000,
+      "baseRate": 0.25,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["amazon","entertainment","travel","food_delivery"], "effectiveRate": 2.5, "rawRate": "10X RP on Amazon/BookMyShow/Cleartrip (10 RP/₹100, 1 RP=₹0.25)", "monthlyCapValue": 1000 },
+        { "categories": ["online_shopping","myntra","dining"], "effectiveRate": 1.25, "rawRate": "5X RP on other online spends", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","utilities"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "sbi-simplysave",
+      "name": "SBI SimplySAVE Credit Card",
+      "bank": "SBI",
+      "network": "Visa/Mastercard",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 499,
+      "feeWaiverSpend": 100000,
+      "baseRate": 0.25,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["dining","entertainment","grocery","offline"], "effectiveRate": 2.5, "rawRate": "10X RP on dining/movies/grocery (10 RP/₹100)", "monthlyCapValue": 500 }
+      ],
+      "exclusions": ["rent","wallet","utilities"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "sbi-prime",
+      "name": "SBI Card PRIME",
+      "bank": "SBI",
+      "network": "Visa/Mastercard",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 2999,
+      "feeWaiverSpend": 300000,
+      "baseRate": 0.5,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["grocery","food_delivery"], "effectiveRate": 2.5, "rawRate": "10X RP on BigBasket/Dominos/select partners", "monthlyCapValue": 750 },
+        { "categories": ["dining","entertainment","travel"], "effectiveRate": 1.25, "rawRate": "5X RP on dining/movies/grocery", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","utilities"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "sbi-elite",
+      "name": "SBI Card ELITE",
+      "bank": "SBI",
+      "network": "Visa/Mastercard",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 4999,
+      "feeWaiverSpend": 1000000,
+      "baseRate": 0.5,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["dining","grocery","offline"], "effectiveRate": 1.25, "rawRate": "5X RP on dining/grocery/departmental", "monthlyCapValue": null },
+        { "categories": ["travel","flights","hotels"], "effectiveRate": 1.25, "rawRate": "5X RP on travel + ₹7500 travel vouchers annually", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "sbi-aurum",
+      "name": "SBI Card AURUM",
+      "bank": "SBI",
+      "network": "Visa",
+      "type": "points",
+      "pointValueINR": 1,
+      "annualFee": 9999,
+      "feeWaiverSpend": 0,
+      "baseRate": 4,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["online_shopping","dining","travel","offline"], "effectiveRate": 4, "rawRate": "4 RP per ₹100 on all spends (1 RP = ₹1)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","wallet","government"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "sbi-irctc-platinum",
+      "name": "IRCTC SBI Platinum Credit Card",
+      "bank": "SBI",
+      "network": "Visa/RuPay",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 500,
+      "feeWaiverSpend": 0,
+      "baseRate": 0.25,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["travel"], "effectiveRate": 10, "rawRate": "10% instant discount on AC train tickets via IRCTC app", "monthlyCapValue": 500 }
+      ],
+      "exclusions": ["fuel","rent","wallet"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "air-india-sbi-signature",
+      "name": "Air India SBI Signature Credit Card",
+      "bank": "SBI",
+      "network": "Visa",
+      "type": "miles",
+      "pointValueINR": 0.25,
+      "annualFee": 4999,
+      "feeWaiverSpend": 1000000,
+      "baseRate": 0.25,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["flights","travel"], "effectiveRate": 7.5, "rawRate": "30 Air India Miles per ₹100 on Air India (1 mile ≈ ₹0.25)", "monthlyCapValue": null },
+        { "categories": ["grocery","dining"], "effectiveRate": 1.25, "rawRate": "5 Air India Miles per ₹100", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "sbi-bpcl-octane",
+      "name": "SBI BPCL Octane Credit Card",
+      "bank": "SBI",
+      "network": "Visa",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 1499,
+      "feeWaiverSpend": 350000,
+      "baseRate": 0.5,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["fuel"], "effectiveRate": 6.25, "rawRate": "25X RP on BPCL fuel (25 RP/₹100 + 1% surcharge waiver = ~7.25% total)", "monthlyCapValue": 2000 },
+        { "categories": ["grocery","dining"], "effectiveRate": 2.5, "rawRate": "10X RP on grocery/dining", "monthlyCapValue": null }
+      ],
+      "exclusions": ["rent","wallet","government"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "axis-magnus",
+      "name": "Axis Bank Magnus Credit Card",
+      "bank": "Axis",
+      "network": "Mastercard",
+      "type": "miles",
+      "pointValueINR": 1,
+      "annualFee": 12500,
+      "feeWaiverSpend": 2500000,
+      "baseRate": 6,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["travel","flights","hotels"], "effectiveRate": 17.5, "rawRate": "35 EDGE Miles/₹200 on travel portals (1 mile ≈ ₹1 via airline transfer)", "monthlyCapValue": 50000 }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "axis-reserve",
+      "name": "Axis Bank Reserve Credit Card",
+      "bank": "Axis",
+      "network": "Mastercard",
+      "type": "miles",
+      "pointValueINR": 1,
+      "annualFee": 50000,
+      "feeWaiverSpend": 0,
+      "baseRate": 7.5,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["travel","flights","hotels"], "effectiveRate": 15, "rawRate": "30 EDGE Miles/₹200 on travel (1 mile ≈ ₹1)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "axis-ace",
+      "name": "Axis Bank ACE Credit Card",
+      "bank": "Axis",
+      "network": "Visa",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 499,
+      "feeWaiverSpend": 200000,
+      "baseRate": 1.5,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["utilities"], "effectiveRate": 5, "rawRate": "5% on bill payments via Google Pay", "monthlyCapValue": 500, "capGroup": "ace-accelerated" },
+        { "categories": ["food_delivery","cab","uber"], "effectiveRate": 4, "rawRate": "4% on Swiggy/Zomato/Ola", "monthlyCapValue": 500, "capGroup": "ace-accelerated" }
+      ],
+      "exclusions": ["fuel","rent","wallet","insurance","government","gaming"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "flipkart-axis",
+      "name": "Flipkart Axis Bank Credit Card",
+      "bank": "Axis",
+      "network": "Mastercard",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 500,
+      "feeWaiverSpend": 350000,
+      "baseRate": 1,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["myntra"], "effectiveRate": 7.5, "rawRate": "7.5% on Myntra", "monthlyCapValue": 1333 },
+        { "categories": ["flipkart","travel"], "effectiveRate": 5, "rawRate": "5% on Flipkart & Cleartrip", "monthlyCapValue": 1333 },
+        { "categories": ["food_delivery","uber","entertainment"], "effectiveRate": 4, "rawRate": "4% on Swiggy/Uber/PVR", "monthlyCapValue": 1333 }
+      ],
+      "exclusions": ["utilities","fuel","rent","wallet","insurance","education","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "axis-atlas",
+      "name": "Axis Bank Atlas Credit Card",
+      "bank": "Axis",
+      "network": "Visa",
+      "type": "miles",
+      "pointValueINR": 1,
+      "annualFee": 5000,
+      "feeWaiverSpend": 0,
+      "baseRate": 2,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["travel","flights","hotels"], "effectiveRate": 5, "rawRate": "5 EDGE Miles/₹100 on travel (1 mile ≈ ₹1)", "monthlyCapValue": 10000 }
+      ],
+      "exclusions": ["fuel","rent","wallet","insurance","government","gaming"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "axis-vistara-infinite",
+      "name": "Axis Bank Vistara Infinite Credit Card",
+      "bank": "Axis",
+      "network": "Visa",
+      "type": "miles",
+      "pointValueINR": 0.5,
+      "annualFee": 10000,
+      "feeWaiverSpend": 0,
+      "baseRate": 1,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["flights","travel"], "effectiveRate": 4, "rawRate": "8 CV Points/₹200 on Air India/travel (1 CV = Air India mile ≈ ₹0.50)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "axis-vistara-signature",
+      "name": "Axis Bank Vistara Signature Credit Card",
+      "bank": "Axis",
+      "network": "Visa",
+      "type": "miles",
+      "pointValueINR": 0.5,
+      "annualFee": 3000,
+      "feeWaiverSpend": 0,
+      "baseRate": 0.75,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["flights","travel"], "effectiveRate": 2, "rawRate": "4 CV Points/₹200 on travel", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "axis-my-zone",
+      "name": "Axis Bank MY Zone Credit Card",
+      "bank": "Axis",
+      "network": "Mastercard",
+      "type": "points",
+      "pointValueINR": 0.2,
+      "annualFee": 500,
+      "feeWaiverSpend": 200000,
+      "baseRate": 0.4,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["entertainment","dining","online_shopping"], "effectiveRate": 0.8, "rawRate": "8 EDGE RP/₹200 on entertainment/dining/online (1 RP = ₹0.20)", "monthlyCapValue": 400 }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "axis-neo",
+      "name": "Axis Bank Neo Credit Card",
+      "bank": "Axis",
+      "network": "Mastercard",
+      "type": "points",
+      "pointValueINR": 0.2,
+      "annualFee": 250,
+      "feeWaiverSpend": 200000,
+      "baseRate": 0.2,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["amazon","flipkart","grocery","food_delivery","myntra"], "effectiveRate": 2, "rawRate": "10 EDGE RP/₹100 on BigBasket/Amazon/Swiggy (1 RP = ₹0.20)", "monthlyCapValue": 500 },
+        { "categories": ["online_shopping","entertainment"], "effectiveRate": 1, "rawRate": "5 EDGE RP/₹100 on other online", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "axis-indianoil",
+      "name": "Axis Bank Indian Oil Credit Card",
+      "bank": "Axis",
+      "network": "RuPay/Visa",
+      "type": "points",
+      "pointValueINR": 0.2,
+      "annualFee": 500,
+      "feeWaiverSpend": 250000,
+      "baseRate": 0.2,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["fuel"], "effectiveRate": 4, "rawRate": "20 EDGE RP/₹100 on IndianOil fuel (+ 1% surcharge waiver = ~5%)", "monthlyCapValue": 1000 },
+        { "categories": ["grocery","utilities"], "effectiveRate": 1, "rawRate": "5 EDGE RP/₹100 on grocery/utilities", "monthlyCapValue": null }
+      ],
+      "exclusions": ["rent","wallet","government"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "axis-airtel",
+      "name": "Airtel Axis Bank Credit Card",
+      "bank": "Axis",
+      "network": "Visa",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 500,
+      "feeWaiverSpend": 200000,
+      "baseRate": 1,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["utilities"], "effectiveRate": 25, "rawRate": "25% cashback on Airtel bill payments via Airtel Thanks app", "monthlyCapValue": 250 },
+        { "categories": ["food_delivery","dining"], "effectiveRate": 10, "rawRate": "10% cashback on Swiggy/Zomato", "monthlyCapValue": 500 }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "irctc-axis",
+      "name": "IRCTC Axis Bank Credit Card",
+      "bank": "Axis",
+      "network": "RuPay",
+      "type": "points",
+      "pointValueINR": 0.4,
+      "annualFee": 500,
+      "feeWaiverSpend": 300000,
+      "baseRate": 0.4,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["travel"], "effectiveRate": 10, "rawRate": "10% instant discount on AC train tickets via IRCTC (₹100 discount per 4 bookings/month)", "monthlyCapValue": 300 }
+      ],
+      "exclusions": ["fuel","rent","wallet"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "amazon-pay-icici",
+      "name": "Amazon Pay ICICI Credit Card",
+      "bank": "ICICI",
+      "network": "Visa",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 0,
+      "feeWaiverSpend": 0,
+      "baseRate": 1,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["amazon"], "effectiveRate": 5, "rawRate": "5% on Amazon.in for Prime members (3% non-Prime)", "monthlyCapValue": null },
+        { "categories": ["online_shopping"], "effectiveRate": 2, "rawRate": "2% at Amazon Pay partner merchants", "monthlyCapValue": null }
+      ],
+      "exclusions": [],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "icici-emeralde-private-metal",
+      "name": "ICICI Bank Emeralde Private Metal Credit Card",
+      "bank": "ICICI",
+      "network": "Mastercard",
+      "type": "points",
+      "pointValueINR": 0.5,
+      "annualFee": 12000,
+      "feeWaiverSpend": 1000000,
+      "baseRate": 3,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["dining","travel","online_shopping","offline"], "effectiveRate": 3, "rawRate": "6 ICICI RP/₹100 (1 RP = ₹0.50 for Emeralde). Unlimited lounge.", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "icici-sapphiro",
+      "name": "ICICI Bank Sapphiro Credit Card",
+      "bank": "ICICI",
+      "network": "Visa/Mastercard/Amex",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 3500,
+      "feeWaiverSpend": 700000,
+      "baseRate": 1,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["dining","travel","online_shopping"], "effectiveRate": 1, "rawRate": "4 ICICI RP/₹100 (1 RP = ₹0.25)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "icici-rubyx",
+      "name": "ICICI Bank Rubyx Credit Card",
+      "bank": "ICICI",
+      "network": "Visa/Mastercard",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 2000,
+      "feeWaiverSpend": 350000,
+      "baseRate": 0.5,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["dining","entertainment","grocery","travel"], "effectiveRate": 1, "rawRate": "4 ICICI RP/₹100 on select categories (1 RP = ₹0.25)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "icici-coral",
+      "name": "ICICI Bank Coral Credit Card",
+      "bank": "ICICI",
+      "network": "Visa/Mastercard/Amex",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 500,
+      "feeWaiverSpend": 150000,
+      "baseRate": 0.5,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["dining","entertainment","grocery"], "effectiveRate": 1, "rawRate": "4 ICICI RP/₹100 on dining/entertainment/grocery", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "icici-platinum",
+      "name": "ICICI Bank Platinum Chip Credit Card",
+      "bank": "ICICI",
+      "network": "Visa",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 0,
+      "feeWaiverSpend": 0,
+      "baseRate": 0.25,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["fuel"], "effectiveRate": 0.5, "rawRate": "2 ICICI RP/₹100 on fuel (1 RP = ₹0.25)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["rent","wallet","government"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "icici-mmt-signature",
+      "name": "ICICI Bank MakeMyTrip Signature Credit Card",
+      "bank": "ICICI",
+      "network": "Visa",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 2500,
+      "feeWaiverSpend": 0,
+      "baseRate": 1,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["flights","hotels","travel"], "effectiveRate": 4, "rawRate": "₹4 My Cash per ₹100 on international + 15% instant hotel discount on MMT", "monthlyCapValue": null },
+        { "categories": ["online_shopping","dining"], "effectiveRate": 2, "rawRate": "₹2 My Cash per ₹100 on online", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "icici-hpcl-super-saver",
+      "name": "ICICI Bank HPCL Super Saver Credit Card",
+      "bank": "ICICI",
+      "network": "Visa",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 500,
+      "feeWaiverSpend": 150000,
+      "baseRate": 0.5,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["fuel"], "effectiveRate": 5, "rawRate": "5% cashback on HPCL fuel via HP Pay app + 1% surcharge waiver", "monthlyCapValue": 750 },
+        { "categories": ["grocery"], "effectiveRate": 1.25, "rawRate": "5 RP/₹100 on grocery (1 RP = ₹0.25)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["rent","wallet","government"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "kotak-royale-signature",
+      "name": "Kotak Royale Signature Credit Card",
+      "bank": "Kotak",
+      "network": "Visa",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 1999,
+      "feeWaiverSpend": 600000,
+      "baseRate": 0.67,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["dining","online_shopping","travel"], "effectiveRate": 1.33, "rawRate": "8 Kotak RP/₹150 on weekends (dining/travel); 4 RP weekdays", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "kotak-811",
+      "name": "Kotak 811 #DreamDifferent Credit Card",
+      "bank": "Kotak",
+      "network": "Visa",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 0,
+      "feeWaiverSpend": 0,
+      "baseRate": 0,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["entertainment"], "effectiveRate": 5, "rawRate": "5% cashback on BookMyShow (cap ₹500/month)", "monthlyCapValue": 500 },
+        { "categories": ["dining","grocery"], "effectiveRate": 2, "rawRate": "2% cashback on dining/grocery", "monthlyCapValue": 200 }
+      ],
+      "exclusions": ["fuel","rent","wallet","government","utilities"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "kotak-league-platinum",
+      "name": "Kotak League Platinum Credit Card",
+      "bank": "Kotak",
+      "network": "Mastercard",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 499,
+      "feeWaiverSpend": 0,
+      "baseRate": 1,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["dining","online_shopping","entertainment","offline"], "effectiveRate": 2, "rawRate": "8 Kotak RP/₹100 on weekends (1 RP = ₹0.25)", "monthlyCapValue": 500 },
+        { "categories": ["dining","online_shopping","offline"], "effectiveRate": 1, "rawRate": "4 RP/₹100 on weekdays", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "kotak-zen-signature",
+      "name": "Kotak Zen Signature Credit Card",
+      "bank": "Kotak",
+      "network": "Visa",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 1999,
+      "feeWaiverSpend": 600000,
+      "baseRate": 0.5,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["flights","travel","hotels"], "effectiveRate": 1, "rawRate": "4 Kotak RP/₹100 on international travel (1 RP = ₹0.25)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "kotak-white-reserve",
+      "name": "Kotak White Reserve Credit Card",
+      "bank": "Kotak",
+      "network": "Visa",
+      "type": "points",
+      "pointValueINR": 0.5,
+      "annualFee": 6000,
+      "feeWaiverSpend": 0,
+      "baseRate": 1,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["dining","travel","online_shopping","offline"], "effectiveRate": 1, "rawRate": "2 RP/₹100 (1 RP = ₹0.50 for White Reserve); by invitation", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "indusind-iconia",
+      "name": "IndusInd Bank Iconia Credit Card",
+      "bank": "IndusInd",
+      "network": "Amex/Visa",
+      "type": "points",
+      "pointValueINR": 0.4,
+      "annualFee": 3500,
+      "feeWaiverSpend": 500000,
+      "baseRate": 1.2,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["dining","online_shopping","entertainment"], "effectiveRate": 1.6, "rawRate": "2X points on weekends (4 RP/₹200 base, 1 RP ≈ ₹0.40)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "indusind-platinum-aura-edge",
+      "name": "IndusInd Bank Platinum Aura Edge Credit Card",
+      "bank": "IndusInd",
+      "network": "Visa",
+      "type": "points",
+      "pointValueINR": 0.3,
+      "annualFee": 799,
+      "feeWaiverSpend": 150000,
+      "baseRate": 0.6,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["dining","travel","entertainment"], "effectiveRate": 1.8, "rawRate": "6X RP on dining/travel/entertainment on weekends (1 RP = ₹0.30)", "monthlyCapValue": 600 }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "indusind-nexxt",
+      "name": "IndusInd Bank Nexxt Credit Card",
+      "bank": "IndusInd",
+      "network": "Mastercard",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 1499,
+      "feeWaiverSpend": 200000,
+      "baseRate": 0.7,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["online_shopping","dining","travel","offline"], "effectiveRate": 1.5, "rawRate": "Switch between cashback/reward modes via physical card buttons", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "indusind-pioneer-heritage",
+      "name": "IndusInd Bank Pioneer Heritage Credit Card",
+      "bank": "IndusInd",
+      "network": "Visa",
+      "type": "points",
+      "pointValueINR": 1,
+      "annualFee": 40000,
+      "feeWaiverSpend": 0,
+      "baseRate": 3,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["dining","travel","online_shopping","offline"], "effectiveRate": 3, "rawRate": "Premium rewards + unlimited lounge + concierge (by invitation)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "yes-marquee",
+      "name": "YES BANK Marquee Credit Card",
+      "bank": "Yes Bank",
+      "network": "Mastercard",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 9999,
+      "feeWaiverSpend": 3000000,
+      "baseRate": 1.5,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["dining","travel","online_shopping"], "effectiveRate": 3, "rawRate": "24 YES Rewardz/₹200 on dining/travel/shopping (1 RP = ₹0.25)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "yes-first-exclusive",
+      "name": "YES BANK First Exclusive Credit Card",
+      "bank": "Yes Bank",
+      "network": "Mastercard",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 999,
+      "feeWaiverSpend": 350000,
+      "baseRate": 1.5,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["dining","travel","flights"], "effectiveRate": 2.25, "rawRate": "18 YES Rewardz/₹200 on dining/travel (1 RP = ₹0.25)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "yes-first-preferred",
+      "name": "YES BANK First Preferred Credit Card",
+      "bank": "Yes Bank",
+      "network": "Mastercard",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 499,
+      "feeWaiverSpend": 150000,
+      "baseRate": 0.75,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["dining","travel","entertainment"], "effectiveRate": 1.5, "rawRate": "12 YES Rewardz/₹200 on dining/travel (1 RP = ₹0.25)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "yes-prosperity-edge",
+      "name": "YES BANK Prosperity Edge Credit Card",
+      "bank": "Yes Bank",
+      "network": "Visa",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 299,
+      "feeWaiverSpend": 100000,
+      "baseRate": 0.5,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["grocery","utilities"], "effectiveRate": 1, "rawRate": "4 YES Rewardz/₹100 on grocery/utilities (1 RP = ₹0.25)", "monthlyCapValue": 200 }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "rbl-shoprite",
+      "name": "RBL Bank Shoprite Credit Card",
+      "bank": "RBL",
+      "network": "Mastercard",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 0,
+      "feeWaiverSpend": 0,
+      "baseRate": 1,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["grocery","offline"], "effectiveRate": 5, "rawRate": "5% cashback on grocery stores (cap ₹2000/year)", "monthlyCapValue": 167 },
+        { "categories": ["dining","online_shopping"], "effectiveRate": 2, "rawRate": "2% on dining/online", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "rbl-platinum-maxima",
+      "name": "RBL Bank Platinum Maxima+ Credit Card",
+      "bank": "RBL",
+      "network": "Mastercard",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 2000,
+      "feeWaiverSpend": 150000,
+      "baseRate": 0.5,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["entertainment","dining","online_shopping"], "effectiveRate": 1.25, "rawRate": "5 RBL RP/₹100 on entertainment/dining/online (1 RP = ₹0.25)", "monthlyCapValue": 750 }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "rbl-movies-more",
+      "name": "RBL Bank Movies & More Credit Card",
+      "bank": "RBL",
+      "network": "Mastercard",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 0,
+      "feeWaiverSpend": 0,
+      "baseRate": 0,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["entertainment"], "effectiveRate": 15, "rawRate": "Buy 1 Get 1 free on BookMyShow (up to 3 pairs/month ~₹300-400 value)", "monthlyCapValue": 900 }
+      ],
+      "exclusions": ["fuel","rent","wallet"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "rbl-icon",
+      "name": "RBL Bank Icon Credit Card",
+      "bank": "RBL",
+      "network": "Mastercard",
+      "type": "points",
+      "pointValueINR": 0.5,
+      "annualFee": 2999,
+      "feeWaiverSpend": 300000,
+      "baseRate": 1.5,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["travel","flights","hotels"], "effectiveRate": 5, "rawRate": "5 RBL RP/₹100 on travel (1 RP = ₹0.50 for Icon)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "sc-smart",
+      "name": "Standard Chartered Smart Credit Card",
+      "bank": "Standard Chartered",
+      "network": "Mastercard",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 499,
+      "feeWaiverSpend": 120000,
+      "baseRate": 1.5,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["online_shopping","amazon","flipkart","myntra","food_delivery"], "effectiveRate": 3, "rawRate": "3% cashback on all online spends", "monthlyCapValue": 500 },
+        { "categories": ["offline","dining"], "effectiveRate": 1.5, "rawRate": "1.5% on offline spends", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "sc-ultimate",
+      "name": "Standard Chartered Ultimate Credit Card",
+      "bank": "Standard Chartered",
+      "network": "Visa",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 5000,
+      "feeWaiverSpend": 900000,
+      "baseRate": 3.3,
+      "baseMonthlyCapValue": 6500,
+      "rules": [
+        { "categories": ["online_shopping","dining","travel","offline","amazon","flipkart","food_delivery"], "effectiveRate": 3.3, "rawRate": "3.3% cashback on ALL spends (no category restriction)", "monthlyCapValue": 6500 }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "sc-platinum-rewards",
+      "name": "Standard Chartered Platinum Rewards Credit Card",
+      "bank": "Standard Chartered",
+      "network": "Visa",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 250,
+      "feeWaiverSpend": 60000,
+      "baseRate": 0.25,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["dining","travel","hotels"], "effectiveRate": 1.25, "rawRate": "5X RP on dining/travel (1 RP = ₹0.25)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "sc-manhattan-platinum",
+      "name": "Standard Chartered Manhattan Platinum Credit Card",
+      "bank": "Standard Chartered",
+      "network": "Mastercard",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 999,
+      "feeWaiverSpend": 0,
+      "baseRate": 0,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["grocery"], "effectiveRate": 5, "rawRate": "5% cashback on grocery stores (cap ₹500/month)", "monthlyCapValue": 500 },
+        { "categories": ["dining","entertainment"], "effectiveRate": 0.75, "rawRate": "3X RP on dining/movies (1 RP = ₹0.25)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
       "lastVerified": "2026-06-09"
     },
     {
@@ -308,54 +1096,482 @@
       "baseRate": 0.8,
       "baseMonthlyCapValue": null,
       "rules": [
-        {
-          "categories": ["amazon", "flipkart", "uber"],
-          "effectiveRate": 8,
-          "rawRate": "10X MR points (10 points per ₹50). 1 MR point ≈ ₹0.40",
-          "monthlyCapValue": 200,
-          "note": "Cap 500 points/month jointly Amazon+Flipkart; separate 500 points/month Uber (~₹200 value each)"
-        },
-        {
-          "categories": ["food_delivery", "wallet", "entertainment"],
-          "effectiveRate": 4,
-          "rawRate": "5X MR points on Swiggy, Paytm wallet, BookMyShow",
-          "monthlyCapValue": 200
-        }
+        { "categories": ["amazon","flipkart","uber"], "effectiveRate": 8, "rawRate": "10X MR points on Amazon/Flipkart/Uber (10 pts/₹50, 1 MR ≈ ₹0.40)", "monthlyCapValue": 200 },
+        { "categories": ["food_delivery","wallet","entertainment"], "effectiveRate": 4, "rawRate": "5X MR points on Swiggy/Paytm/BookMyShow", "monthlyCapValue": 200 }
       ],
-      "exclusions": ["fuel", "rent", "insurance", "government"],
+      "exclusions": ["fuel","rent","insurance","government"],
       "lastVerified": "2026-06-09"
     },
+    {
+      "id": "amex-gold",
+      "name": "American Express Membership Rewards Gold Card",
+      "bank": "American Express",
+      "network": "Amex",
+      "type": "points",
+      "pointValueINR": 0.75,
+      "annualFee": 4500,
+      "feeWaiverSpend": 0,
+      "baseRate": 1.5,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["online_shopping","dining","travel","offline"], "effectiveRate": 1.5, "rawRate": "1 MR/₹50 on all spends (1 MR ≈ ₹0.75 via airline/hotel transfer)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","utilities","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "amex-platinum-travel",
+      "name": "American Express Platinum Travel Credit Card",
+      "bank": "American Express",
+      "network": "Amex",
+      "type": "miles",
+      "pointValueINR": 0.75,
+      "annualFee": 3500,
+      "feeWaiverSpend": 0,
+      "baseRate": 1.5,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["flights","travel","hotels"], "effectiveRate": 1.5, "rawRate": "1 MR/₹50 base + milestone: 5000 IndiGo pts @₹1.9L, 7500 @₹4L spend", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","utilities","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "amex-platinum-charge",
+      "name": "American Express Platinum Charge Card",
+      "bank": "American Express",
+      "network": "Amex",
+      "type": "points",
+      "pointValueINR": 0.75,
+      "annualFee": 60000,
+      "feeWaiverSpend": 0,
+      "baseRate": 1.875,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["dining","travel","flights","hotels","online_shopping","offline"], "effectiveRate": 1.875, "rawRate": "1 MR/₹40 on all spends. Unlimited Centurion + Priority Pass lounge. By invitation.", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","government"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "idfc-first-wealth",
+      "name": "IDFC FIRST Wealth Credit Card",
+      "bank": "IDFC FIRST",
+      "network": "Visa/Mastercard",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 0,
+      "feeWaiverSpend": 0,
+      "baseRate": 0.375,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["online_shopping","amazon","flipkart","dining","food_delivery","rent","education","utilities","insurance"], "effectiveRate": 1.25, "rawRate": "10 RP/₹200 above ₹20k/month (3 RP below). 1 RP = ₹0.25. Rent/utilities pe bhi rewards!", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","wallet"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "idfc-first-select",
+      "name": "IDFC FIRST Select Credit Card",
+      "bank": "IDFC FIRST",
+      "network": "Visa/Mastercard",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 500,
+      "feeWaiverSpend": 150000,
+      "baseRate": 0.375,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["online_shopping","dining","travel","entertainment"], "effectiveRate": 1.25, "rawRate": "10 RP/₹200 above ₹20k spend (3 RP below). 10X on birthday.", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "idfc-first-millennia",
+      "name": "IDFC FIRST Millennia Credit Card",
+      "bank": "IDFC FIRST",
+      "network": "Visa/Mastercard",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 0,
+      "feeWaiverSpend": 0,
+      "baseRate": 0.25,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["online_shopping","dining","food_delivery","entertainment"], "effectiveRate": 0.75, "rawRate": "6 RP/₹200 above ₹20k/month spend (3 RP below). 1 RP = ₹0.25", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "idfc-first-classic",
+      "name": "IDFC FIRST Classic Credit Card",
+      "bank": "IDFC FIRST",
+      "network": "Visa",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 0,
+      "feeWaiverSpend": 0,
+      "baseRate": 0.25,
+      "baseMonthlyCapValue": null,
+      "rules": [],
+      "exclusions": ["fuel","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "federal-signet",
+      "name": "Federal Bank Signet Credit Card",
+      "bank": "Federal Bank",
+      "network": "Visa",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 0,
+      "feeWaiverSpend": 0,
+      "baseRate": 0.33,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["online_shopping","dining"], "effectiveRate": 0.5, "rawRate": "2 Federal RP/₹150 on online/dining (1 RP = ₹0.25)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "federal-celesta",
+      "name": "Federal Bank Celesta Credit Card",
+      "bank": "Federal Bank",
+      "network": "Visa",
+      "type": "points",
+      "pointValueINR": 0.5,
+      "annualFee": 7500,
+      "feeWaiverSpend": 500000,
+      "baseRate": 1,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["dining","travel","online_shopping"], "effectiveRate": 2, "rawRate": "4 RP/₹100 on premium categories (1 RP = ₹0.50 for Celesta)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "au-altura",
+      "name": "AU Bank Altura Credit Card",
+      "bank": "AU Small Finance Bank",
+      "network": "Visa",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 199,
+      "feeWaiverSpend": 40000,
+      "baseRate": 1,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["offline","grocery","dining"], "effectiveRate": 2, "rawRate": "2% cashback on offline spends", "monthlyCapValue": 400 },
+        { "categories": ["online_shopping","food_delivery","entertainment"], "effectiveRate": 1, "rawRate": "1% cashback on online", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "au-altura-plus",
+      "name": "AU Bank Altura Plus Credit Card",
+      "bank": "AU Small Finance Bank",
+      "network": "Visa",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 499,
+      "feeWaiverSpend": 100000,
+      "baseRate": 1,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["grocery","offline","utilities"], "effectiveRate": 2, "rawRate": "2% cashback on grocery/offline/pharmacy", "monthlyCapValue": 600 },
+        { "categories": ["online_shopping","food_delivery"], "effectiveRate": 2, "rawRate": "2% on online too", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "au-zenith",
+      "name": "AU Bank Zenith Credit Card",
+      "bank": "AU Small Finance Bank",
+      "network": "Visa",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 2999,
+      "feeWaiverSpend": 300000,
+      "baseRate": 1,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["dining"], "effectiveRate": 10, "rawRate": "10% cashback on dining (cap ₹500/month)", "monthlyCapValue": 500 },
+        { "categories": ["entertainment"], "effectiveRate": 5, "rawRate": "5% on movies/entertainment (cap ₹300/month)", "monthlyCapValue": 300 },
+        { "categories": ["flights","travel","hotels"], "effectiveRate": 2, "rawRate": "2% on international/travel", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "au-vetta",
+      "name": "AU Bank Vetta Credit Card",
+      "bank": "AU Small Finance Bank",
+      "network": "Visa",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 999,
+      "feeWaiverSpend": 200000,
+      "baseRate": 1,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["dining","travel","online_shopping"], "effectiveRate": 1, "rawRate": "4 AU RP/₹100 (1 RP = ₹0.25)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "au-lit",
+      "name": "AU Bank LIT Credit Card",
+      "bank": "AU Small Finance Bank",
+      "network": "Visa",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 499,
+      "feeWaiverSpend": 100000,
+      "baseRate": 1,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["online_shopping","dining","grocery","entertainment"], "effectiveRate": 2, "rawRate": "Choose 2 benefit categories via app (2% cashback on chosen). Customizable monthly.", "monthlyCapValue": 500 }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "hsbc-smart-value",
+      "name": "HSBC Smart Value Credit Card",
+      "bank": "HSBC",
+      "network": "Visa",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 0,
+      "feeWaiverSpend": 0,
+      "baseRate": 0.25,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["dining","entertainment","online_shopping"], "effectiveRate": 0.75, "rawRate": "3X RP on dining/entertainment/pharmacy (1 RP = ₹0.25)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "hsbc-cashback",
+      "name": "HSBC Cashback Credit Card",
+      "bank": "HSBC",
+      "network": "Visa",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 750,
+      "feeWaiverSpend": 200000,
+      "baseRate": 1,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["flights","travel","hotels","online_shopping"], "effectiveRate": 1.5, "rawRate": "1.5% cashback on international/online spends (unlimited)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "hsbc-platinum",
+      "name": "HSBC Platinum Credit Card",
+      "bank": "HSBC",
+      "network": "Visa",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 2000,
+      "feeWaiverSpend": 400000,
+      "baseRate": 0.5,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["dining","travel"], "effectiveRate": 1, "rawRate": "2X RP on dining/travel (1 RP = ₹0.25)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "bob-eterna",
+      "name": "Bank of Baroda Eterna Credit Card",
+      "bank": "Bank of Baroda",
+      "network": "Visa",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 2499,
+      "feeWaiverSpend": 500000,
+      "baseRate": 1.25,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["online_shopping","dining","travel","entertainment"], "effectiveRate": 1.25, "rawRate": "5 BOB RP/₹100 on online/dining/travel (1 RP = ₹0.25)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "bob-premier",
+      "name": "Bank of Baroda Premier Credit Card",
+      "bank": "Bank of Baroda",
+      "network": "Mastercard",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 999,
+      "feeWaiverSpend": 250000,
+      "baseRate": 0.75,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["online_shopping","dining"], "effectiveRate": 1, "rawRate": "4 BOB RP/₹100 on online/dining (1 RP = ₹0.25)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "bob-select",
+      "name": "Bank of Baroda Select Credit Card",
+      "bank": "Bank of Baroda",
+      "network": "Mastercard",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 0,
+      "feeWaiverSpend": 0,
+      "baseRate": 0.5,
+      "baseMonthlyCapValue": null,
+      "rules": [],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "indigo-hdfc",
+      "name": "IndiGo HDFC Bank Ka-ching Credit Card",
+      "bank": "HDFC",
+      "network": "Mastercard",
+      "type": "miles",
+      "pointValueINR": 0.5,
+      "annualFee": 700,
+      "feeWaiverSpend": 100000,
+      "baseRate": 0.75,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["flights","travel"], "effectiveRate": 3, "rawRate": "6 IndiGo 6a pts/₹100 on IndiGo bookings (1 pt ≈ ₹0.50)", "monthlyCapValue": null },
+        { "categories": ["dining","grocery"], "effectiveRate": 1.5, "rawRate": "3 pts/₹100 on dining/grocery", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "zomato-rbl",
+      "name": "Zomato RBL Bank Edition 1 Credit Card",
+      "bank": "RBL",
+      "network": "Mastercard",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 0,
+      "feeWaiverSpend": 0,
+      "baseRate": 1,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["food_delivery","dining"], "effectiveRate": 5, "rawRate": "5% cashback on Zomato (cap ₹2000/month)", "monthlyCapValue": 2000 }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "pnb-rupay-select",
+      "name": "PNB RuPay Select Credit Card",
+      "bank": "PNB",
+      "network": "RuPay",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 500,
+      "feeWaiverSpend": 0,
+      "baseRate": 0.25,
+      "baseMonthlyCapValue": null,
+      "rules": [],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "canara-rupay-platinum",
+      "name": "Canara Bank RuPay Platinum Credit Card",
+      "bank": "Canara Bank",
+      "network": "RuPay",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 0,
+      "feeWaiverSpend": 0,
+      "baseRate": 0.25,
+      "baseMonthlyCapValue": null,
+      "rules": [],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "union-rupay-platinum",
+      "name": "Union Bank RuPay Platinum Credit Card",
+      "bank": "Union Bank",
+      "network": "RuPay",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 0,
+      "feeWaiverSpend": 0,
+      "baseRate": 0.25,
+      "baseMonthlyCapValue": null,
+      "rules": [],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+
     {
       "id": "hdfc-millennia-debit",
       "name": "HDFC Millennia Debit Card",
       "bank": "HDFC",
       "network": "Visa/Mastercard",
-      "type": "cashback",
       "cardType": "debit",
+      "type": "cashback",
       "pointValueINR": 1,
       "annualFee": 0,
       "feeWaiverSpend": 0,
       "baseRate": 0.5,
       "baseMonthlyCapValue": 250,
       "rules": [
-        {
-          "categories": ["amazon", "flipkart", "myntra", "online_shopping", "food_delivery"],
-          "effectiveRate": 2.5,
-          "rawRate": "~2.5% cashback on online spends (PLACEHOLDER — verify)",
-          "monthlyCapValue": 250,
-          "note": "PLACEHOLDER — HDFC Millennia debit cashback bank se verify karo"
-        }
+        { "categories": ["amazon","flipkart","myntra","online_shopping","food_delivery"], "effectiveRate": 2.5, "rawRate": "2.5% cashback on online spends", "monthlyCapValue": 250 }
       ],
-      "exclusions": ["fuel", "rent", "wallet", "utilities", "insurance"],
-      "lastVerified": ""
+      "exclusions": ["fuel","rent","wallet","utilities","insurance"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "hdfc-easyshop-imperia-debit",
+      "name": "HDFC EasyShop Imperia Debit Card",
+      "bank": "HDFC",
+      "network": "Mastercard",
+      "cardType": "debit",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 0,
+      "feeWaiverSpend": 0,
+      "baseRate": 0.33,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["online_shopping","dining","travel"], "effectiveRate": 0.5, "rawRate": "2 CashPoints/₹200 on select spends (Imperia customers)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
     },
     {
       "id": "sbi-debit-platinum",
       "name": "SBI Platinum Debit Card",
       "bank": "SBI",
       "network": "Visa/Mastercard",
-      "type": "cashback",
       "cardType": "debit",
+      "type": "cashback",
       "pointValueINR": 1,
       "annualFee": 0,
       "feeWaiverSpend": 0,
@@ -363,15 +1579,33 @@
       "baseMonthlyCapValue": null,
       "rules": [],
       "exclusions": [],
-      "lastVerified": ""
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "sbi-yono-pay-debit",
+      "name": "SBI YONO Pay Debit Card",
+      "bank": "SBI",
+      "network": "RuPay",
+      "cardType": "debit",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 0,
+      "feeWaiverSpend": 0,
+      "baseRate": 0,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["online_shopping","food_delivery","entertainment"], "effectiveRate": 1, "rawRate": "Occasional 1% cashback offers via YONO app (offer-based)", "monthlyCapValue": 200 }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
     },
     {
       "id": "icici-debit",
       "name": "ICICI Bank Debit Card",
       "bank": "ICICI",
       "network": "Visa/Mastercard",
-      "type": "cashback",
       "cardType": "debit",
+      "type": "cashback",
       "pointValueINR": 1,
       "annualFee": 0,
       "feeWaiverSpend": 0,
@@ -379,7 +1613,233 @@
       "baseMonthlyCapValue": null,
       "rules": [],
       "exclusions": [],
-      "lastVerified": ""
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "icici-coral-debit",
+      "name": "ICICI Bank Coral Debit Card",
+      "bank": "ICICI",
+      "network": "Mastercard",
+      "cardType": "debit",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 0,
+      "feeWaiverSpend": 0,
+      "baseRate": 0.25,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["dining","online_shopping","grocery"], "effectiveRate": 0.5, "rawRate": "2 ICICI RP/₹100 on dining/grocery (1 RP = ₹0.25)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "axis-myzone-debit",
+      "name": "Axis My Zone Debit Card",
+      "bank": "Axis",
+      "network": "Mastercard",
+      "cardType": "debit",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 250,
+      "feeWaiverSpend": 0,
+      "baseRate": 0,
+      "baseMonthlyCapValue": 100,
+      "rules": [
+        { "categories": ["online_shopping","amazon","flipkart","myntra","food_delivery","entertainment"], "effectiveRate": 1, "rawRate": "1% cashback on online spends", "monthlyCapValue": 100 }
+      ],
+      "exclusions": ["fuel","rent","wallet","utilities","insurance","government"],
+      "lastVerified": "2026-06-14"
+    },
+    {
+      "id": "axis-priority-debit",
+      "name": "Axis Bank Priority Debit Card",
+      "bank": "Axis",
+      "network": "Visa",
+      "cardType": "debit",
+      "type": "points",
+      "pointValueINR": 0.2,
+      "annualFee": 0,
+      "feeWaiverSpend": 0,
+      "baseRate": 0.4,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["online_shopping","dining","travel"], "effectiveRate": 0.6, "rawRate": "3 EDGE RP/₹200 on priority account spends (1 RP = ₹0.20)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "kotak-811-debit",
+      "name": "Kotak 811 Debit Card",
+      "bank": "Kotak",
+      "network": "Visa",
+      "cardType": "debit",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 0,
+      "feeWaiverSpend": 0,
+      "baseRate": 0,
+      "baseMonthlyCapValue": 250,
+      "rules": [
+        { "categories": ["online_shopping","amazon","flipkart","food_delivery"], "effectiveRate": 0.5, "rawRate": "0.5% cashback on online spends", "monthlyCapValue": 250 }
+      ],
+      "exclusions": ["fuel","rent","wallet","utilities","insurance","government"],
+      "lastVerified": "2026-06-14"
+    },
+    {
+      "id": "kotak-platina-debit",
+      "name": "Kotak Platina Debit Card",
+      "bank": "Kotak",
+      "network": "Mastercard",
+      "cardType": "debit",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 0,
+      "feeWaiverSpend": 0,
+      "baseRate": 0.25,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["dining","online_shopping"], "effectiveRate": 0.5, "rawRate": "2 Kotak RP/₹200 on select premium spends (1 RP = ₹0.25)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "idfc-first-select-debit",
+      "name": "IDFC FIRST Select Debit Card",
+      "bank": "IDFC FIRST",
+      "network": "Visa",
+      "cardType": "debit",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 0,
+      "feeWaiverSpend": 0,
+      "baseRate": 0,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["online_shopping","amazon","flipkart","myntra","food_delivery","dining"], "effectiveRate": 1, "rawRate": "1% cashback on online (IDFC FIRST Rewards)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","insurance","government"],
+      "lastVerified": "2026-06-14"
+    },
+    {
+      "id": "indusind-pinnacle-debit",
+      "name": "IndusInd Pinnacle Debit Card",
+      "bank": "IndusInd",
+      "network": "Visa",
+      "cardType": "debit",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 299,
+      "feeWaiverSpend": 0,
+      "baseRate": 0,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["online_shopping","amazon","flipkart","food_delivery","dining","entertainment"], "effectiveRate": 1, "rawRate": "4 RP/₹100 online (1 point = ₹0.25)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","insurance","government"],
+      "lastVerified": "2026-06-14"
+    },
+    {
+      "id": "yes-bank-debit",
+      "name": "Yes Bank Debit Card",
+      "bank": "Yes Bank",
+      "network": "Visa/Mastercard",
+      "cardType": "debit",
+      "type": "points",
+      "pointValueINR": 0.25,
+      "annualFee": 0,
+      "feeWaiverSpend": 0,
+      "baseRate": 0,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["online_shopping","food_delivery","dining","entertainment"], "effectiveRate": 0.5, "rawRate": "2 YES Rewardz/₹100 (1 point = ₹0.25)", "monthlyCapValue": null }
+      ],
+      "exclusions": ["fuel","rent","wallet","insurance","government"],
+      "lastVerified": "2026-06-14"
+    },
+    {
+      "id": "au-zenith-debit",
+      "name": "AU Bank Zenith Debit Card",
+      "bank": "AU Small Finance Bank",
+      "network": "Visa",
+      "cardType": "debit",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 0,
+      "feeWaiverSpend": 0,
+      "baseRate": 0,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        { "categories": ["dining","online_shopping"], "effectiveRate": 1, "rawRate": "1% cashback on dining/online for Zenith account holders", "monthlyCapValue": 500 }
+      ],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "federal-visa-debit",
+      "name": "Federal Bank Visa Platinum Debit Card",
+      "bank": "Federal Bank",
+      "network": "Visa",
+      "cardType": "debit",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 0,
+      "feeWaiverSpend": 0,
+      "baseRate": 0,
+      "baseMonthlyCapValue": null,
+      "rules": [],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "hsbc-visa-debit",
+      "name": "HSBC Visa Platinum Debit Card",
+      "bank": "HSBC",
+      "network": "Visa",
+      "cardType": "debit",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 0,
+      "feeWaiverSpend": 0,
+      "baseRate": 0,
+      "baseMonthlyCapValue": null,
+      "rules": [],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "rbl-visa-debit",
+      "name": "RBL Bank Visa Platinum Debit Card",
+      "bank": "RBL",
+      "network": "Visa",
+      "cardType": "debit",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 0,
+      "feeWaiverSpend": 0,
+      "baseRate": 0,
+      "baseMonthlyCapValue": null,
+      "rules": [],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
+    },
+    {
+      "id": "bob-visa-debit",
+      "name": "Bank of Baroda Visa Debit Card",
+      "bank": "Bank of Baroda",
+      "network": "Visa",
+      "cardType": "debit",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 0,
+      "feeWaiverSpend": 0,
+      "baseRate": 0,
+      "baseMonthlyCapValue": null,
+      "rules": [],
+      "exclusions": ["fuel","rent","wallet","government"],
+      "lastVerified": "2026-06-09"
     }
   ]
 }

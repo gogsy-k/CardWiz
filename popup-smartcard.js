@@ -60,7 +60,7 @@ let lastRanked = [];  // last recommendation results (log button ke liye)
 
 // ---------- Init ----------
 async function init() {
-  DB = await fetch('data/cards.json').then((r) => r.json());
+  DB = await SmartCardCatalog.load();
   buildCategoryDropdown();
   buildCardSelect();
   await loadWallet();
@@ -80,7 +80,7 @@ async function init() {
 
   // Cards section ke Debit/Credit toggle tabs
   document.querySelectorAll('.cards-tabs button').forEach((btn) => {
-    btn.addEventListener('click', () => { cardsTab = btn.dataset.cardtype; renderMyCards(); });
+    btn.addEventListener('click', () => { cardsTab = btn.dataset.cardtype; buildCardSelect(); renderMyCards(); });
   });
 
   els.goBtn.addEventListener('click', runRecommendation);
@@ -124,27 +124,18 @@ function cardTypeOf(cat) {
   return cat && cat.cardType === 'debit' ? 'debit' : 'credit';
 }
 
-// Add/Edit form ka dropdown — Credit / Debit optgroups mein.
+// Add/Edit form ka dropdown — sirf active tab (credit ya debit) ke cards.
 function buildCardSelect() {
   els.formCardId.innerHTML = '';
-  const groups = [
-    { key: 'credit', label: 'Credit Cards' },
-    { key: 'debit', label: 'Debit Cards' },
-  ];
-  for (const g of groups) {
-    const cards = DB.cards.filter((c) => cardTypeOf(c) === g.key);
-    if (!cards.length) continue;
-    const og = document.createElement('optgroup');
-    og.label = g.label;
-    for (const card of cards) {
-      const opt = document.createElement('option');
-      opt.value = card.id;
-      const fee = card.annualFee === 0 ? 'LTF' : '₹' + card.annualFee + '/yr';
-      opt.textContent = `${card.name} (${fee})`;
-      og.appendChild(opt);
-    }
-    els.formCardId.appendChild(og);
+  const filtered = DB.cards.filter((c) => cardTypeOf(c) === cardsTab);
+  for (const card of filtered) {
+    const opt = document.createElement('option');
+    opt.value = card.id;
+    const fee = card.annualFee === 0 ? 'LTF' : '₹' + card.annualFee + '/yr';
+    opt.textContent = `${card.name} (${fee})`;
+    els.formCardId.appendChild(opt);
   }
+  updateFormForCardType();
 }
 
 // ---------- Wallet storage ----------
@@ -223,13 +214,23 @@ function togglePremium() {
   renderMyCards(); // card-limit gating refresh
 }
 
-// ---------- Premium upgrade (Phase 11 — Razorpay) ----------
-// Popup khulte hi pending payment silently check — paid ho gaya to premium unlock.
-// (Popup ephemeral hai: payment ke baad reopen pe "Maine pay kiya" button gayab ho
-//  jaata hai, isliye yahan khud check kar lete hain.)
+// ---------- Premium upgrade (Razorpay Subscriptions — free trial + auto-pay) ----------
+
+// Popup khulte hi silently check: subscription card save hua? ya old payment paid? -> premium unlock.
 async function autoVerifyPayment() {
   if (!currentUser || isPremium || typeof SmartCardAuth === 'undefined') return;
   try {
+    // New flow: subscription check (card authenticated = premium)
+    const subRes = await SmartCardAuth.authedFetch('/payment/verify-subscription', { method: 'POST' });
+    if (subRes.ok) {
+      const subData = await subRes.json();
+      if (subData.status === 'active' || subData.plan === 'premium') {
+        currentUser = await SmartCardAuth.fetchMe();
+        applyAuthToPremium();
+        return;
+      }
+    }
+    // Old flow fallback: one-time payment link (backward compat)
     const res = await SmartCardAuth.authedFetch('/payment/verify', { method: 'POST' });
     if (!res.ok) return;
     const data = await res.json();
@@ -240,51 +241,110 @@ async function autoVerifyPayment() {
   } catch (e) { /* offline / koi pending nahi — ignore */ }
 }
 
-async function startUpgrade() {
+// Plan selector dikhao — monthly ya yearly chunne do, phir subscribe karo.
+function startUpgrade() {
   const msg = $('upgradeMsg');
   if (typeof SmartCardAuth === 'undefined') return;
-  if (msg) msg.innerHTML = '<div class="more-sub">Payment link ban raha hai…</div>';
+  const P = window.SmartCardPremium;
+  const yearlySaving = P.PREMIUM_MONTHLY_INR * 12 - P.PREMIUM_YEARLY_INR;
+
+  msg.innerHTML = `
+    <div class="upgrade-note" style="text-align:left;padding:12px;">
+      <div style="font-weight:700;font-size:12px;margin-bottom:10px;text-align:center;color:#cdd6f4;">
+        Plan chuniye 👇
+      </div>
+      <div class="plan-selector">
+        <div class="plan-card selected" id="planMonthly">
+          <div class="plan-price">₹${P.PREMIUM_MONTHLY_INR}</div>
+          <div class="plan-label">/ month</div>
+          <div class="plan-trial">1st month FREE</div>
+        </div>
+        <div class="plan-card" id="planYearly">
+          <div class="plan-badge">SAVE ₹${yearlySaving}!</div>
+          <div class="plan-price">₹${P.PREMIUM_YEARLY_INR}</div>
+          <div class="plan-label">/ year</div>
+          <div class="plan-trial">1st month FREE</div>
+          <div class="plan-label" style="margin-top:2px;">₹${Math.round(P.PREMIUM_YEARLY_INR / 12)}/mo effective</div>
+        </div>
+      </div>
+      <button class="plan-confirm" id="confirmUpgradeBtn">
+        ⭐ 1st mahina FREE — Shuru karo
+      </button>
+      <div style="font-size:9px;color:#6c7086;text-align:center;margin-top:6px;">
+        🔒 Card abhi save hoga, charge ${P.PREMIUM_TRIAL_DAYS} din baad. Cancel kabhi bhi.
+      </div>
+    </div>`;
+
+  let selectedPlan = 'monthly';
+
+  function updateSelection() {
+    const pm = $('planMonthly'), py = $('planYearly'), btn = $('confirmUpgradeBtn');
+    if (pm) pm.classList.toggle('selected', selectedPlan === 'monthly');
+    if (py) py.classList.toggle('selected', selectedPlan === 'yearly');
+    if (btn) btn.textContent = selectedPlan === 'yearly'
+      ? `⭐ ₹${P.PREMIUM_YEARLY_INR}/year — Shuru karo`
+      : `⭐ 1st mahina FREE, phir ₹${P.PREMIUM_MONTHLY_INR}/month`;
+  }
+
+  const pm = $('planMonthly'), py = $('planYearly');
+  if (pm) pm.addEventListener('click', () => { selectedPlan = 'monthly'; updateSelection(); });
+  if (py) py.addEventListener('click', () => { selectedPlan = 'yearly'; updateSelection(); });
+
+  const btn = $('confirmUpgradeBtn');
+  if (btn) btn.addEventListener('click', () => doSubscribe(selectedPlan));
+}
+
+// Subscription create karo aur user ko Razorpay hosted checkout pe bhejo.
+async function doSubscribe(plan) {
+  const msg = $('upgradeMsg');
+  if (!msg || typeof SmartCardAuth === 'undefined') return;
+  msg.innerHTML = '<div class="more-sub" style="text-align:center;padding:12px;">Subscription ban raha hai…</div>';
   try {
-    const res = await SmartCardAuth.authedFetch('/payment/order', { method: 'POST' });
+    const res = await SmartCardAuth.authedFetch('/payment/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plan }),
+    });
     if (!res.ok) {
       throw new Error(res.status === 503
         ? 'Payments abhi enable nahi — backend pe Razorpay keys daalo (README).'
-        : 'Order fail (' + res.status + ')');
+        : 'Subscribe fail (' + res.status + ')');
     }
-    const data = await res.json(); // { shortUrl, amount }
+    const data = await res.json(); // { shortUrl, plan, trialDays }
     window.open(data.shortUrl, '_blank', 'noopener');
-    if (msg) {
-      msg.innerHTML =
-        `<div class="upgrade-note">Naye tab mein ₹${data.amount} ka payment poora karo.<br>
-         Ho jaye to dabao 👇
-         <button id="verifyPayBtn">✅ Maine pay kar diya</button></div>`;
-      const vb = $('verifyPayBtn');
-      if (vb) vb.addEventListener('click', verifyPayment);
-    }
+    msg.innerHTML =
+      `<div class="upgrade-note">
+         Naye tab mein apna card save karo (${data.trialDays} din free trial).<br>
+         Card save ho jaye to yahan wapas aao 👇<br>
+         <button id="verifySubBtn">✅ Card save kar diya</button>
+       </div>`;
+    const vb = $('verifySubBtn');
+    if (vb) vb.addEventListener('click', verifySubscription);
   } catch (e) {
-    if (msg) msg.innerHTML = `<div class="acct-err">${escapeHtml((e && e.message) || 'Upgrade fail')}</div>`;
+    if (msg) msg.innerHTML = `<div class="acct-err">${escapeHtml((e && e.message) || 'Subscribe fail')}</div>`;
   }
 }
 
-async function verifyPayment() {
+// Subscription verify — 'authenticated' matlab card save hua = premium.
+async function verifySubscription() {
   const msg = $('upgradeMsg');
-  const vb = $('verifyPayBtn');
+  const vb = $('verifySubBtn');
   if (vb) { vb.disabled = true; vb.textContent = 'Check kar rahe hain…'; }
   try {
-    const res = await SmartCardAuth.authedFetch('/payment/verify', { method: 'POST' });
-    const data = await res.json(); // { status, plan }
-    if (data.status === 'paid' || data.plan === 'premium') {
-      currentUser = await SmartCardAuth.fetchMe(); // fresh plan
+    const res = await SmartCardAuth.authedFetch('/payment/verify-subscription', { method: 'POST' });
+    const data = await res.json();
+    if (data.status === 'active' || data.plan === 'premium') {
+      currentUser = await SmartCardAuth.fetchMe();
       applyAuthToPremium();
-      if (msg) msg.innerHTML = '<div class="upgrade-note">🎉 Premium active! Shukriya. 🙏</div>';
+      if (msg) msg.innerHTML = '<div class="upgrade-note">🎉 Premium active! Pehla charge 30 din baad. Shukriya! 🙏</div>';
       renderMore();
       renderMyCards();
     } else if (data.status === 'pending') {
       if (msg) msg.innerHTML =
-        '<div class="upgrade-note">Abhi confirm nahi hua. Payment ho gaya to thodi der baad dobara check karo.<br><button id="verifyPayBtn">🔄 Dobara check</button></div>';
-      const vb2 = $('verifyPayBtn'); if (vb2) vb2.addEventListener('click', verifyPayment);
+        '<div class="upgrade-note">Card abhi verify nahi hua. Thodi der mein dobara try karo.<br><button id="verifySubBtn">🔄 Dobara check</button></div>';
+      const vb2 = $('verifySubBtn'); if (vb2) vb2.addEventListener('click', verifySubscription);
     } else {
-      if (msg) msg.innerHTML = '<div class="more-sub">Koi pending payment nahi mila. Upgrade dobara shuru karo.</div>';
+      if (msg) msg.innerHTML = '<div class="more-sub">Subscription nahi mila. Upgrade dobara shuru karo.</div>';
     }
   } catch (e) {
     if (msg) msg.innerHTML = `<div class="acct-err">${escapeHtml((e && e.message) || 'Check fail')}</div>`;
@@ -464,17 +524,17 @@ function renderMore() {
   // Premium status + toggle
   els.premiumStatus.innerHTML = isPremium
     ? '<span class="pill pro">PREMIUM</span> Saari features unlocked. Shukriya! 🙏'
-    : `<span class="pill free">FREE</span> Upgrade ₹${P.PREMIUM_PRICE_INR}/year se — unlimited cards + analytics.`;
-  // Action button — signed in free: real Razorpay upgrade; premium: hidden;
+    : `<span class="pill free">FREE</span> 1st mahina FREE, phir ₹${P.PREMIUM_MONTHLY_INR}/month · ya ₹${P.PREMIUM_YEARLY_INR}/year (save ₹${P.PREMIUM_MONTHLY_INR * 12 - P.PREMIUM_YEARLY_INR}!).`;
+  // Action button — signed in free: plan selector + Razorpay subscription; premium: hidden;
   // signed out: dev toggle (local testing).
   const devNote = $('premiumDevNote');
   const btn = els.premiumToggle;
   if (currentUser) {
     btn.hidden = isPremium;
-    btn.textContent = `⭐ Upgrade ₹${P.PREMIUM_PRICE_INR}/year`;
+    btn.textContent = `⭐ 1st Mahina FREE — Upgrade karo`;
     if (devNote) devNote.textContent = isPremium
       ? 'Premium active — account se synced, har device pe.'
-      : '🔒 Secure Razorpay payment. Hum card details nahi lete.';
+      : '🔒 Card save hoga, charge 30 din baad. Auto-renew. Cancel kabhi bhi.';
   } else {
     btn.hidden = false;
     btn.textContent = isPremium ? '↩ Free pe wapas (dev)' : '⭐ Premium on karo (dev)';
@@ -510,7 +570,7 @@ function renderAnalytics() {
   if (!P.canUseFeature('spending_analytics', isPremium)) {
     els.analyticsBox.innerHTML =
       `<div class="upgrade-note">🔒 Premium feature<br>Is mahine kis card pe kitna reward kamaaya — dekho.
-       <button id="analyticsUpgrade">⭐ Premium on karo</button></div>`;
+       <button id="analyticsUpgrade">⭐ 1st mahina FREE — Upgrade karo</button></div>`;
     const b = $('analyticsUpgrade');
     if (b) b.addEventListener('click', togglePremium);
     return;
@@ -620,7 +680,7 @@ function openForm(editId = null) {
       const max = window.SmartCardPremium.FREE_LIMITS.maxCards;
       els.cardsList.insertAdjacentHTML('afterend',
         `<div class="upgrade-note" id="limitNote">🔒 Free tier mein ${max} cards tak. Unlimited ke liye Premium.
-         <button id="limitUpgrade">⭐ "More" tab pe Premium on karo</button></div>`);
+         <button id="limitUpgrade">⭐ 1st mahina FREE — Premium on karo</button></div>`);
       const b = $('limitUpgrade');
       if (b) b.addEventListener('click', () => { switchView('more'); const n = $('limitNote'); if (n) n.remove(); });
       void uniqueCount;

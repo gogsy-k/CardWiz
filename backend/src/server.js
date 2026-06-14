@@ -11,9 +11,11 @@ const cors = require('cors');
 
 const { config, validate } = require('./config');
 const db = require('./db');
-const authRoutes = require('./routes/auth');
-const cardsRoutes = require('./routes/cards');
+const authRoutes    = require('./routes/auth');
+const cardsRoutes   = require('./routes/cards');
 const paymentRoutes = require('./routes/payment');
+const catalogRoutes = require('./routes/catalog');
+const { autoSeedIfEmpty } = require('./routes/catalog');
 
 const app = express();
 
@@ -43,6 +45,7 @@ app.get('/health', (req, res) => {
 app.use('/auth', authRoutes);
 app.use('/cards', cardsRoutes);
 app.use('/payment', paymentRoutes);
+app.use('/catalog', catalogRoutes);
 
 // 404 fallback
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
@@ -58,6 +61,7 @@ async function start() {
   }
 
   await db.init();
+  await autoSeedIfEmpty(); // Supabase empty ho to cards.json se seed karo
 
   app.listen(config.port, () => {
     console.log(`\n✅ RewardXtra backend chal raha hai: http://localhost:${config.port}`);

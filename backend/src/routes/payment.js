@@ -72,4 +72,61 @@ router.post('/verify', requireAuth, async (req, res) => {
   }
 });
 
+// --- Subscribe: recurring plan with free trial ---
+router.post('/subscribe', requireAuth, async (req, res) => {
+  if (!ensureConfigured(res)) return;
+  const isYearly = req.body.plan === 'yearly';
+  const planType = isYearly ? 'yearly' : 'monthly';
+  try {
+    const amount = isYearly
+      ? config.premiumYearlyInr * 100
+      : config.premiumMonthlyInr * 100;
+
+    const rzpPlan = await rzp.createPlan({
+      amount,
+      period: planType,
+      interval: 1,
+      name: `RewardXtra Premium (${isYearly ? 'Yearly' : 'Monthly'})`,
+    });
+
+    // Trial end = trialDays din baad (first charge date).
+    const startAt = Math.floor(Date.now() / 1000) + config.premiumTrialDays * 86400;
+    const sub = await rzp.createSubscription({
+      planId: rzpPlan.id,
+      startAt,
+      totalCount: isYearly ? 10 : 120, // 10 years either way
+      notes: { userId: req.user.id, plan: planType },
+    });
+
+    await db.subscriptions.create(req.user.id, sub.id, planType);
+    res.json({ shortUrl: sub.short_url, plan: planType, trialDays: config.premiumTrialDays });
+  } catch (err) {
+    console.error('[payment/subscribe]', err.message);
+    res.status(502).json({ error: 'Subscription nahi bana: ' + err.message });
+  }
+});
+
+// --- Verify subscription: card save hua? to premium ---
+router.post('/verify-subscription', requireAuth, async (req, res) => {
+  if (!ensureConfigured(res)) return;
+  try {
+    const pending = await db.subscriptions.findPending(req.user.id, 5);
+    if (!pending.length) return res.json({ status: 'none', plan: req.user.plan });
+
+    for (const s of pending) {
+      const sub = await rzp.getSubscription(s.subId);
+      // 'authenticated' = card saved (trial active); 'active' = charging has started.
+      if (sub.status === 'authenticated' || sub.status === 'active') {
+        await db.subscriptions.markActive(s.subId);
+        const user = await db.users.updatePlan(req.user.id, 'premium');
+        return res.json({ status: 'active', plan: user.plan });
+      }
+    }
+    res.json({ status: 'pending', plan: req.user.plan });
+  } catch (err) {
+    console.error('[payment/verify-subscription]', err.message);
+    res.status(502).json({ error: 'Verify fail' });
+  }
+});
+
 module.exports = router;

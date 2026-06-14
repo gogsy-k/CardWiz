@@ -148,7 +148,7 @@ async function evaluateAndRender() {
   // User ne is page pe widget close kiya tha? to mat dikhao.
   if (sessionStorage.getItem('scs-dismissed') === location.pathname) return;
 
-  const DB = await fetch(chrome.runtime.getURL('data/cards.json')).then((r) => r.json());
+  const DB = await window.SmartCardCatalog.load();
   const { owned, capUsage } = await getWalletState();
   const amount = detectAmount(site.merchant);
 

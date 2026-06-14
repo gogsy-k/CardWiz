@@ -64,4 +64,51 @@ function verifyWebhookSignature(rawBody, signature, secret) {
   }
 }
 
-module.exports = { createPaymentLink, getPaymentLink, verifyWebhookSignature };
+// ---- Subscriptions (recurring billing with free trial) ----
+
+// Step 1: Plan banao (amount = paise, period = 'monthly'|'yearly', interval = 1).
+async function createPlan({ amount, period, interval, name }) {
+  const res = await fetch(`${RZP_BASE}/plans`, {
+    method: 'POST',
+    headers: { Authorization: authHeader(), 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      period,
+      interval,
+      item: { name: name || 'RewardXtra Premium', amount, currency: 'INR' },
+    }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error('plan create: ' + ((data.error && data.error.description) || res.status));
+  return data; // { id: 'plan_...', period, interval, item, ... }
+}
+
+// Step 2: Subscription banao. startAt = unix timestamp of first charge (trial end).
+async function createSubscription({ planId, startAt, notes, totalCount }) {
+  const res = await fetch(`${RZP_BASE}/subscriptions`, {
+    method: 'POST',
+    headers: { Authorization: authHeader(), 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      plan_id: planId,
+      total_count: totalCount || 120, // monthly=120 (10yr), yearly=10 (10yr)
+      quantity: 1,
+      start_at: startAt,
+      customer_notify: 1,
+      notes: notes || {},
+    }),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error('subscription create: ' + ((data.error && data.error.description) || res.status));
+  return data; // { id: 'sub_...', short_url, status: 'created', ... }
+}
+
+// Status check: 'authenticated' = card saved; 'active' = charging.
+async function getSubscription(id) {
+  const res = await fetch(`${RZP_BASE}/subscriptions/${id}`, {
+    headers: { Authorization: authHeader() },
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error('subscription fetch: ' + ((data.error && data.error.description) || res.status));
+  return data;
+}
+
+module.exports = { createPaymentLink, getPaymentLink, verifyWebhookSignature, createPlan, createSubscription, getSubscription };

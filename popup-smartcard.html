@@ -124,6 +124,28 @@
       border:none; border-radius:6px; padding:7px; font-size:11px; font-weight:700; cursor:pointer;
     }
 
+    /* Plan selector (subscription flow) */
+    .plan-selector { display:flex; gap:8px; margin:8px 0; }
+    .plan-card {
+      flex:1; background:#1e1e2e; border:2px solid #45475a; border-radius:10px;
+      padding:10px 8px; text-align:center; cursor:pointer; transition:border-color 0.15s; position:relative;
+    }
+    .plan-card.selected { border-color:#cba6f7; background:#2a2a3e; }
+    .plan-badge {
+      position:absolute; top:-9px; left:50%; transform:translateX(-50%);
+      background:#a6e3a1; color:#1e1e2e; font-size:8px; font-weight:700;
+      padding:2px 8px; border-radius:10px; white-space:nowrap;
+    }
+    .plan-price { font-size:16px; font-weight:700; color:#cdd6f4; }
+    .plan-label { font-size:9px; color:#a6adc8; margin-top:1px; }
+    .plan-trial { font-size:9px; color:#a6e3a1; margin-top:5px; font-weight:600; }
+    .plan-confirm {
+      width:100%; margin-top:8px; padding:10px; background:#cba6f7; color:#1e1e2e;
+      border:none; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;
+    }
+    .plan-confirm:hover { background:#b4befe; }
+    .plan-confirm:disabled { opacity:0.6; cursor:default; }
+
     /* Account / SSO */
     .acct-row { display: flex; align-items: center; gap: 10px; }
     .acct-avatar {
@@ -368,6 +390,7 @@
   <script src="affiliate.js"></script>
   <script src="premium.js"></script>
   <script src="auth.js"></script>
+  <script src="catalog.js"></script>
   <script src="sync.js"></script>
   <script src="cardreferral.js"></script>
   <script src="popup-smartcard.js"></script>

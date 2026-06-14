@@ -33,7 +33,7 @@
         "*://*.flipkart.com/*",
         "*://*.myntra.com/*"
       ],
-      "js": ["recommend.js", "offers.js", "captracker.js", "affiliate.js", "content-detect.js"],
+      "js": ["recommend.js", "offers.js", "captracker.js", "affiliate.js", "catalog.js", "content-detect.js"],
       "run_at": "document_idle"
     }
   ],
