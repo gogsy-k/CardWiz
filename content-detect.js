@@ -113,7 +113,7 @@ function readPaymentPageOffers() {
   const allNodes = document.querySelectorAll('div, li, p, span');
   for (const node of allNodes) {
     const own = (node.textContent || '').replace(/\s+/g, ' ').trim();
-    if (!/₹\s*[\d,]+(?:\.\d+)?\s*off/i.test(own)) continue; // koi ₹X off nahi
+    if (!/\b[\d,]+(?:\.\d+)?\s*off\b/i.test(own)) continue; // koi X off nahi (₹ optional)
     if (own.length > 500) continue; // bada container — skip (body etc.)
     // Parent tree mein bank naam dhundho (max 8 levels up)
     let el = node;
