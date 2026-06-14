@@ -6079,6 +6079,231 @@
         "government"
       ],
       "lastVerified": "2026-06-14"
+    },
+    {
+      "id": "citi-cashback",
+      "name": "Citi Cashback Credit Card",
+      "bank": "Citi",
+      "network": "Visa",
+      "cardType": "credit",
+      "type": "cashback",
+      "pointValueINR": 1,
+      "annualFee": 500,
+      "feeWaiverSpend": 30000,
+      "baseRate": 0.5,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        {
+          "categories": [
+            "entertainment"
+          ],
+          "effectiveRate": 5,
+          "rawRate": "5% cashback on movie ticket spends",
+          "monthlyCapValue": 500
+        },
+        {
+          "categories": [
+            "utilities"
+          ],
+          "effectiveRate": 5,
+          "rawRate": "5% cashback on telephone & utility bill payments",
+          "monthlyCapValue": 500
+        },
+        {
+          "categories": [
+            "online_shopping",
+            "amazon",
+            "flipkart",
+            "myntra",
+            "offline",
+            "dining",
+            "food_delivery"
+          ],
+          "effectiveRate": 0.5,
+          "rawRate": "0.5% cashback on all other spends",
+          "monthlyCapValue": null
+        }
+      ],
+      "exclusions": [
+        "fuel"
+      ],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-14"
+    },
+    {
+      "id": "citi-rewards",
+      "name": "Citi Rewards Credit Card",
+      "bank": "Citi",
+      "network": "Visa",
+      "cardType": "credit",
+      "type": "points",
+      "pointValueINR": 0.3,
+      "annualFee": 1000,
+      "feeWaiverSpend": 30000,
+      "baseRate": 0.5,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        {
+          "categories": [
+            "online_shopping",
+            "myntra"
+          ],
+          "effectiveRate": 2.5,
+          "rawRate": "10 Reward Points per ₹125 on apparel & department stores (1 pt ≈ ₹0.30)",
+          "monthlyCapValue": null
+        },
+        {
+          "categories": [
+            "amazon",
+            "flipkart",
+            "dining",
+            "food_delivery",
+            "offline"
+          ],
+          "effectiveRate": 0.6,
+          "rawRate": "1 Reward Point per ₹125 on other spends",
+          "monthlyCapValue": null
+        }
+      ],
+      "exclusions": [
+        "fuel"
+      ],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-14"
+    },
+    {
+      "id": "citi-premiermiles",
+      "name": "Citi PremierMiles Credit Card",
+      "bank": "Citi",
+      "network": "Visa",
+      "cardType": "credit",
+      "type": "miles",
+      "pointValueINR": 0.5,
+      "annualFee": 3000,
+      "feeWaiverSpend": 0,
+      "baseRate": 2,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        {
+          "categories": [
+            "travel",
+            "flights",
+            "hotels"
+          ],
+          "effectiveRate": 5,
+          "rawRate": "10 Miles per ₹100 on airlines & travel (1 Mile ≈ ₹0.50)",
+          "monthlyCapValue": null
+        },
+        {
+          "categories": [
+            "online_shopping",
+            "amazon",
+            "flipkart",
+            "dining",
+            "food_delivery",
+            "offline"
+          ],
+          "effectiveRate": 2,
+          "rawRate": "4 Miles per ₹100 on all other spends",
+          "monthlyCapValue": null
+        }
+      ],
+      "exclusions": [
+        "fuel"
+      ],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-14"
+    },
+    {
+      "id": "citi-prestige",
+      "name": "Citi Prestige Credit Card",
+      "bank": "Citi",
+      "network": "Mastercard",
+      "cardType": "credit",
+      "type": "points",
+      "pointValueINR": 0.5,
+      "annualFee": 20000,
+      "feeWaiverSpend": 1000000,
+      "baseRate": 2,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        {
+          "categories": [
+            "dining",
+            "travel",
+            "hotels",
+            "flights"
+          ],
+          "effectiveRate": 2.5,
+          "rawRate": "5 Points per ₹100 on dining/travel + 4th night free on hotels (1 pt ≈ ₹0.50)",
+          "monthlyCapValue": null
+        },
+        {
+          "categories": [
+            "online_shopping",
+            "amazon",
+            "flipkart",
+            "offline",
+            "food_delivery"
+          ],
+          "effectiveRate": 2,
+          "rawRate": "4 Points per ₹100 on all other spends",
+          "monthlyCapValue": null
+        }
+      ],
+      "exclusions": [
+        "fuel"
+      ],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-14"
+    },
+    {
+      "id": "citi-indianoil",
+      "name": "Citi IndianOil Credit Card",
+      "bank": "Citi",
+      "network": "Visa",
+      "cardType": "credit",
+      "type": "points",
+      "pointValueINR": 0.33,
+      "annualFee": 1000,
+      "feeWaiverSpend": 30000,
+      "baseRate": 0.6,
+      "baseMonthlyCapValue": null,
+      "rules": [
+        {
+          "categories": [
+            "fuel"
+          ],
+          "effectiveRate": 4,
+          "rawRate": "4 Turbo Points per ₹150 at IndianOil outlets (1 pt = ₹1 fuel)",
+          "monthlyCapValue": 600
+        },
+        {
+          "categories": [
+            "grocery",
+            "utilities"
+          ],
+          "effectiveRate": 2,
+          "rawRate": "2 Turbo Points per ₹150 on grocery & utilities",
+          "monthlyCapValue": null
+        },
+        {
+          "categories": [
+            "online_shopping",
+            "amazon",
+            "flipkart",
+            "dining",
+            "food_delivery",
+            "offline"
+          ],
+          "effectiveRate": 0.6,
+          "rawRate": "1 Turbo Point per ₹150 on other spends",
+          "monthlyCapValue": null
+        }
+      ],
+      "exclusions": [],
+      "fuelSurchargeWaiver": true,
+      "lastVerified": "2026-06-14"
     }
   ]
 }

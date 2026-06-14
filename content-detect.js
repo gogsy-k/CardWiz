@@ -260,12 +260,12 @@ function renderWidget(site, amount, ranked, usingWallet, otherOffers, myCards) {
     let right;
     if (hasAmount) {
       const capTag = r.capExhausted ? '<em>cap khatam</em>' : (r.capped ? '<em>cap</em>' : '');
-      const parts = [`₹${r.savings}${capTag}`];
-      if (r.offerValue > 0) parts.push(`<o>+₹${r.offerValue} offer</o>`);
-      parts.push(`<t class="${typeClass}">${typeLabel}</t>`);
-      right = parts.join(' ');
+      const rewardLine = `<span class="reward">₹${r.savings}${capTag}</span>`;
+      const offerLine = r.offerValue > 0 ? `<span class="offer">+₹${r.offerValue} instant off</span>` : '';
+      const pill = `<span class="pill ${typeClass}">${typeLabel}</span>`;
+      right = rewardLine + offerLine + pill;
     } else {
-      right = `${r.rate}% <t class="${typeClass}">${typeLabel}</t>`;
+      right = `<span class="reward">${r.rate}%</span><span class="pill ${typeClass}">${typeLabel}</span>`;
     }
     const walletEntry = myCards && myCards.find((c) => c.cardId === r.id);
     let subtitle = '';
@@ -323,18 +323,20 @@ function renderWidget(site, amount, ranked, usingWallet, otherOffers, myCards) {
       .headline { font-size:11px; color:#a6adc8; margin-bottom:8px; }
       .row { display:flex; justify-content:space-between; align-items:center;
              background:#313244; border:1px solid #45475a; border-radius:8px;
-             padding:7px 9px; margin-bottom:6px; }
+             padding:8px 10px; margin-bottom:6px; gap:8px; }
       .row.best { border-color:#a6e3a1; background:#2a3a2e; }
       .row.exhausted { border-color:#f38ba8; opacity:.85; }
-      .cleft { display:flex; flex-direction:column; }
+      .cleft { display:flex; flex-direction:column; min-width:0; }
       .cname { font-size:11px; font-weight:600; }
-      .csub { font-size:9px; color:#6c7086; margin-top:1px; }
-      .csave { font-size:12px; font-weight:700; color:#a6e3a1; white-space:nowrap; text-align:right; }
-      .csave em { font-size:8px; background:#f9e2af; color:#1e1e2e; padding:0 4px; border-radius:3px; font-style:normal; margin-left:2px; }
-      .csave o { font-size:9px; color:#89b4fa; font-weight:700; display:block; }
-      .csave t { font-size:8px; padding:1px 5px; border-radius:3px; font-style:normal; font-weight:700; display:block; margin-top:2px; }
+      .csub { font-size:9px; color:#6c7086; margin-top:2px; }
+      .csave { display:flex; flex-direction:column; align-items:flex-end; gap:3px; white-space:nowrap; flex-shrink:0; }
+      .csave .reward { font-size:14px; font-weight:800; color:#a6e3a1; line-height:1; }
+      .csave .offer { font-size:11px; font-weight:800; color:#1e1e2e; background:#89b4fa;
+                      padding:2px 7px; border-radius:5px; line-height:1.3; }
+      .csave em { font-size:8px; background:#f9e2af; color:#1e1e2e; padding:0 4px; border-radius:3px; font-style:normal; margin-left:3px; }
+      .csave .pill { font-size:8px; padding:2px 7px; border-radius:4px; font-weight:700; letter-spacing:.2px; line-height:1.3; }
       .tag-cash { background:#a6e3a1; color:#1e1e2e; }
-      .tag-pts  { background:#89b4fa; color:#1e1e2e; }
+      .tag-pts  { background:#585b70; color:#cdd6f4; }
       .tag-miles { background:#f9e2af; color:#1e1e2e; }
       .offers { font-size:9px; color:#89b4fa; margin-top:2px; line-height:1.4; }
       .buy {
