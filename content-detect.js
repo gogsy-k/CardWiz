@@ -104,19 +104,29 @@ function genericAmount() {
 const OFFER_HINT = /(instant discount|bank offer|no cost emi|cashback|%\s*off|flat\s*₹|credit card|debit card|₹\s*[\d,]+(?:\.\d+)?\s*off)/i;
 const OFFER_VALUE_HINT = /(credit card|debit card|emi|instant|cashback|%|₹\s*\d)/i;
 
-// Payment page pe har card option ka container padho — bank name + offer ek saath milti hai.
+const BANK_NAME_RE = /(hdfc|icici|sbi|axis|kotak|amex|american express|indusind|yes bank|rbl|idfc|federal|standard chartered|hsbc|au bank|bob|bank of baroda|citibank|onecard)/i;
+
+// Payment page pe "₹X off" wala element dhundho, phir parent container mein bank naam milao.
+// Class-name agnostic — Amazon DOM structure change hone pe bhi kaam karta hai.
 function readPaymentPageOffers() {
   const texts = new Set();
-  // Amazon payment page: each instrument box has card label + offer inline
-  const containers = document.querySelectorAll(
-    '.pmts-instrument-box, [class*="pmts-instrument"], [data-pmts-element-name], .a-box.pmts-base-widget'
-  );
-  for (const c of containers) {
-    const full = (c.textContent || '').replace(/\s+/g, ' ').trim();
-    if (full.length < 10 || full.length > 600) continue;
-    if (!/₹[\d,]+(?:\.\d+)?\s*off/i.test(full)) continue; // koi ₹X off nahi → skip
-    // Bank name + offer ek hi string mein dete hain
-    texts.add(full.slice(0, 250));
+  const allNodes = document.querySelectorAll('div, li, p, span');
+  for (const node of allNodes) {
+    const own = (node.textContent || '').replace(/\s+/g, ' ').trim();
+    if (!/₹\s*[\d,]+(?:\.\d+)?\s*off/i.test(own)) continue; // koi ₹X off nahi
+    if (own.length > 500) continue; // bada container — skip (body etc.)
+    // Parent tree mein bank naam dhundho (max 8 levels up)
+    let el = node;
+    for (let i = 0; i < 8; i++) {
+      if (!el.parentElement) break;
+      el = el.parentElement;
+      const pt = (el.textContent || '').replace(/\s+/g, ' ').trim();
+      if (pt.length > 1000) break; // bahut bada section — bank match koi na koi ho hi jayega, skip
+      if (BANK_NAME_RE.test(pt)) {
+        texts.add(pt.slice(0, 300));
+        break;
+      }
+    }
   }
   return [...texts];
 }
