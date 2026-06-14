@@ -106,16 +106,37 @@ const OFFER_VALUE_HINT = /(credit card|debit card|emi|instant|cashback|%|₹\s*\
 
 const BANK_NAME_RE = /(hdfc|icici|sbi|axis|kotak|amex|american express|indusind|yes bank|rbl|idfc|federal|standard chartered|hsbc|au bank|bob|bank of baroda|citibank|onecard)/i;
 
-// Payment page pe card option containers scan karo — bank name + "X off" dono ek box mein.
+// Payment page pe "X off" leaf dhoondo, phir UPAR walk karke bank naam milao.
+// Amazon bank-name aur offer-amount ko ALAG elements mein rakhta hai, isliye
+// ek hi container mein dono milna zaroori nahi — DOM tree upar chadhke jodte hain.
 function readPaymentPageOffers() {
   const texts = new Set();
-  const allNodes = document.querySelectorAll('div, li, tr');
-  for (const node of allNodes) {
-    const t = (node.textContent || '').replace(/\s+/g, ' ').trim();
-    if (t.length < 20 || t.length > 600) continue;
-    if (!BANK_NAME_RE.test(t)) continue;
-    if (!/\b[\d,]+(?:\.\d+)?\s*off\b/i.test(t)) continue;
-    texts.add(t.slice(0, 300));
+  const leaves = document.querySelectorAll('div, li, p, span, td, b, strong');
+  for (const node of leaves) {
+    if (node.children.length > 3) continue;                  // leaf-ish hi
+    const own = (node.textContent || '').replace(/\s+/g, ' ').trim();
+    if (own.length < 4 || own.length > 220) continue;
+    if (!/\b[\d,]+(?:\.\d+)?\s*off\b/i.test(own)) continue;  // "X off" chahiye
+
+    // Pure EMI offer skip (instant discount nahi — EMI conversion mangta hai).
+    const lower = own.toLowerCase();
+    if (lower.includes('emi') && !lower.includes('full payment')) continue;
+
+    // Upar walk karke nearest ancestor with a bank name.
+    let el = node, bank = null, ctx = '';
+    for (let i = 0; i < 12 && el.parentElement; i++) {
+      el = el.parentElement;
+      const at = el.textContent || '';
+      const m = at.match(BANK_NAME_RE);
+      if (m) { bank = m[0]; ctx = at.toLowerCase(); break; }
+    }
+    if (!bank) continue;
+
+    // Card type ancestor se: debit-only offer credit recommender ke liye skip ho jaye.
+    const cardType = (ctx.includes('debit card') && !ctx.includes('credit card'))
+      ? 'debit card' : 'credit card';
+    // parseOffer ke liye clean synthetic string: "ICICI credit card 600.00 off ..."
+    texts.add(`${bank} ${cardType} ${own}`);
   }
   return [...texts];
 }
