@@ -211,14 +211,17 @@ function renderWidget(site, amount, ranked, usingWallet, otherOffers, myCards) {
   let listHtml = '';
   top3.forEach((r, i) => {
     const star = i === 0 ? '⭐ ' : '';
+    const typeLabel = r.type === 'cashback' ? 'cashback' : r.type === 'miles' ? 'miles' : 'points';
+    const typeClass = r.type === 'cashback' ? 'tag-cash' : r.type === 'miles' ? 'tag-miles' : 'tag-pts';
     let right;
     if (hasAmount) {
       const capTag = r.capExhausted ? '<em>cap khatam</em>' : (r.capped ? '<em>cap</em>' : '');
       const parts = [`₹${r.savings}${capTag}`];
       if (r.offerValue > 0) parts.push(`<o>+₹${r.offerValue} offer</o>`);
+      parts.push(`<t class="${typeClass}">${typeLabel}</t>`);
       right = parts.join(' ');
     } else {
-      right = `${r.rate}%`;
+      right = `${r.rate}% <t class="${typeClass}">${typeLabel}</t>`;
     }
     const walletEntry = myCards && myCards.find((c) => c.cardId === r.id);
     let subtitle = '';
@@ -285,6 +288,10 @@ function renderWidget(site, amount, ranked, usingWallet, otherOffers, myCards) {
       .csave { font-size:12px; font-weight:700; color:#a6e3a1; white-space:nowrap; text-align:right; }
       .csave em { font-size:8px; background:#f9e2af; color:#1e1e2e; padding:0 4px; border-radius:3px; font-style:normal; margin-left:2px; }
       .csave o { font-size:9px; color:#89b4fa; font-weight:700; display:block; }
+      .csave t { font-size:8px; padding:1px 5px; border-radius:3px; font-style:normal; font-weight:700; display:block; margin-top:2px; }
+      .tag-cash { background:#a6e3a1; color:#1e1e2e; }
+      .tag-pts  { background:#89b4fa; color:#1e1e2e; }
+      .tag-miles { background:#f9e2af; color:#1e1e2e; }
       .offers { font-size:9px; color:#89b4fa; margin-top:2px; line-height:1.4; }
       .buy {
         width:100%; margin-top:8px; background:#f9e2af; color:#1e1e2e; border:none;
