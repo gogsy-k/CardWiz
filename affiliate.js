@@ -15,7 +15,7 @@
  */
 
 const DEFAULT_AFFILIATE_CONFIG = {
-  amazon: { tag: 'smartcardsav-21' },        // Amazon Associates "tag" — REPLACE
+  amazon: { tag: 'gogsy-21' },               // Amazon Associates Store ID
   flipkart: { affid: 'smartcardsaver' },     // Flipkart affiliate id   — REPLACE
   // Myntra/baaki ke liye Cuelinks/INRDeals universal wrapper (enable + cid daalo):
   cuelinks: { cid: '', enabled: false },
