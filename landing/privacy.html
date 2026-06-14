@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CardWiz — Privacy Policy</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #1e1e2e; color: #cdd6f4;
+      line-height: 1.7; padding: 40px 20px;
+    }
+    .wrap { max-width: 720px; margin: 0 auto; }
+    h1 { color: #cba6f7; font-size: 26px; margin-bottom: 4px; }
+    .updated { color: #6c7086; font-size: 13px; margin-bottom: 24px; }
+    h2 { color: #a6e3a1; font-size: 18px; margin: 26px 0 8px; }
+    p, li { color: #cdd6f4; font-size: 15px; margin-bottom: 8px; }
+    ul { padding-left: 22px; }
+    .tldr { background: #313244; border-left: 4px solid #a6e3a1; border-radius: 8px; padding: 14px 16px; margin: 16px 0; }
+    .never { background: #313244; border-left: 4px solid #f38ba8; border-radius: 8px; padding: 14px 16px; margin: 16px 0; }
+    code { background: #313244; padding: 1px 6px; border-radius: 4px; font-size: 13px; }
+    a { color: #89b4fa; }
+    .nav { margin-bottom: 20px; font-size: 13px; }
+    .nav a { margin-right: 14px; }
+    .foot { margin-top: 30px; color: #6c7086; font-size: 13px; border-top: 1px solid #313244; padding-top: 16px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="nav">
+      <a href="index.html">← Home</a>
+      <a href="terms.html">Terms</a>
+      <a href="refunds.html">Refunds</a>
+      <a href="shipping.html">Shipping</a>
+      <a href="contact.html">Contact</a>
+    </div>
+    <h1>💳 CardWiz — Privacy Policy</h1>
+    <div class="updated">Last updated: 12 June 2026</div>
+
+    <div class="tldr">
+      <b>TL;DR —</b> By default aapka saara data <b>sirf aapke device pe</b> rehta hai. Agar aap
+      <b>Google se sign in</b> karte ho, ek account banta hai aur <b>Cloud Sync</b> (default ON, jise
+      aap off kar sakte ho) aapke cards ki <b>limited details</b> — card type, nickname,
+      <b>last-4 (poora number nahi)</b>, due-date — hamare secure server pe sync karta hai, taaki kisi
+      bhi browser pe login karke wahi cards mil sakein. Koi tracking/ads nahi. Poora card number /
+      CVV <b>kabhi nahi</b>.
+    </div>
+
+    <div class="never">
+      <b>Hum ye KABHI collect/store nahi karte:</b>
+      <ul>
+        <li>Poora credit/debit card number</li>
+        <li>CVV</li>
+        <li>Net-banking / bank login credentials</li>
+        <li>OTP ya koi payment authentication</li>
+      </ul>
+    </div>
+
+    <h2>1. Kaun-sa data store hota hai (sirf device pe)</h2>
+    <p>Aap jo add karte ho, woh browser ke <code>chrome.storage.local</code> mein save hota hai —
+       sirf aapke is device/browser pe:</p>
+    <ul>
+      <li>Aapke cards ka <b>type/naam</b> (jaise "HDFC Millennia") aur optional <b>nickname</b></li>
+      <li>Optional <b>last 4 digits</b> (sirf pehchaan ke liye — poora number nahi)</li>
+      <li>Bill <b>due date</b> (mahine ka din) aur reminder preference</li>
+      <li>Cap usage jo aap manually log karte ho ("✓ Use kiya")</li>
+      <li>Premium on/off setting</li>
+    </ul>
+    <p>Signed out ho to ye data kabhi aapke device se bahar nahi jaata. Signed in + Cloud Sync ON ho
+       to upar batayi limited card details (last-4 tak, poora number nahi) hamare server pe sync hoti
+       hain — niche section 2 dekho.</p>
+
+    <h2>2. Account &amp; Cloud Sync (optional)</h2>
+    <p>Agar aap <b>Google se sign in</b> karte ho, hum ek account banakar secure server pe store karte
+       hain: aapka <b>email, naam, Google account id</b>, aur plan (free/premium). Sign-in optional
+       hai — bina iske bhi extension poora kaam karta hai.</p>
+    <p><b>Cloud Sync</b> (default ON, "More" tab se OFF kar sakte ho): signed-in hone pe aapke cards ki
+       limited details server pe sync hoti hain taaki kisi bhi browser pe login karke wahi cards milein.
+       Sync hota hai sirf:</p>
+    <ul>
+      <li>Card type/naam aur nickname</li>
+      <li>Last 4 digits (poora number nahi)</li>
+      <li>Due date + reminder preference</li>
+    </ul>
+    <p>Server pe bhi <b>poora card number / CVV / bank login KABHI nahi</b> jaata. Cloud Sync OFF
+       karoge to cards sirf is device pe rehte hain.</p>
+
+    <h2>3. Shopping sites pe kya hota hai</h2>
+    <p>Amazon.in, Flipkart.com aur Myntra.com ke <b>cart/checkout pages</b> pe extension
+       <b>read-only</b> taur pe ye padhta hai:</p>
+    <ul>
+      <li>Order ka total amount</li>
+      <li>Page pe dikhaye gaye bank offers / No-Cost-EMI text</li>
+    </ul>
+    <p>Ye sab <b>aapke browser ke andar hi</b> process hota hai — best card recommend karne ke liye.
+       Ye jaankari kahin transmit nahi hoti. Extension koi form fill nahi karta, koi card number
+       enter nahi karta.</p>
+
+    <h2>4. Notifications</h2>
+    <p>Bill reminders ke liye browser notifications use hoti hain. Ye aapke device pe locally
+       schedule hoti hain (<code>chrome.alarms</code>) — koi external push service nahi.</p>
+
+    <h2>5. Affiliate links</h2>
+    <p>"Buy via our link" dabane pe, link mein hamara affiliate tag add hota hai. Agar aap kuch
+       khareedte ho, to hame chhota commission milta hai — <b>aapko koi extra cost nahi</b>, price
+       wahi rehta hai. Affiliate network (jaise Amazon Associates) ko sirf standard click-referral
+       jaati hai; hum aapki koi personal jaankari unke saath share nahi karte.</p>
+
+    <h2>6. Permissions kyun chahiye</h2>
+    <ul>
+      <li><code>storage</code> — aapke cards/settings device pe save karne ke liye</li>
+      <li><code>alarms</code> — bill reminder check schedule karne ke liye</li>
+      <li><code>notifications</code> — bill due reminders dikhane ke liye</li>
+      <li><code>identity</code> — optional Google sign-in (account + cloud sync) ke liye</li>
+      <li>Amazon/Flipkart/Myntra access — checkout pe best card recommend karne ke liye (read-only)</li>
+    </ul>
+
+    <h2>7. Data delete kaise karein</h2>
+    <p>Extension uninstall karte hi saara local data delete ho jaata hai. Aap "Clear" / "Caps reset"
+       buttons se bhi data hata sakte ho. Agar aap signed in the, to synced cards hatane ke liye saare
+       cards delete kar do (empty set server pe chala jaata hai), ya account/data deletion ke liye
+       <a href="mailto:gurpreetsj8871@gmail.com">humein likho</a>.</p>
+
+    <h2>8. Bachchon ke liye</h2>
+    <p>Ye extension financial tool hai, 18+ users ke liye intended hai.</p>
+
+    <h2>9. Changes</h2>
+    <p>Policy update hone pe yahaan "Last updated" date badlegi.</p>
+
+    <h2>10. Contact</h2>
+    <p>Sawaal ho to: <a href="mailto:gurpreetsj8871@gmail.com">gurpreetsj8871@gmail.com</a></p>
+
+    <div class="foot">
+      CardWiz — India-first, privacy-first. 🔒 Aapka data, aapke device pe.
+    </div>
+  </div>
+</body>
+</html>
