@@ -262,10 +262,11 @@ function renderWidget(site, amount, ranked, usingWallet, otherOffers, myCards) {
     const approx = isCash ? '' : '≈';
     let right;
     if (hasAmount) {
-      const capTag = r.capExhausted ? '<em>cap khatam</em>' : (r.capped ? '<em>cap</em>' : '');
-      const rewardRow = `<span class="rewardrow"><span class="reward">${approx}₹${r.savings}${capTag}</span><span class="pill ${typeClass}">${typeLabel}</span></span>`;
+      const rewardRow = `<span class="rewardrow"><span class="reward">${approx}₹${r.savings}</span><span class="pill ${typeClass}">${typeLabel}</span></span>`;
       const offerLine = r.offerValue > 0 ? `<span class="offer">+₹${r.offerValue} instant off</span>` : '';
-      right = rewardRow + offerLine;
+      const capLine = r.capExhausted ? '<span class="capnote khatam">cap khatam</span>'
+                    : (r.capped ? '<span class="capnote">cap tak</span>' : '');
+      right = rewardRow + offerLine + capLine;
     } else {
       right = `<span class="rewardrow"><span class="reward">${r.rate}%</span><span class="pill ${typeClass}">${typeLabel}</span></span>`;
     }
@@ -336,7 +337,8 @@ function renderWidget(site, amount, ranked, usingWallet, otherOffers, myCards) {
       .csave .reward { font-size:14px; font-weight:800; color:#a6e3a1; line-height:1; }
       .csave .offer { font-size:11px; font-weight:800; color:#1e1e2e; background:#89b4fa;
                       padding:2px 7px; border-radius:5px; line-height:1.3; }
-      .csave em { font-size:8px; background:#f9e2af; color:#1e1e2e; padding:0 4px; border-radius:3px; font-style:normal; margin-left:3px; }
+      .csave .capnote { font-size:8px; background:#f9e2af; color:#1e1e2e; padding:2px 7px; border-radius:4px; font-weight:700; line-height:1.3; }
+      .csave .capnote.khatam { background:#f38ba8; }
       .csave .pill { font-size:8px; padding:2px 7px; border-radius:4px; font-weight:700; letter-spacing:.2px; line-height:1.3; }
       .tag-cash { background:#a6e3a1; color:#1e1e2e; }
       .tag-pts  { background:#89b4fa; color:#1e1e2e; }
