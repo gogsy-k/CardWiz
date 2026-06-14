@@ -106,27 +106,16 @@ const OFFER_VALUE_HINT = /(credit card|debit card|emi|instant|cashback|%|₹\s*\
 
 const BANK_NAME_RE = /(hdfc|icici|sbi|axis|kotak|amex|american express|indusind|yes bank|rbl|idfc|federal|standard chartered|hsbc|au bank|bob|bank of baroda|citibank|onecard)/i;
 
-// Payment page pe "₹X off" wala element dhundho, phir parent container mein bank naam milao.
-// Class-name agnostic — Amazon DOM structure change hone pe bhi kaam karta hai.
+// Payment page pe card option containers scan karo — bank name + "X off" dono ek box mein.
 function readPaymentPageOffers() {
   const texts = new Set();
-  const allNodes = document.querySelectorAll('div, li, p, span');
+  const allNodes = document.querySelectorAll('div, li, tr');
   for (const node of allNodes) {
-    const own = (node.textContent || '').replace(/\s+/g, ' ').trim();
-    if (!/\b[\d,]+(?:\.\d+)?\s*off\b/i.test(own)) continue; // koi X off nahi (₹ optional)
-    if (own.length > 500) continue; // bada container — skip (body etc.)
-    // Parent tree mein bank naam dhundho (max 8 levels up)
-    let el = node;
-    for (let i = 0; i < 8; i++) {
-      if (!el.parentElement) break;
-      el = el.parentElement;
-      const pt = (el.textContent || '').replace(/\s+/g, ' ').trim();
-      if (pt.length > 1000) break; // bahut bada section — bank match koi na koi ho hi jayega, skip
-      if (BANK_NAME_RE.test(pt)) {
-        texts.add(pt.slice(0, 300));
-        break;
-      }
-    }
+    const t = (node.textContent || '').replace(/\s+/g, ' ').trim();
+    if (t.length < 20 || t.length > 600) continue;
+    if (!BANK_NAME_RE.test(t)) continue;
+    if (!/\b[\d,]+(?:\.\d+)?\s*off\b/i.test(t)) continue;
+    texts.add(t.slice(0, 300));
   }
   return [...texts];
 }
