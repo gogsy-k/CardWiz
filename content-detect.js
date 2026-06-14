@@ -106,39 +106,41 @@ const OFFER_VALUE_HINT = /(credit card|debit card|emi|instant|cashback|%|₹\s*\
 
 const BANK_NAME_RE = /(hdfc|icici|sbi|axis|kotak|amex|american express|indusind|yes bank|rbl|idfc|federal|standard chartered|hsbc|au bank|bob|bank of baroda|citibank|onecard)/i;
 
-// Payment page pe "X off" leaf dhoondo, phir UPAR walk karke bank naam milao.
-// Amazon bank-name aur offer-amount ko ALAG elements mein rakhta hai, isliye
-// ek hi container mein dono milna zaroori nahi — DOM tree upar chadhke jodte hain.
+// Sirf "X off on full payment" wala instant-discount pattern (screenshot wala).
+// "select products" coupons / EMI / concatenated garbage ko ignore karta hai —
+// warna "500.0010% off" jaise mangled text 500% ban jaata tha.
+const FULLPAY_OFF_RE = /(?:₹|rs\.?|inr)?\s*([\d,]+(?:\.\d+)?)\s*off\s+on\s+full\s+payment/i;
+
+// Payment page pe full-payment instant discount dhoondo, phir UPAR walk karke
+// bank naam milao (Amazon bank-name aur amount alag elements mein rakhta hai).
 function readPaymentPageOffers() {
-  const texts = new Set();
+  const offers = [];
   const leaves = document.querySelectorAll('div, li, p, span, td, b, strong');
   for (const node of leaves) {
     if (node.children.length > 3) continue;                  // leaf-ish hi
     const own = (node.textContent || '').replace(/\s+/g, ' ').trim();
-    if (own.length < 4 || own.length > 220) continue;
-    if (!/\b[\d,]+(?:\.\d+)?\s*off\b/i.test(own)) continue;  // "X off" chahiye
+    if (own.length < 8 || own.length > 220) continue;
 
-    // Pure EMI offer skip (instant discount nahi — EMI conversion mangta hai).
-    const lower = own.toLowerCase();
-    if (lower.includes('emi') && !lower.includes('full payment')) continue;
+    const m = own.match(FULLPAY_OFF_RE);
+    if (!m) continue;                                        // sirf full-payment instant off
+    const amt = parseFloat(m[1].replace(/,/g, ''));
+    if (!amt || amt <= 0 || amt > 100000) continue;          // sanity bound
 
     // Upar walk karke nearest ancestor with a bank name.
     let el = node, bank = null, ctx = '';
     for (let i = 0; i < 12 && el.parentElement; i++) {
       el = el.parentElement;
       const at = el.textContent || '';
-      const m = at.match(BANK_NAME_RE);
-      if (m) { bank = m[0]; ctx = at.toLowerCase(); break; }
+      const bm = at.match(BANK_NAME_RE);
+      if (bm) { bank = bm[0]; ctx = at.toLowerCase(); break; }
     }
     if (!bank) continue;
+    if (ctx.includes('debit card') && !ctx.includes('credit card')) continue; // debit-only skip
 
-    // Card type ancestor se: debit-only offer credit recommender ke liye skip ho jaye.
-    const cardType = (ctx.includes('debit card') && !ctx.includes('credit card'))
-      ? 'debit card' : 'credit card';
-    // parseOffer ke liye clean synthetic string: "ICICI credit card 600.00 off ..."
-    texts.add(`${bank} ${cardType} ${own}`);
+    // parseOffer ke liye pristine string — koi % nahi, sirf flat ₹X off.
+    offers.push(`${bank} credit card flat ₹${amt} off`);
   }
-  return [...texts];
+  return [...new Set(offers)];
 }
 
 function readOffersFromDOM() {
@@ -208,7 +210,8 @@ async function evaluateAndRender() {
   const offersByBank = window.CardWizOffers.bestOffersByBank(offerTexts, amount || 0);
   ranked.forEach((r) => {
     const m = offersByBank[r.bank];
-    r.offerValue = m ? m.value : 0;
+    // Safety: offer kabhi order amount se zyada nahi ho sakta (mangled DOM se bachao).
+    r.offerValue = m ? Math.min(m.value, amount || m.value) : 0;
     r.offerRaw = m ? m.offer.raw : null;
     r.total = r.savings + r.offerValue;
   });
