@@ -52,7 +52,7 @@ function parseOffer(text) {
   const noCostEmi = /no\s*cost\s*emi/i.test(text);
 
   const pct = text.match(/(\d+(?:\.\d+)?)\s*%/);
-  const flat = text.match(/(?:flat\s*)?(?:₹|rs\.?|inr)\s*([\d,]+)\s*(?:off|cashback|discount|instant)/i);
+  const flat = text.match(/(?:flat\s*)?(?:₹|rs\.?|inr)\s*([\d,]+(?:\.\d+)?)\s*(?:off|cashback|discount|instant)/i);
   const cap = text.match(/up\s*to\s*(?:₹|rs\.?|inr)?\s*([\d,]+)/i);
 
   let kind, percent = null, flatOff = null;

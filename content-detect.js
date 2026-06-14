@@ -101,12 +101,33 @@ function genericAmount() {
 
 // Checkout page pe dikhne wale bank-offer / No-Cost-EMI text padho (READ-ONLY).
 // Heuristic: chhote text blocks jo offer-jaise lagte hain. offers.js parse karega.
-const OFFER_HINT = /(instant discount|bank offer|no cost emi|cashback|%\s*off|flat\s*₹|credit card|debit card)/i;
+const OFFER_HINT = /(instant discount|bank offer|no cost emi|cashback|%\s*off|flat\s*₹|credit card|debit card|₹\s*[\d,]+(?:\.\d+)?\s*off)/i;
 const OFFER_VALUE_HINT = /(credit card|debit card|emi|instant|cashback|%|₹\s*\d)/i;
+
+// Payment page pe har card option ka container padho — bank name + offer ek saath milti hai.
+function readPaymentPageOffers() {
+  const texts = new Set();
+  // Amazon payment page: each instrument box has card label + offer inline
+  const containers = document.querySelectorAll(
+    '.pmts-instrument-box, [class*="pmts-instrument"], [data-pmts-element-name], .a-box.pmts-base-widget'
+  );
+  for (const c of containers) {
+    const full = (c.textContent || '').replace(/\s+/g, ' ').trim();
+    if (full.length < 10 || full.length > 600) continue;
+    if (!/₹[\d,]+(?:\.\d+)?\s*off/i.test(full)) continue; // koi ₹X off nahi → skip
+    // Bank name + offer ek hi string mein dete hain
+    texts.add(full.slice(0, 250));
+  }
+  return [...texts];
+}
 
 function readOffersFromDOM() {
   const texts = new Set();
-  // Known offer containers (best signal) + generic scan fallback.
+
+  // Payment page specific reader (Amazon checkout step 2)
+  readPaymentPageOffers().forEach((t) => texts.add(t));
+
+  // Known offer containers (cart page — best signal)
   const scopes = [];
   ['#itembox-InstantBankDiscount', '#sopp_offers', '#bank-offer', '[class*="offer"]', '[class*="Offer"]']
     .forEach((sel) => document.querySelectorAll(sel).forEach((el) => scopes.push(el)));
@@ -116,13 +137,13 @@ function readOffersFromDOM() {
   for (const scope of root) {
     const nodes = scope.querySelectorAll('li, p, span, div');
     for (const n of nodes) {
-      if (count++ > 5000) break; // safety: bade pages pe loop bound
+      if (count++ > 5000) break;
       const t = (n.textContent || '').replace(/\s+/g, ' ').trim();
-      if (t.length < 15 || t.length > 180) continue;
+      if (t.length < 15 || t.length > 250) continue;
       if (OFFER_HINT.test(t) && OFFER_VALUE_HINT.test(t)) texts.add(t);
     }
   }
-  return [...texts].slice(0, 15);
+  return [...texts].slice(0, 20);
 }
 
 // Wallet + cap usage ek saath padho (read-only).
