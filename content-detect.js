@@ -339,7 +339,7 @@ function renderWidget(site, amount, ranked, usingWallet, otherOffers, myCards) {
       .csave em { font-size:8px; background:#f9e2af; color:#1e1e2e; padding:0 4px; border-radius:3px; font-style:normal; margin-left:3px; }
       .csave .pill { font-size:8px; padding:2px 7px; border-radius:4px; font-weight:700; letter-spacing:.2px; line-height:1.3; }
       .tag-cash { background:#a6e3a1; color:#1e1e2e; }
-      .tag-pts  { background:#585b70; color:#cdd6f4; }
+      .tag-pts  { background:#89b4fa; color:#1e1e2e; }
       .tag-miles { background:#f9e2af; color:#1e1e2e; }
       .offers { font-size:9px; color:#89b4fa; margin-top:2px; line-height:1.4; }
       .buy {
