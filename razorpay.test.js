@@ -12,7 +12,7 @@ function test(name, fn) {
   catch (e) { console.error(`  ✗ ${name}\n      ${e.message}`); process.exitCode = 1; }
 }
 
-console.log('RewardXtra — Razorpay signature Tests\n');
+console.log('CardWiz — Razorpay signature Tests\n');
 
 const secret = 'whsec_test_123';
 const body = JSON.stringify({ event: 'payment_link.paid', x: 1 });

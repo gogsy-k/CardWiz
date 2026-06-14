@@ -1,5 +1,5 @@
 /*
- * RewardXtra — Auth module (Phase 8: Google SSO).
+ * CardWiz — Auth module (Phase 8: Google SSO).
  * ----------------------------------------------------
  * Extension Google se ek signed ID token leta hai (chrome.identity), use backend
  * ko bhejta hai, backend verify karke humara session token (JWT) deta hai.
@@ -140,4 +140,4 @@ const authApi = {
   signIn, signOut, fetchMe, isSignedIn, getStoredAuth, authedFetch,
 };
 if (typeof module !== 'undefined' && module.exports) module.exports = authApi;
-if (typeof globalThis !== 'undefined') globalThis.SmartCardAuth = authApi;
+if (typeof globalThis !== 'undefined') globalThis.CardWizAuth = authApi;

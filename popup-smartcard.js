@@ -1,5 +1,5 @@
 /*
- * RewardXtra — Popup UI logic.
+ * CardWiz — Popup UI logic.
  * recommend.js (engine) + data/cards.json (brain) + chrome.storage (wallet).
  *
  * Phase 1 (Card Wallet): user apne cards add/edit/delete kare. Har card:
@@ -60,7 +60,7 @@ let lastRanked = [];  // last recommendation results (log button ke liye)
 
 // ---------- Init ----------
 async function init() {
-  DB = await SmartCardCatalog.load();
+  DB = await CardWizCatalog.load();
   buildCategoryDropdown();
   buildCardSelect();
   await loadWallet();
@@ -173,7 +173,7 @@ function loadCapUsage() {
   return new Promise((resolve) => {
     const done = (raw) => {
       // Load pe hi normalize → naya mahina ho to auto-reset.
-      capUsage = window.SmartCardCapTracker.normalize(raw, new Date());
+      capUsage = window.CardWizCapTracker.normalize(raw, new Date());
       if (!raw || raw.period !== capUsage.period) saveCapUsage(); // reset persist
       resolve();
     };
@@ -188,7 +188,7 @@ function saveCapUsage() {
 
 function resetCaps() {
   if (!confirm('Is mahine ka cap usage reset karein?')) return;
-  capUsage = window.SmartCardCapTracker.resetAll(new Date());
+  capUsage = window.CardWizCapTracker.resetAll(new Date());
   saveCapUsage();
   runRecommendation();
 }
@@ -218,24 +218,24 @@ function togglePremium() {
 
 // Popup khulte hi silently check: subscription card save hua? ya old payment paid? -> premium unlock.
 async function autoVerifyPayment() {
-  if (!currentUser || isPremium || typeof SmartCardAuth === 'undefined') return;
+  if (!currentUser || isPremium || typeof CardWizAuth === 'undefined') return;
   try {
     // New flow: subscription check (card authenticated = premium)
-    const subRes = await SmartCardAuth.authedFetch('/payment/verify-subscription', { method: 'POST' });
+    const subRes = await CardWizAuth.authedFetch('/payment/verify-subscription', { method: 'POST' });
     if (subRes.ok) {
       const subData = await subRes.json();
       if (subData.status === 'active' || subData.plan === 'premium') {
-        currentUser = await SmartCardAuth.fetchMe();
+        currentUser = await CardWizAuth.fetchMe();
         applyAuthToPremium();
         return;
       }
     }
     // Old flow fallback: one-time payment link (backward compat)
-    const res = await SmartCardAuth.authedFetch('/payment/verify', { method: 'POST' });
+    const res = await CardWizAuth.authedFetch('/payment/verify', { method: 'POST' });
     if (!res.ok) return;
     const data = await res.json();
     if (data.status === 'paid' || data.plan === 'premium') {
-      currentUser = await SmartCardAuth.fetchMe();
+      currentUser = await CardWizAuth.fetchMe();
       applyAuthToPremium();
     }
   } catch (e) { /* offline / koi pending nahi — ignore */ }
@@ -244,8 +244,8 @@ async function autoVerifyPayment() {
 // Plan selector dikhao — monthly ya yearly chunne do, phir subscribe karo.
 function startUpgrade() {
   const msg = $('upgradeMsg');
-  if (typeof SmartCardAuth === 'undefined') return;
-  const P = window.SmartCardPremium;
+  if (typeof CardWizAuth === 'undefined') return;
+  const P = window.CardWizPremium;
   const yearlySaving = P.PREMIUM_MONTHLY_INR * 12 - P.PREMIUM_YEARLY_INR;
 
   msg.innerHTML = `
@@ -297,10 +297,10 @@ function startUpgrade() {
 // Subscription create karo aur user ko Razorpay hosted checkout pe bhejo.
 async function doSubscribe(plan) {
   const msg = $('upgradeMsg');
-  if (!msg || typeof SmartCardAuth === 'undefined') return;
+  if (!msg || typeof CardWizAuth === 'undefined') return;
   msg.innerHTML = '<div class="more-sub" style="text-align:center;padding:12px;">Subscription ban raha hai…</div>';
   try {
-    const res = await SmartCardAuth.authedFetch('/payment/subscribe', {
+    const res = await CardWizAuth.authedFetch('/payment/subscribe', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ plan }),
@@ -331,10 +331,10 @@ async function verifySubscription() {
   const vb = $('verifySubBtn');
   if (vb) { vb.disabled = true; vb.textContent = 'Check kar rahe hain…'; }
   try {
-    const res = await SmartCardAuth.authedFetch('/payment/verify-subscription', { method: 'POST' });
+    const res = await CardWizAuth.authedFetch('/payment/verify-subscription', { method: 'POST' });
     const data = await res.json();
     if (data.status === 'active' || data.plan === 'premium') {
-      currentUser = await SmartCardAuth.fetchMe();
+      currentUser = await CardWizAuth.fetchMe();
       applyAuthToPremium();
       if (msg) msg.innerHTML = '<div class="upgrade-note">🎉 Premium active! Pehla charge 30 din baad. Shukriya! 🙏</div>';
       renderMore();
@@ -354,9 +354,9 @@ async function verifySubscription() {
 // ---------- Account / Google SSO (Phase 8) ----------
 function loadAuth() {
   return new Promise(async (resolve) => {
-    if (typeof SmartCardAuth === 'undefined') return resolve();
+    if (typeof CardWizAuth === 'undefined') return resolve();
     try {
-      currentUser = await SmartCardAuth.fetchMe(); // null = signed out / token expired
+      currentUser = await CardWizAuth.fetchMe(); // null = signed out / token expired
     } catch {
       currentUser = null;
     }
@@ -373,7 +373,7 @@ function applyAuthToPremium() {
 function renderAccount() {
   const box = els.accountBox;
   if (!box) return;
-  if (typeof SmartCardAuth === 'undefined') {
+  if (typeof CardWizAuth === 'undefined') {
     box.innerHTML = '<div class="more-sub">Auth module load nahi hua.</div>';
     return;
   }
@@ -411,7 +411,7 @@ async function doSignIn() {
   if (btn) { btn.disabled = true; btn.textContent = 'Sign in ho raha hai…'; }
   if (err) err.textContent = '';
   try {
-    currentUser = await SmartCardAuth.signIn();
+    currentUser = await CardWizAuth.signIn();
     applyAuthToPremium();
     if (syncEnabled) await doSyncNow(); // Phase 10: local cards ko cloud mein merge
     renderMore();
@@ -423,7 +423,7 @@ async function doSignIn() {
 }
 
 async function doSignOut() {
-  if (typeof SmartCardAuth !== 'undefined') await SmartCardAuth.signOut();
+  if (typeof CardWizAuth !== 'undefined') await CardWizAuth.signOut();
   currentUser = null;
   await loadPremium();   // signed out -> wapas local dev premium flag pe
   renderMore();
@@ -458,9 +458,9 @@ function saveSyncPref() {
 
 // Pull + merge + push — local aur cloud dono consistent, bina kisi device ka data khoye.
 async function doSyncNow() {
-  if (!currentUser || !syncEnabled || typeof SmartCardSync === 'undefined') return;
+  if (!currentUser || !syncEnabled || typeof CardWizSync === 'undefined') return;
   try {
-    const merged = await SmartCardSync.syncNow(myCards);
+    const merged = await CardWizSync.syncNow(myCards);
     myCards = merged;
     saveWallet();
     renderMyCards();
@@ -469,8 +469,8 @@ async function doSyncNow() {
 
 // Local change ke baad cloud update (best-effort, signed-in + sync-on pe hi).
 function pushIfSyncing() {
-  if (!currentUser || !syncEnabled || typeof SmartCardSync === 'undefined') return;
-  SmartCardSync.push(myCards).catch(() => {});
+  if (!currentUser || !syncEnabled || typeof CardWizSync === 'undefined') return;
+  CardWizSync.push(myCards).catch(() => {});
 }
 
 async function toggleSync() {
@@ -515,7 +515,7 @@ function updateCardsPrivacy() {
 }
 
 function renderMore() {
-  const P = window.SmartCardPremium;
+  const P = window.CardWizPremium;
 
   // Account / SSO (Phase 8) — sabse upar.
   renderAccount();
@@ -545,8 +545,8 @@ function renderMore() {
   renderAnalytics();
 
   // Affiliate disclosure
-  els.affDisclosure.textContent = window.SmartCardAffiliate.DISCLOSURE +
-    (window.SmartCardReferral ? ' ' + window.SmartCardReferral.DISCLOSURE : '') +
+  els.affDisclosure.textContent = window.CardWizAffiliate.DISCLOSURE +
+    (window.CardWizReferral ? ' ' + window.CardWizReferral.DISCLOSURE : '') +
     ' Networks: Amazon Associates, Flipkart, Cuelinks, card-referral.';
 
   // About: privacy link + version (manifest se).
@@ -566,7 +566,7 @@ function renderMore() {
 }
 
 function renderAnalytics() {
-  const P = window.SmartCardPremium;
+  const P = window.CardWizPremium;
   if (!P.canUseFeature('spending_analytics', isPremium)) {
     els.analyticsBox.innerHTML =
       `<div class="upgrade-note">🔒 Premium feature<br>Is mahine kis card pe kitna reward kamaaya — dekho.
@@ -676,8 +676,8 @@ function openForm(editId = null) {
   // Phase 6: free tier card-limit gate (sirf naye card pe, edit pe nahi).
   if (!editId) {
     const uniqueCount = ownedUniqueIds().length;
-    if (window.SmartCardPremium.cardLimitReached(myCards.length, isPremium)) {
-      const max = window.SmartCardPremium.FREE_LIMITS.maxCards;
+    if (window.CardWizPremium.cardLimitReached(myCards.length, isPremium)) {
+      const max = window.CardWizPremium.FREE_LIMITS.maxCards;
       els.cardsList.insertAdjacentHTML('afterend',
         `<div class="upgrade-note" id="limitNote">🔒 Free tier mein ${max} cards tak. Unlimited ke liye Premium.
          <button id="limitUpgrade">⭐ 1st mahina FREE — Premium on karo</button></div>`);
@@ -781,7 +781,7 @@ function renderBills() {
   }
 
   const today = new Date();
-  const R = window.SmartCardReminders;
+  const R = window.CardWizReminders;
 
   // Sabse pehle jo due ho, woh upar.
   const rows = withDue
@@ -853,9 +853,9 @@ function runRecommendation() {
   }
 
   // Phase 5: cap-aware ranking — used caps factor karo.
-  opts.getRemaining = window.SmartCardCapTracker.makeGetRemaining(capUsage, new Date());
+  opts.getRemaining = window.CardWizCapTracker.makeGetRemaining(capUsage, new Date());
 
-  const ranked = window.SmartCardEngine.recommend(DB, opts);
+  const ranked = window.CardWizEngine.recommend(DB, opts);
   lastRanked = ranked;
   renderResults(ranked);
 
@@ -867,7 +867,7 @@ function runRecommendation() {
 // "✓ Use kiya" — top card ka reward is mahine ke cap mein log karo.
 function logUsageFor(result) {
   if (!result || !result.rule || result.savings <= 0) return;
-  capUsage = window.SmartCardCapTracker.logUsage(capUsage, result.id, result.rule, result.savings, new Date());
+  capUsage = window.CardWizCapTracker.logUsage(capUsage, result.id, result.rule, result.savings, new Date());
   saveCapUsage();
   runRecommendation(); // re-rank with updated caps
 }
@@ -951,8 +951,8 @@ function renderResults(ranked) {
 
 // ---------- Referral / Sponsored (Phase 6.5 monetization) ----------
 function openApply(card) {
-  if (typeof SmartCardReferral === 'undefined') return;
-  const url = SmartCardReferral.getApplyUrl(card);
+  if (typeof CardWizReferral === 'undefined') return;
+  const url = CardWizReferral.getApplyUrl(card);
   if (url) window.open(url, '_blank', 'noopener');
 }
 
@@ -960,7 +960,7 @@ function openApply(card) {
 function renderFeatured() {
   const box = $('featuredBox');
   if (!box) return;
-  const feat = (typeof SmartCardReferral !== 'undefined') ? SmartCardReferral.getFeatured() : null;
+  const feat = (typeof CardWizReferral !== 'undefined') ? CardWizReferral.getFeatured() : null;
   const cat = feat ? catalogCard(feat.cardId) : null;
   if (isPremium || !feat || !cat) { box.hidden = true; box.innerHTML = ''; return; }
 
@@ -975,7 +975,7 @@ function renderFeatured() {
      </div>`;
   const b = $('featuredApply');
   if (b) b.addEventListener('click', () => {
-    const url = SmartCardReferral.getFeaturedApplyUrl({ id: feat.cardId, name: cat.name });
+    const url = CardWizReferral.getFeaturedApplyUrl({ id: feat.cardId, name: cat.name });
     if (url) window.open(url, '_blank', 'noopener');
   });
 }

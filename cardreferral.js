@@ -1,5 +1,5 @@
 /*
- * RewardXtra — Credit-card referral + Sponsored card (monetization).
+ * CardWiz — Credit-card referral + Sponsored card (monetization).
  * --------------------------------------------------------------------
  * Free users se earning (bina display ads ke):
  *   1) "Apply for this card" referral links — user apply/approve hota hai to
@@ -80,8 +80,8 @@ function getFeaturedApplyUrl(card) {
 // ---------- Exports (browser/node) ----------
 const referralApi = {
   APPLY_URLS, REFERRAL_CONFIG, FEATURED,
-  DISCLOSURE: REFERRAL_DISCLOSURE, // public API naam wahi (SmartCardReferral.DISCLOSURE)
+  DISCLOSURE: REFERRAL_DISCLOSURE,
   getApplyUrl, hasApply, getFeatured, isSponsored, getFeaturedApplyUrl,
 };
 if (typeof module !== 'undefined' && module.exports) module.exports = referralApi;
-if (typeof globalThis !== 'undefined') globalThis.SmartCardReferral = referralApi;
+if (typeof globalThis !== 'undefined') globalThis.CardWizReferral = referralApi;

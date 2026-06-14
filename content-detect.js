@@ -1,5 +1,5 @@
 /*
- * RewardXtra — Content Script (Phase 3: Auto Checkout Detection)
+ * CardWiz — Content Script (Phase 3: Auto Checkout Detection)
  * ------------------------------------------------------------------
  * Amazon / Flipkart / Myntra pe chalkar:
  *   1. merchant -> category map karta hai (read-only)
@@ -67,7 +67,7 @@ const TOTAL_LABELS = /(grand total|order total|amount payable|total payable|tota
 
 // ---------- DOM-dependent (browser only) ----------
 
-const WIDGET_HOST_ID = 'smartcard-saver-widget-host';
+const WIDGET_HOST_ID = 'cardwiz-widget-host';
 
 // Site selectors se amount nikaalo; warna label-based generic fallback.
 function detectAmount(merchant) {
@@ -148,7 +148,7 @@ async function evaluateAndRender() {
   // User ne is page pe widget close kiya tha? to mat dikhao.
   if (sessionStorage.getItem('scs-dismissed') === location.pathname) return;
 
-  const DB = await window.SmartCardCatalog.load();
+  const DB = await window.CardWizCatalog.load();
   const { owned, capUsage } = await getWalletState();
   const amount = detectAmount(site.merchant);
 
@@ -156,15 +156,15 @@ async function evaluateAndRender() {
   if (owned.length) opts.ownedCardIds = owned;
 
   // Phase 5: widget bhi caps respect kare (read-only — sirf warn karta hai, log nahi).
-  if (window.SmartCardCapTracker) {
-    opts.getRemaining = window.SmartCardCapTracker.makeGetRemaining(capUsage, new Date());
+  if (window.CardWizCapTracker) {
+    opts.getRemaining = window.CardWizCapTracker.makeGetRemaining(capUsage, new Date());
   }
 
-  const ranked = window.SmartCardEngine.recommend(DB, opts);
+  const ranked = window.CardWizEngine.recommend(DB, opts);
 
   // Page pe visible bank-offers padho aur ranking mein factor karo (reward + offer).
   const offerTexts = readOffersFromDOM();
-  const offersByBank = window.SmartCardOffers.bestOffersByBank(offerTexts, amount || 0);
+  const offersByBank = window.CardWizOffers.bestOffersByBank(offerTexts, amount || 0);
   ranked.forEach((r) => {
     const m = offersByBank[r.bank];
     r.offerValue = m ? m.value : 0;
@@ -242,8 +242,8 @@ function renderWidget(site, amount, ranked, usingWallet, otherOffers) {
     : '';
 
   // Phase 6: affiliate "Buy via our link" (no extra cost) + disclosure.
-  const aff = window.SmartCardAffiliate
-    ? window.SmartCardAffiliate.affiliateUrl(site.category, location.href)
+  const aff = window.CardWizAffiliate
+    ? window.CardWizAffiliate.affiliateUrl(site.category, location.href)
     : { affiliated: false };
   const affHtml = aff.affiliated
     ? `<button class="buy" data-url="${escapeHtml(aff.url)}">🛒 Buy via our link (no extra cost)</button>
@@ -285,7 +285,7 @@ function renderWidget(site, amount, ranked, usingWallet, otherOffers) {
     </style>
     <div class="box">
       <div class="hd">
-        <span class="title">💳 RewardXtra</span>
+        <span class="title">💳 CardWiz</span>
         <button class="x" title="Band karo">✕</button>
       </div>
       <div class="headline">${escapeHtml(headline)}</div>

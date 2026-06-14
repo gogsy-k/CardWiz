@@ -22,7 +22,7 @@ function test(name, fn) {
   }
 }
 
-console.log('RewardXtra — Engine Tests\n');
+console.log('CardWiz — Engine Tests\n');
 
 // --- evaluateCard ---
 const sbi = db.cards.find((c) => c.id === 'sbi-cashback');

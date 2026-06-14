@@ -1,5 +1,5 @@
 /*
- * RewardXtra — Bill Reminder Logic (Phase 4)
+ * CardWiz — Bill Reminder Logic (Phase 4)
  * -----------------------------------------------
  * Pure date math. Koi DOM/chrome API nahi — popup, background worker, aur Node
  * test, teeno mein same file chalti hai.
@@ -76,4 +76,4 @@ function reminderMessage(name, days) {
 // unique const naam — classic scripts shared global scope mein collide na ho.
 const remindersApi = { lastDayOfMonth, clampDay, nextDueDate, daysUntil, dueStatus, reminderMessage };
 if (typeof module !== 'undefined' && module.exports) module.exports = remindersApi;
-if (typeof globalThis !== 'undefined') globalThis.SmartCardReminders = remindersApi;
+if (typeof globalThis !== 'undefined') globalThis.CardWizReminders = remindersApi;

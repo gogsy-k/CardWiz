@@ -11,7 +11,7 @@ function test(name, fn) {
   catch (e) { console.error(`  ✗ ${name}\n      ${e.message}`); process.exitCode = 1; }
 }
 
-console.log('RewardXtra — Card Referral Tests\n');
+console.log('CardWiz — Card Referral Tests\n');
 
 test('getApplyUrl: search fallback mein card name hota hai', () => {
   const u = R.getApplyUrl({ id: 'hdfc-millennia', name: 'HDFC Millennia' });

@@ -11,7 +11,7 @@ function test(name, fn) {
   catch (e) { console.error(`  ✗ ${name}\n      ${e.message}`); process.exitCode = 1; }
 }
 
-console.log('RewardXtra — Card Sync (merge) Tests\n');
+console.log('CardWiz — Card Sync (merge) Tests\n');
 
 const t1 = '2026-01-01T00:00:00.000Z';
 const t2 = '2026-02-01T00:00:00.000Z';

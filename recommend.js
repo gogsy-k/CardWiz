@@ -1,5 +1,5 @@
 /*
- * RewardXtra — Recommendation Engine (Phase 2)
+ * CardWiz — Recommendation Engine (Phase 2)
  * -------------------------------------------------
  * Pure logic. Koi DOM, koi chrome API yahan nahi — taaki ye Node mein test ho
  * sake aur browser extension mein bhi same file chale.
@@ -138,5 +138,5 @@ if (typeof module !== 'undefined' && module.exports) {
   module.exports = { evaluateCard, recommend, topLine };
 }
 if (typeof window !== 'undefined') {
-  window.SmartCardEngine = { evaluateCard, recommend, topLine };
+  window.CardWizEngine = { evaluateCard, recommend, topLine };
 }

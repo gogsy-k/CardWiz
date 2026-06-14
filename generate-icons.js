@@ -1,5 +1,5 @@
 /*
- * RewardXtra — Icon generator (no dependencies).
+ * CardWiz — Icon generator (no dependencies).
  * Chalao:  node generate-icons.js   (ya `npm run icons`)
  * Mauve "card" design ke 16/48/128 PNG banata hai.
  */

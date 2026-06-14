@@ -1,5 +1,5 @@
 /*
- * RewardXtra — Premium Tier Gating (Phase 6)
+ * CardWiz — Premium Tier Gating (Phase 6)
  * -----------------------------------------------
  * Free vs Premium feature gates. Pure logic — abhi koi payment backend nahi,
  * to premium ek storage flag hai (dev toggle se test kar sakte ho). Payment
@@ -51,4 +51,4 @@ const premiumApi = {
   isPremiumFeature, canUseFeature, cardLimitReached, cardsRemaining,
 };
 if (typeof module !== 'undefined' && module.exports) module.exports = premiumApi;
-if (typeof globalThis !== 'undefined') globalThis.SmartCardPremium = premiumApi;
+if (typeof globalThis !== 'undefined') globalThis.CardWizPremium = premiumApi;

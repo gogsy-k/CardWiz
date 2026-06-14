@@ -1,5 +1,5 @@
 /*
- * RewardXtra — Remote Card Catalog
+ * CardWiz — Remote Card Catalog
  *
  * Card data ab bundled file mein nahi, backend (Supabase) mein hai.
  * Wahan update karo, extension automatically new data le lega — bina redeploy ke.
@@ -9,7 +9,7 @@
  *   2. Backend down: pichla cached data use karo (offline fallback).
  *   3. Kabhi backend nahi mila: bundled data/cards.json pe fallback.
  *
- * SmartCardAuth.BACKEND_URL se backend URL milta hai (auth.js pehle load honi chahiye).
+ * CardWizAuth.BACKEND_URL se backend URL milta hai (auth.js pehle load honi chahiye).
  * Content scripts mein auth.js nahi hoti, wahan CATALOG_BACKEND_URL use hota hai.
  */
 
@@ -20,8 +20,8 @@ const CACHE_KEY     = 'rxCatalog_v2';   // v2 = cardType (credit/debit) wala sch
 const CACHE_VERSION = 2;
 
 function backendUrl() {
-  if (typeof SmartCardAuth !== 'undefined' && SmartCardAuth.BACKEND_URL) {
-    return SmartCardAuth.BACKEND_URL;
+  if (typeof CardWizAuth !== 'undefined' && CardWizAuth.BACKEND_URL) {
+    return CardWizAuth.BACKEND_URL;
   }
   return CATALOG_BACKEND_URL;
 }
@@ -97,4 +97,4 @@ async function load() {
 
 const catalogApi = { load, invalidate };
 if (typeof module !== 'undefined' && module.exports) module.exports = catalogApi;
-if (typeof globalThis !== 'undefined') globalThis.SmartCardCatalog = catalogApi;
+if (typeof globalThis !== 'undefined') globalThis.CardWizCatalog = catalogApi;

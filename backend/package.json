@@ -1,7 +1,7 @@
 {
-  "name": "smartcard-saver-backend",
+  "name": "cardwiz-backend",
   "version": "0.1.0",
-  "description": "RewardXtra backend — Google SSO, user accounts, premium status. Phase 8. Koi full card number / CVV yahan bhi store nahi.",
+  "description": "CardWiz backend — Google SSO, user accounts, premium status. Phase 8. Koi full card number / CVV yahan bhi store nahi.",
   "private": true,
   "main": "src/server.js",
   "scripts": {

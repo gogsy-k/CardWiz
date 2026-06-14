@@ -1,5 +1,5 @@
 /*
- * RewardXtra backend — entry point (Phase 8).
+ * CardWiz backend — entry point (Phase 8).
  * Express server: Google SSO + user accounts. Card numbers / CVV kabhi nahi.
  *
  * Run: npm start   (ya npm run dev for auto-reload)
@@ -38,7 +38,7 @@ app.use(express.json());
 
 // --- Health check ---
 app.get('/health', (req, res) => {
-  res.json({ ok: true, service: 'smartcard-saver-backend', db: db.kind });
+  res.json({ ok: true, service: 'cardwiz-backend', db: db.kind });
 });
 
 // --- Routes ---
@@ -64,7 +64,7 @@ async function start() {
   await autoSeedIfEmpty(); // Supabase empty ho to cards.json se seed karo
 
   app.listen(config.port, () => {
-    console.log(`\n✅ RewardXtra backend chal raha hai: http://localhost:${config.port}`);
+    console.log(`\n✅ CardWiz backend chal raha hai: http://localhost:${config.port}`);
     console.log(`   health: http://localhost:${config.port}/health\n`);
   });
 }

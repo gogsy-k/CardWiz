@@ -35,7 +35,7 @@ router.post('/order', requireAuth, async (req, res) => {
     const amount = config.premiumPriceInr * 100; // paise
     const link = await rzp.createPaymentLink({
       amount,
-      description: 'RewardXtra Premium',
+      description: 'CardWiz Premium',
       customer: { name: req.user.name || 'User', email: req.user.email },
       notes: { userId: req.user.id },
     });
@@ -86,7 +86,7 @@ router.post('/subscribe', requireAuth, async (req, res) => {
       amount,
       period: planType,
       interval: 1,
-      name: `RewardXtra Premium (${isYearly ? 'Yearly' : 'Monthly'})`,
+      name: `CardWiz Premium (${isYearly ? 'Yearly' : 'Monthly'})`,
     });
 
     // Trial end = trialDays din baad (first charge date).

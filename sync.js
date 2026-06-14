@@ -1,5 +1,5 @@
 /*
- * RewardXtra — Card Sync (Phase 10).
+ * CardWiz — Card Sync (Phase 10).
  * --------------------------------------------------
  * Signed-in user ke cards backend (Supabase) se sync karta hai. Cloud Sync
  * DEFAULT ON hai (user More tab se OFF kar sakta hai). Sirf card type /
@@ -26,14 +26,14 @@ function mergeCards(local, remote) {
 
 // ---------- network ----------
 async function pull() {
-  const res = await SmartCardAuth.authedFetch('/cards', { method: 'GET' });
+  const res = await CardWizAuth.authedFetch('/cards', { method: 'GET' });
   if (!res.ok) throw new Error('pull fail ' + res.status);
   const data = await res.json();
   return Array.isArray(data.cards) ? data.cards : [];
 }
 
 async function push(cards) {
-  const res = await SmartCardAuth.authedFetch('/cards', {
+  const res = await CardWizAuth.authedFetch('/cards', {
     method: 'PUT',
     body: JSON.stringify({ cards }),
   });
@@ -54,4 +54,4 @@ async function syncNow(localCards) {
 // ---------- exports ----------
 const syncApi = { mergeCards, pull, push, syncNow };
 if (typeof module !== 'undefined' && module.exports) module.exports = syncApi;
-if (typeof globalThis !== 'undefined') globalThis.SmartCardSync = syncApi;
+if (typeof globalThis !== 'undefined') globalThis.CardWizSync = syncApi;

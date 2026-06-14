@@ -1,5 +1,5 @@
 /*
- * RewardXtra — Background Service Worker (Phase 4)
+ * CardWiz — Background Service Worker (Phase 4)
  * ----------------------------------------------------
  * Roz do baar (chrome.alarms) bills check karta hai aur due-soon cards ke liye
  * browser notification deta hai. Ek din mein ek card pe ek hi notification.
@@ -8,7 +8,7 @@
  */
 
 importScripts('reminders.js');
-const R = globalThis.SmartCardReminders;
+const R = globalThis.CardWizReminders;
 
 const ALARM = 'scs-daily-bill-check';
 
@@ -47,7 +47,7 @@ async function checkBills() {
     chrome.notifications.create(`bill-${mc.id}-${todayKey}`, {
       type: 'basic',
       iconUrl: 'icon128.png',
-      title: '💳 RewardXtra — Bill Reminder',
+      title: '💳 CardWiz — Bill Reminder',
       message: R.reminderMessage(name, days),
       priority: 2,
     });

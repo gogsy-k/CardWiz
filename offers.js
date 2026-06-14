@@ -1,5 +1,5 @@
 /*
- * RewardXtra — Bank Offer Parser (Phase 3 extension)
+ * CardWiz — Bank Offer Parser (Phase 3 extension)
  * -------------------------------------------------------
  * Checkout page pe dikhne wale "Bank Offers / No Cost EMI" text ko parse karta hai:
  *   "10% Instant Discount up to ₹1,500 on HDFC Bank Credit Card EMI Transactions"
@@ -108,4 +108,4 @@ function bestOffersByBank(texts, amount) {
 // unique const naam — classic scripts shared global scope mein collide na ho.
 const offersApi = { detectBank, parseOffer, offerValue, bestOffersByBank };
 if (typeof module !== 'undefined' && module.exports) module.exports = offersApi;
-if (typeof globalThis !== 'undefined') globalThis.SmartCardOffers = offersApi;
+if (typeof globalThis !== 'undefined') globalThis.CardWizOffers = offersApi;

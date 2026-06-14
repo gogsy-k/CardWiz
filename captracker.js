@@ -1,5 +1,5 @@
 /*
- * RewardXtra — Monthly Cap Tracker (Phase 5)
+ * CardWiz — Monthly Cap Tracker (Phase 5)
  * -----------------------------------------------
  * Har card ke har reward-rule ka monthly cap kitna "use" ho chuka hai, ye track
  * karta hai. Naye mahine pe khud reset. Engine isse "remaining cap" puchta hai
@@ -70,4 +70,4 @@ function makeGetRemaining(usage, date) {
 // scripts ek hi global scope share karte hain, to `const api` collide kar jaata.
 const capTrackerApi = { currentPeriod, ruleKey, normalize, getUsed, remaining, logUsage, resetAll, makeGetRemaining };
 if (typeof module !== 'undefined' && module.exports) module.exports = capTrackerApi;
-if (typeof globalThis !== 'undefined') globalThis.SmartCardCapTracker = capTrackerApi;
+if (typeof globalThis !== 'undefined') globalThis.CardWizCapTracker = capTrackerApi;

@@ -26,7 +26,7 @@ async function createPaymentLink({ amount, description, customer, notes }) {
     body: JSON.stringify({
       amount,
       currency: 'INR',
-      description: description || 'RewardXtra Premium',
+      description: description || 'CardWiz Premium',
       customer: customer || undefined,
       notify: { sms: false, email: false },
       reminder_enable: false,
@@ -74,7 +74,7 @@ async function createPlan({ amount, period, interval, name }) {
     body: JSON.stringify({
       period,
       interval,
-      item: { name: name || 'RewardXtra Premium', amount, currency: 'INR' },
+      item: { name: name || 'CardWiz Premium', amount, currency: 'INR' },
     }),
   });
   const data = await res.json();

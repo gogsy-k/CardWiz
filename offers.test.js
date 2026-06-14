@@ -11,7 +11,7 @@ function test(name, fn) {
   catch (e) { console.error(`  ✗ ${name}\n      ${e.message}`); process.exitCode = 1; }
 }
 
-console.log('RewardXtra — Offer Parser Tests\n');
+console.log('CardWiz — Offer Parser Tests\n');
 
 // --- detectBank ---
 test('detectBank HDFC', () => assert.strictEqual(detectBank('10% off on HDFC Bank Credit Card'), 'HDFC'));

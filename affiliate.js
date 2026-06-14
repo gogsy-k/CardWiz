@@ -1,5 +1,5 @@
 /*
- * RewardXtra — Affiliate Link Builder (Phase 6)
+ * CardWiz — Affiliate Link Builder (Phase 6)
  * --------------------------------------------------
  * Merchant + page URL -> affiliate-tagged URL. Free tier ka revenue source.
  *
@@ -77,4 +77,4 @@ function affiliateUrl(merchant, url, config) {
 // unique const naam — classic scripts shared global scope mein collide na ho.
 const affiliateApi = { DEFAULT_AFFILIATE_CONFIG, DISCLOSURE, affiliateUrl, amazonLink, flipkartLink, cuelinksLink };
 if (typeof module !== 'undefined' && module.exports) module.exports = affiliateApi;
-if (typeof globalThis !== 'undefined') globalThis.SmartCardAffiliate = affiliateApi;
+if (typeof globalThis !== 'undefined') globalThis.CardWizAffiliate = affiliateApi;

@@ -12,7 +12,7 @@ function test(name, fn) {
 }
 const ymd = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 
-console.log('RewardXtra — Reminder Logic Tests\n');
+console.log('CardWiz — Reminder Logic Tests\n');
 
 // Aaj = 9 June 2026 (Tue). month index 5.
 const today = new Date(2026, 5, 9);
