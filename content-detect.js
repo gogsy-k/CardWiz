@@ -221,10 +221,13 @@ function renderWidget(site, amount, ranked, usingWallet, otherOffers, myCards) {
       right = `${r.rate}%`;
     }
     const walletEntry = myCards && myCards.find((c) => c.cardId === r.id);
-    const subParts = [];
-    if (walletEntry && walletEntry.nickname) subParts.push(walletEntry.nickname);
-    if (walletEntry && walletEntry.last4) subParts.push(`···${walletEntry.last4}`);
-    const subtitle = subParts.join(' · ');
+    let subtitle = '';
+    if (walletEntry) {
+      const endingPart = walletEntry.last4 ? `ending with ${walletEntry.last4}` : '';
+      if (walletEntry.nickname && endingPart) subtitle = `${walletEntry.nickname} - ${endingPart}`;
+      else if (walletEntry.nickname) subtitle = walletEntry.nickname;
+      else subtitle = endingPart;
+    }
     listHtml += `
       <div class="row ${i === 0 ? 'best' : ''} ${r.capExhausted ? 'exhausted' : ''}">
         <div class="cleft">
