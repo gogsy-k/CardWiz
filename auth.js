@@ -15,8 +15,8 @@
 // ⚠️ Yahan apna Google OAuth client id daalo (backend/.env wala same).
 const GOOGLE_CLIENT_ID = '792822617409-42qs5ac2f1v4ud48rjek7a1cugbkgobb.apps.googleusercontent.com';
 
-// ⚠️ Backend ka base URL. Dev: localhost. Deploy ke baad Railway/Render ka URL.
-const BACKEND_URL = 'http://localhost:3000';
+// ⚠️ Backend ka base URL. Dev: localhost. Production: Render.
+const BACKEND_URL = 'https://cardwiz-backend.onrender.com';
 
 const AUTH_STORAGE_KEY = 'scsAuth'; // { token, user }
 
