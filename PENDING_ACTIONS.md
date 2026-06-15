@@ -93,34 +93,35 @@ Har site pe **cart/checkout page** pe jaake check karo:
 - [ ] **Flipkart.com** — cart/checkout
 - [ ] **Myntra.com** — bag/checkout
 
-### 🔵 Add karne hain phir test (abhi manifest mein NAHI):
+### 🔵 Naye sites — ab manifest mein ADD ho gaye, browser pe test karo:
 
-**Food delivery:**
+**Food delivery** (category: food_delivery):
 - [ ] Swiggy (swiggy.com)
 - [ ] Zomato (zomato.com)
 
-**Grocery / quick-commerce:**
+**Grocery / quick-commerce** (category: grocery):
 - [ ] BigBasket (bigbasket.com)
 - [ ] Blinkit (blinkit.com)
-- [ ] Zepto (zepto.com / zeptonow.com)
+- [ ] Zepto (zeptonow.com)
 
-**Fashion / shopping:**
+**Fashion / shopping** (category: online_shopping):
 - [ ] Nykaa (nykaa.com)
 - [ ] Ajio (ajio.com)
 - [ ] Meesho (meesho.com)
-- [ ] Tata Cliq (tatacliq.com)
+- [ ] Tata CLiQ (tatacliq.com)
 
-**Travel:**
+**Travel** (category: travel):
 - [ ] MakeMyTrip (makemytrip.com)
 - [ ] Cleartrip (cleartrip.com)
 - [ ] IRCTC (irctc.co.in)
 
-**Entertainment:**
+**Entertainment** (category: entertainment):
 - [ ] BookMyShow (bookmyshow.com)
 
-> Note: Naye sites add karne ke liye `manifest.json` ke `content_scripts.matches` +
-> `web_accessible_resources.matches` mein domains add karne honge, aur `content-detect.js`
-> ke `detectSite()` + `AMOUNT_SELECTORS` mein per-site logic add karna hoga.
+> ⚠️ Amount detection: Inn sites ke class names obfuscated hain, isliye mostly
+> `genericAmount()` ("Grand Total / To Pay / Total Amount" label dhoondhta hai) pe rely karte hain.
+> Testing mein agar kisi site pe amount nahi aata, us site ka exact selector
+> `content-detect.js` ke `AMOUNT_SELECTORS` mein add karna padega (browser console se dekh ke).
 
 ---
 
@@ -135,8 +136,8 @@ Har site pe **cart/checkout page** pe jaake check karo:
 | Amazon instant-discount detection | ✅ Done |
 | Legal pages (privacy/terms/refunds/shipping/contact) | ✅ Ready (deploy pending) |
 | Razorpay live payments | 🔴 Wife ka account pending |
-| cardwiz.in deploy | 🟡 Netlify pe deploy pending |
-| Cuelinks affiliate | 🟡 Signup pending |
+| cardwiz.in deploy | ✅ Done (live) |
+| Cuelinks affiliate | 🟡 Approval state mein |
 | Backend production deploy | 🟡 Pending |
-| Add 13 new checkout sites | 🟡 Pending |
-| Testing on all sites | 🟡 Pending |
+| Add 13 new checkout sites | ✅ Done (16 sites total) |
+| Testing on all sites | 🟡 Pending (browser pe) |

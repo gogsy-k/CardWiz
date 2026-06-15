@@ -31,7 +31,20 @@
       "matches": [
         "*://*.amazon.in/*",
         "*://*.flipkart.com/*",
-        "*://*.myntra.com/*"
+        "*://*.myntra.com/*",
+        "*://*.swiggy.com/*",
+        "*://*.zomato.com/*",
+        "*://*.bigbasket.com/*",
+        "*://*.blinkit.com/*",
+        "*://*.zeptonow.com/*",
+        "*://*.nykaa.com/*",
+        "*://*.ajio.com/*",
+        "*://*.meesho.com/*",
+        "*://*.tatacliq.com/*",
+        "*://*.makemytrip.com/*",
+        "*://*.cleartrip.com/*",
+        "*://*.irctc.co.in/*",
+        "*://*.bookmyshow.com/*"
       ],
       "js": ["recommend.js", "offers.js", "captracker.js", "affiliate.js", "catalog.js", "content-detect.js"],
       "run_at": "document_idle"
@@ -43,7 +56,20 @@
       "matches": [
         "*://*.amazon.in/*",
         "*://*.flipkart.com/*",
-        "*://*.myntra.com/*"
+        "*://*.myntra.com/*",
+        "*://*.swiggy.com/*",
+        "*://*.zomato.com/*",
+        "*://*.bigbasket.com/*",
+        "*://*.blinkit.com/*",
+        "*://*.zeptonow.com/*",
+        "*://*.nykaa.com/*",
+        "*://*.ajio.com/*",
+        "*://*.meesho.com/*",
+        "*://*.tatacliq.com/*",
+        "*://*.makemytrip.com/*",
+        "*://*.cleartrip.com/*",
+        "*://*.irctc.co.in/*",
+        "*://*.bookmyshow.com/*"
       ]
     }
   ]

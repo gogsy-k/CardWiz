@@ -19,16 +19,35 @@ function detectSite(hostname) {
   const h = (hostname || '').toLowerCase();
   // Exact domain ya uska subdomain hi match ho (lookalike/phishing domains nahi).
   const isDomain = (host, root) => host === root || host.endsWith('.' + root);
+  // category = recommend engine ki category (cards.json rules se match honi chahiye).
   if (isDomain(h, 'amazon.in')) return { merchant: 'Amazon', category: 'amazon' };
   if (isDomain(h, 'flipkart.com')) return { merchant: 'Flipkart', category: 'flipkart' };
   if (isDomain(h, 'myntra.com')) return { merchant: 'Myntra', category: 'myntra' };
+  // Food delivery
+  if (isDomain(h, 'swiggy.com')) return { merchant: 'Swiggy', category: 'food_delivery' };
+  if (isDomain(h, 'zomato.com')) return { merchant: 'Zomato', category: 'food_delivery' };
+  // Grocery / quick-commerce
+  if (isDomain(h, 'bigbasket.com')) return { merchant: 'BigBasket', category: 'grocery' };
+  if (isDomain(h, 'blinkit.com')) return { merchant: 'Blinkit', category: 'grocery' };
+  if (isDomain(h, 'zeptonow.com')) return { merchant: 'Zepto', category: 'grocery' };
+  // Fashion / shopping
+  if (isDomain(h, 'nykaa.com')) return { merchant: 'Nykaa', category: 'online_shopping' };
+  if (isDomain(h, 'ajio.com')) return { merchant: 'Ajio', category: 'online_shopping' };
+  if (isDomain(h, 'meesho.com')) return { merchant: 'Meesho', category: 'online_shopping' };
+  if (isDomain(h, 'tatacliq.com')) return { merchant: 'Tata CLiQ', category: 'online_shopping' };
+  // Travel
+  if (isDomain(h, 'makemytrip.com')) return { merchant: 'MakeMyTrip', category: 'travel' };
+  if (isDomain(h, 'cleartrip.com')) return { merchant: 'Cleartrip', category: 'travel' };
+  if (isDomain(h, 'irctc.co.in')) return { merchant: 'IRCTC', category: 'travel' };
+  // Entertainment
+  if (isDomain(h, 'bookmyshow.com')) return { merchant: 'BookMyShow', category: 'entertainment' };
   return null;
 }
 
 // Sirf cart/checkout/payment jaise pages pe widget dikhao — har page pe nahi.
 function isCheckoutish(pathAndSearch) {
   const u = (pathAndSearch || '').toLowerCase();
-  return /(cart|checkout|\/buy|payment|\/gp\/buy|order-summary|bag)/.test(u);
+  return /(cart|checkout|\/buy|payment|\/gp\/buy|order-summary|bag|booking|\/review|order-payment|buytickets)/.test(u);
 }
 
 // "₹1,299.00" / "Rs. 1299" / "1,299" -> 1299  (warna null)
@@ -61,9 +80,24 @@ const AMOUNT_SELECTORS = {
     '.priceDetail-base-totalAmount',
     '.pdp-price strong',
   ],
+  // Naye sites — class names obfuscated/badalte rehte hain, isliye mostly
+  // genericAmount() (TOTAL_LABELS) fallback pe rely karte hain. Ye best-guess hints hain.
+  Swiggy: ['[data-testid="cart-total"]', '.styles_totalAmount__', '.GrandTotal'],
+  Zomato: ['[class*="grand-total"]', '[class*="GrandTotal"]', '[class*="total"]'],
+  BigBasket: ['.mt-summary .total', '[qa="order_total"]', '[class*="GrandTotal"]'],
+  Blinkit: ['[class*="GrandTotal"]', '[class*="bill-total"]', '[class*="total"]'],
+  Zepto: ['[class*="GrandTotal"]', '[class*="grandTotal"]', '[class*="total"]'],
+  Nykaa: ['.total-amount', '[class*="grandTotal"]', '[class*="GrandTotal"]'],
+  Ajio: ['.cart-total-value', '[class*="grandTotal"]', '[class*="totalAmount"]'],
+  Meesho: ['[class*="grandTotal"]', '[class*="GrandTotal"]', '[class*="totalAmount"]'],
+  'Tata CLiQ': ['[class*="grandTotal"]', '[class*="GrandTotal"]', '.total-value'],
+  MakeMyTrip: ['[class*="grandTotal"]', '[class*="totalAmount"]', '.totalPrice'],
+  Cleartrip: ['[class*="grandTotal"]', '[class*="totalAmount"]', '.total-amount'],
+  IRCTC: ['#totalCollectibleAmount', '[class*="totalFare"]', '[class*="total"]'],
+  BookMyShow: ['[class*="grandTotal"]', '[class*="totalAmount"]', '[class*="amountPayable"]'],
 };
 
-const TOTAL_LABELS = /(grand total|order total|amount payable|total payable|total amount|net payable|to pay)/i;
+const TOTAL_LABELS = /(grand total|order total|amount payable|total payable|total amount|net payable|to pay|bill total|item total|amount to pay|payable amount|you pay|total payable amount|total fare|final amount)/i;
 
 // ---------- DOM-dependent (browser only) ----------
 
