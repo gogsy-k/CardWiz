@@ -71,8 +71,7 @@ Backend live: **https://cardwiz-backend.onrender.com** (Render free plan, Supaba
 - [x] Secrets set on Render (Google/JWT/DB/Razorpay)
 - [x] Extension backend URL updated (`auth.js`, `catalog.js`, `manifest.json`)
 - [x] Verified: `/health` 200 (db: postgres), `/catalog` 195 cards
-- [ ] **Render pe `BASE_URL` set karo** = `https://cardwiz-backend.onrender.com`
-      (Razorpay payment links ke callback ke liye — abhi skip kiya tha)
+- [x] **Render pe `BASE_URL` set** = `https://cardwiz-backend.onrender.com` (Razorpay callbacks ke liye)
 - [ ] Launch pe: Render **free → starter ($7/mo)** upgrade (always-on, no cold start)
 - [ ] Published hone pe: Render pe `ALLOWED_EXTENSION_IDS` = extension ID set karo
 
