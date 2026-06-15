@@ -1,0 +1,33 @@
+import Link from "next/link";
+
+const legal = [
+  { href: "/privacy", label: "Privacy" },
+  { href: "/terms", label: "Terms" },
+  { href: "/refunds", label: "Refunds" },
+  { href: "/shipping", label: "Shipping" },
+  { href: "/contact", label: "Contact" },
+];
+
+export default function Footer() {
+  return (
+    <footer className="mt-auto border-t border-border">
+      <div className="mx-auto flex max-w-6xl flex-col gap-4 px-5 py-7 sm:flex-row sm:items-center sm:justify-between">
+        <div className="text-sm text-muted">
+          💳 <span className="font-bold text-accent">CardWiz</span> &nbsp;·&nbsp; India-first,
+          privacy-first
+        </div>
+        <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
+          {legal.map((l) => (
+            <Link key={l.href} href={l.href} className="text-muted hover:text-subtle">
+              {l.label}
+            </Link>
+          ))}
+        </div>
+      </div>
+      <div className="border-t border-border/50 px-5 py-3 text-center text-xs text-muted">
+        © {new Date().getFullYear()} CardWiz · Hum kabhi aapka full card number / CVV store nahi
+        karte.
+      </div>
+    </footer>
+  );
+}

@@ -1,0 +1,81 @@
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
+
+const CHROME_STORE_URL = "https://chrome.google.com/webstore";
+
+const links = [
+  { href: "/", label: "Home" },
+  { href: "/cards", label: "Find Cards" },
+  { href: "/#how", label: "How it works" },
+  { href: "/contact", label: "Contact" },
+];
+
+export default function Navbar() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <header className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur-md">
+      <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3.5">
+        <Link href="/" className="text-xl font-extrabold tracking-tight text-accent">
+          💳 CardWiz
+        </Link>
+
+        {/* Desktop links */}
+        <div className="hidden items-center gap-7 md:flex">
+          {links.map((l) => (
+            <Link
+              key={l.href}
+              href={l.href}
+              className="text-sm font-medium text-subtle transition-colors hover:text-fg"
+            >
+              {l.label}
+            </Link>
+          ))}
+          <a
+            href={CHROME_STORE_URL}
+            target="_blank"
+            rel="noopener"
+            className="rounded-lg bg-accent px-4 py-2 text-sm font-bold text-bg transition-colors hover:bg-blue"
+          >
+            Add to Chrome
+          </a>
+        </div>
+
+        {/* Mobile toggle */}
+        <button
+          onClick={() => setOpen((v) => !v)}
+          className="text-2xl text-subtle md:hidden"
+          aria-label="Menu"
+        >
+          {open ? "✕" : "☰"}
+        </button>
+      </nav>
+
+      {/* Mobile menu */}
+      {open && (
+        <div className="flex flex-col gap-1 border-t border-border px-5 py-3 md:hidden">
+          {links.map((l) => (
+            <Link
+              key={l.href}
+              href={l.href}
+              onClick={() => setOpen(false)}
+              className="rounded-lg px-2 py-2 text-sm font-medium text-subtle hover:bg-surface hover:text-fg"
+            >
+              {l.label}
+            </Link>
+          ))}
+          <a
+            href={CHROME_STORE_URL}
+            target="_blank"
+            rel="noopener"
+            className="mt-1 rounded-lg bg-accent px-4 py-2 text-center text-sm font-bold text-bg"
+          >
+            Add to Chrome
+          </a>
+        </div>
+      )}
+    </header>
+  );
+}
