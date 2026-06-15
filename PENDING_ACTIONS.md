@@ -30,27 +30,18 @@ Income wahi decide karta hai jiske naam pe Razorpay KYC + settlement bank accoun
 
 ---
 
-## 🟡 2. Website Deploy — cardwiz.in (Razorpay verification ke liye zaroori)
+## ✅ 2. Website — cardwiz.in (DONE, React/Next.js on Vercel)
 
-Razorpay website verification ke liye `cardwiz.in` pe ye 5 pages **live** honi chahiye.
-Saari pages `landing/` folder mein ready hain.
+cardwiz.in ab **Next.js 16 React site** (`website/` folder) — Vercel pe live, Let's Encrypt SSL.
+Old `landing/*.html` hata diya (obsolete). DNS Netlify mein manage (apex A → 216.198.79.1,
+www CNAME → vercel-dns). Auto-deploys from GitHub push.
 
-### Steps:
-- [ ] [netlify.com](https://app.netlify.com) pe sign up
-- [ ] "Add new site" → "Deploy manually" → `landing/` folder drag-drop
-- [ ] Temp URL pe saari pages khul rahi hain verify karo
-- [ ] Custom domain `cardwiz.in` add karo → GoDaddy DNS records update karo
-- [ ] HTTPS active hone ka wait (15-30 min)
+- [x] React website built + deployed on Vercel (project "card-wiz")
+- [x] Custom domain cardwiz.in + www, SSL active
+- [x] All Razorpay-required legal pages live as React routes:
+      /privacy /terms /shipping /contact /refunds
 - [ ] Razorpay form: website = `https://cardwiz.in`, "login to pay" = No → Submit
-
-### Mandatory pages (sab ready):
-| Page | File | URL |
-|------|------|-----|
-| Privacy Policy | `landing/privacy.html` | cardwiz.in/privacy.html |
-| Terms & Conditions | `landing/terms.html` | cardwiz.in/terms.html |
-| Shipping & Delivery | `landing/shipping.html` | cardwiz.in/shipping.html |
-| Contact Us | `landing/contact.html` | cardwiz.in/contact.html |
-| Cancellation & Refunds | `landing/refunds.html` | cardwiz.in/refunds.html |
+      (blocked on wife's KYC — see section 1)
 
 ---
 
