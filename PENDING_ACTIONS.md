@@ -136,7 +136,7 @@ Har site pe **cart/checkout page** pe jaake check karo:
 | Amazon instant-discount detection | ✅ Done |
 | Legal pages (privacy/terms/refunds/shipping/contact) | ✅ Ready (deploy pending) |
 | Razorpay live payments | 🔴 Wife ka account pending |
-| cardwiz.in deploy | ✅ Done (live) |
+| cardwiz.in website | ✅ Next.js (React) live on Vercel + SSL |
 | Cuelinks affiliate | 🟡 Approval state mein |
 | Backend production deploy | ✅ Done (Render, live) |
 | Add 13 new checkout sites | ✅ Done (16 sites total) |
