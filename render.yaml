@@ -1,0 +1,42 @@
+# Render Blueprint — CardWiz backend
+# Render dashboard → "New +" → "Blueprint" → ye repo connect karo.
+# Render is file ko padhke service auto-configure karega.
+# Secrets (sync:false) Render UI mein prompt honge — git mein NAHI jaate.
+
+services:
+  - type: web
+    name: cardwiz-backend
+    runtime: node
+    plan: free                 # launch pe 'starter' ($7/mo) karke always-on kar dena
+    rootDir: backend           # backend/ folder se chalega
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /health
+    autoDeploy: true           # git push -> auto redeploy
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      # Pricing (public — value yahin)
+      - key: PREMIUM_MONTHLY_INR
+        value: "49"
+      - key: PREMIUM_YEARLY_INR
+        value: "299"
+      - key: PREMIUM_TRIAL_DAYS
+        value: "30"
+      # Secrets — Render UI mein daalo (git mein nahi jaate)
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: DATABASE_URL          # Supabase connection string
+        sync: false
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: RAZORPAY_WEBHOOK_SECRET
+        sync: false
+      - key: ALLOWED_EXTENSION_IDS # published extension ID(s), comma-separated
+        sync: false
+      - key: BASE_URL              # deploy ke baad apna Render URL, jaise https://cardwiz-backend.onrender.com
+        sync: false
