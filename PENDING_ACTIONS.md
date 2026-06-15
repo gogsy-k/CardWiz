@@ -64,16 +64,17 @@ Saari pages `landing/` folder mein ready hain.
 
 ---
 
-## 🟡 4. Backend Deploy (production ke liye)
+## ✅ 4. Backend Deploy — DONE (Render)
 
-Abhi backend **localhost:3000** pe hai. Live payments tabhi process honge jab backend chal raha ho.
-Real product ke liye backend deploy karna padega.
-
-- [ ] Backend deploy karo (Render / Railway / VPS)
-- [ ] `backend/.env` mein `BASE_URL` = deployed URL set karo
-- [ ] `ALLOWED_EXTENSION_IDS` = published extension ID set karo
-- [ ] Extension mein backend URL update karo (`auth.js` BACKEND_URL + `catalog.js` CATALOG_BACKEND_URL)
-- [ ] Supabase `/catalog/seed` deployed backend pe chala ke cards seed karo
+Backend live: **https://cardwiz-backend.onrender.com** (Render free plan, Supabase connected).
+- [x] Deploy via Render blueprint (`render.yaml`)
+- [x] Secrets set on Render (Google/JWT/DB/Razorpay)
+- [x] Extension backend URL updated (`auth.js`, `catalog.js`, `manifest.json`)
+- [x] Verified: `/health` 200 (db: postgres), `/catalog` 195 cards
+- [ ] **Render pe `BASE_URL` set karo** = `https://cardwiz-backend.onrender.com`
+      (Razorpay payment links ke callback ke liye — abhi skip kiya tha)
+- [ ] Launch pe: Render **free → starter ($7/mo)** upgrade (always-on, no cold start)
+- [ ] Published hone pe: Render pe `ALLOWED_EXTENSION_IDS` = extension ID set karo
 
 ---
 
@@ -138,6 +139,6 @@ Har site pe **cart/checkout page** pe jaake check karo:
 | Razorpay live payments | 🔴 Wife ka account pending |
 | cardwiz.in deploy | ✅ Done (live) |
 | Cuelinks affiliate | 🟡 Approval state mein |
-| Backend production deploy | 🟡 Pending |
+| Backend production deploy | ✅ Done (Render, live) |
 | Add 13 new checkout sites | ✅ Done (16 sites total) |
 | Testing on all sites | 🟡 Pending (browser pe) |
