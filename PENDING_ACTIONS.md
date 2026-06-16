@@ -80,6 +80,10 @@ Elite/Premium/Solid tiers, Info modal). Pending:
       Baad mein kahin re-enable karna hai (maybe Top Cards ya Suggest mein).
 - [ ] **Apply links** — `cardreferral.js` APPLY_URLS abhi khaali (Google-search fallback).
       Referral network (Cuelinks/bank) ke real apply links daalo.
+- [ ] **English/Hinglish language toggle** — DECIDED placement: **More tab, Account ke
+      neeche + Cloud Sync ke upar**. Build deferred (post-launch priority). ⚠️ Real kaam =
+      i18n layer: saari hardcoded Hinglish strings (popup + widget) ko en/hinglish map mein
+      nikaal ke language-pref (chrome.storage) se switch karna. Toggle UI 10-min, translation bada.
 
 ---
 
