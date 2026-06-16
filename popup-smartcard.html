@@ -262,21 +262,34 @@
     .tier-premium { background: #cba6f7; color: #1e1e2e; }
     .tier-solid { background: #89b4fa; color: #1e1e2e; }
 
-    .bc-badges { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 11px; }
+    .bc-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
     .bc-badge {
-      font-size: 9px; background: #1e1e2e; color: #bac2de; border: 1px solid #3a3a4c;
-      padding: 3px 9px; border-radius: 20px; font-weight: 600;
+      font-size: 9px; font-weight: 600; color: #cdd6f4;
+      background: linear-gradient(145deg, #34344a, #232333);
+      border: 1px solid #50506a; border-radius: 20px; padding: 4px 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.06);
     }
-    .bc-actions { display: flex; gap: 8px; margin-top: 13px; }
+    .bc-actions { display: flex; gap: 9px; margin-top: 14px; }
     .bc-actions button {
-      flex: 1; border: none; border-radius: 9px; padding: 8px; font-size: 11px; font-weight: 700;
-      cursor: pointer; transition: background .12s, transform .12s;
+      flex: 1; border-radius: 11px; padding: 9px; font-size: 11px; font-weight: 800;
+      cursor: pointer; border: 1px solid transparent; letter-spacing: .2px;
+      box-shadow: 0 3px 8px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.1);
+      transition: transform .13s ease, box-shadow .13s ease, filter .13s ease;
     }
-    .bc-actions button:active { transform: scale(.97); }
-    .bc-info { background: #45475a; color: #cdd6f4; }
-    .bc-info:hover { background: #585b70; }
-    .bc-apply { background: #a6e3a1; color: #1e1e2e; }
-    .bc-apply:hover { background: #94e2d5; }
+    .bc-actions button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 7px 16px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.16);
+      filter: brightness(1.08);
+    }
+    .bc-actions button:active {
+      transform: translateY(0); box-shadow: 0 2px 5px rgba(0,0,0,.35);
+    }
+    .bc-info {
+      background: linear-gradient(145deg, #51516a, #3c3c50); color: #e6e9f5; border-color: #5c5c76;
+    }
+    .bc-apply {
+      background: linear-gradient(145deg, #b9f3b4, #8ad885); color: #133018; border-color: #a6e3a1;
+    }
     .best-disclosure { font-size: 9px; color: #6c7086; line-height: 1.5; margin-top: 6px; text-align: center; }
 
     /* ============ CARD INFO MODAL ============ */
