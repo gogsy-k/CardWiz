@@ -1055,6 +1055,15 @@ function renderBestCards() {
   if (disc) disc.textContent = (typeof CardWizReferral !== 'undefined') ? CardWizReferral.DISCLOSURE : '';
 }
 
+// Card content language ke hisaab se (bestcards-i18n.js); missing -> English base.
+function cardField(card, field) {
+  const lang = CardWizI18n.getLang();
+  const all = (typeof CardWizBestCardsI18n !== 'undefined') && CardWizBestCardsI18n.BEST_CARDS_I18N;
+  const tr = all && all[card.cardId];
+  if (tr && tr[lang] && tr[lang][field] != null) return tr[lang][field];
+  return card[field]; // English base (bestcards.js). Card NAME kabhi translate nahi.
+}
+
 // Card info modal — features / pros / cons / useful-for + Apply (andar bhi).
 function openCardInfo(card) {
   const modal = $('cardInfoModal');
@@ -1067,10 +1076,10 @@ function openCardInfo(card) {
        <div class="m-name">${escapeHtml(card.name)} <span class="bc-tier-icon" title="${escapeHtml(tm.label || '')}">${tm.icon}</span></div>
        <button class="m-x" id="cardInfoClose">✕</button>
      </div>
-     <div class="m-sec feat"><h4>${escapeHtml(CardWizI18n.t('md_features'))}</h4><ul>${li(card.features)}</ul></div>
-     <div class="m-sec pros"><h4>${escapeHtml(CardWizI18n.t('md_pros'))}</h4><ul>${li(card.pros)}</ul></div>
-     <div class="m-sec cons"><h4>${escapeHtml(CardWizI18n.t('md_cons'))}</h4><ul>${li(card.cons)}</ul></div>
-     <div class="m-sec use"><h4>${escapeHtml(CardWizI18n.t('md_useful'))}</h4><div class="m-use">${escapeHtml(card.usefulFor || '')}</div></div>
+     <div class="m-sec feat"><h4>${escapeHtml(CardWizI18n.t('md_features'))}</h4><ul>${li(cardField(card, 'features'))}</ul></div>
+     <div class="m-sec pros"><h4>${escapeHtml(CardWizI18n.t('md_pros'))}</h4><ul>${li(cardField(card, 'pros'))}</ul></div>
+     <div class="m-sec cons"><h4>${escapeHtml(CardWizI18n.t('md_cons'))}</h4><ul>${li(cardField(card, 'cons'))}</ul></div>
+     <div class="m-sec use"><h4>${escapeHtml(CardWizI18n.t('md_useful'))}</h4><div class="m-use">${escapeHtml(cardField(card, 'usefulFor') || '')}</div></div>
      <button class="m-apply" id="cardInfoApply">${escapeHtml(CardWizI18n.t('act_apply_this'))}</button>
      <div class="m-disc">${(typeof CardWizReferral !== 'undefined') ? escapeHtml(CardWizReferral.DISCLOSURE) : ''}</div>`;
   $('cardInfoClose').addEventListener('click', closeCardInfo);
