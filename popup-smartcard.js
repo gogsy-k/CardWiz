@@ -1055,26 +1055,25 @@ function openCardInfo(card) {
   const li = (arr) => (arr || []).map((x) => `<li>${escapeHtml(x)}</li>`).join('');
   box.innerHTML =
     `<div class="m-hd">
-       <div>
-         <div class="m-name">${escapeHtml(card.name)}</div>
-         <div class="m-bank">${escapeHtml(card.bank)} &nbsp;<span class="tier ${tm.cls}">${tm.icon} ${escapeHtml(tm.label || '')}</span></div>
-       </div>
+       <div class="m-name">${escapeHtml(card.name)} <span class="bc-tier-icon" title="${escapeHtml(tm.label || '')}">${tm.icon}</span></div>
        <button class="m-x" id="cardInfoClose">✕</button>
      </div>
      <div class="m-sec feat"><h4>✨ Features</h4><ul>${li(card.features)}</ul></div>
-     <div class="m-sec pros"><h4>Pros</h4><ul>${li(card.pros)}</ul></div>
-     <div class="m-sec cons"><h4>Cons</h4><ul>${li(card.cons)}</ul></div>
-     <div class="m-sec use"><h4>👤 Useful for</h4><div class="m-use">${escapeHtml(card.usefulFor || '')}</div></div>
+     <div class="m-sec pros"><h4>👍 Pros</h4><ul>${li(card.pros)}</ul></div>
+     <div class="m-sec cons"><h4>👎 Cons</h4><ul>${li(card.cons)}</ul></div>
+     <div class="m-sec use"><h4>🎯 Useful for</h4><div class="m-use">${escapeHtml(card.usefulFor || '')}</div></div>
      <button class="m-apply" id="cardInfoApply">Apply for this card ↗</button>
      <div class="m-disc">${(typeof CardWizReferral !== 'undefined') ? escapeHtml(CardWizReferral.DISCLOSURE) : ''}</div>`;
   $('cardInfoClose').addEventListener('click', closeCardInfo);
   $('cardInfoApply').addEventListener('click', () => openApply({ id: card.cardId, name: card.name }));
   modal.hidden = false;
+  document.body.style.overflow = 'hidden'; // background scroll lock jab modal khula ho
 }
 
 function closeCardInfo() {
   const modal = $('cardInfoModal');
   if (modal) modal.hidden = true;
+  document.body.style.overflow = ''; // scroll wapas allow
 }
 
 // ---------- CIBIL score checker (affiliate redirect) ----------

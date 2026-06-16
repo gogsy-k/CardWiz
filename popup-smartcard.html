@@ -16,10 +16,10 @@
     /* Top nav (view switch) */
     nav { display: flex; gap: 6px; margin: 10px 0 12px; }
     nav button {
-      flex: 1; background: #313244; color: #a6adc8; border: 1px solid #45475a;
-      border-radius: 8px; padding: 7px; font-size: 12px; cursor: pointer; font-weight: 600;
+      flex: 1; background: linear-gradient(145deg, #3a3a4e, #2c2c3c); color: #a6adc8;
+      border: 1px solid #4a4a5e; border-radius: 8px; padding: 7px; font-size: 12px; cursor: pointer; font-weight: 600;
     }
-    nav button.active { background: #cba6f7; color: #1e1e2e; border-color: #cba6f7; }
+    nav button.active { background: linear-gradient(145deg, #d4b5fa, #c39cf3); color: #1e1e2e; border-color: #cba6f7; }
 
     .privacy { font-size: 10px; color: #6c7086; margin: 0 0 12px; line-height: 1.5; }
 
@@ -183,10 +183,10 @@
     /* Credit/Debit toggle tabs + type tag */
     .cards-tabs { display: flex; gap: 6px; margin-bottom: 10px; }
     .cards-tabs button {
-      flex: 1; background: #313244; color: #a6adc8; border: 1px solid #45475a;
-      border-radius: 8px; padding: 7px; font-size: 12px; cursor: pointer; font-weight: 600;
+      flex: 1; background: linear-gradient(145deg, #3a3a4e, #2c2c3c); color: #a6adc8;
+      border: 1px solid #4a4a5e; border-radius: 8px; padding: 7px; font-size: 12px; cursor: pointer; font-weight: 600;
     }
-    .cards-tabs button.active { background: #cba6f7; color: #1e1e2e; border-color: #cba6f7; }
+    .cards-tabs button.active { background: linear-gradient(145deg, #d4b5fa, #c39cf3); color: #1e1e2e; border-color: #cba6f7; }
     .type-tag {
       font-size: 8px; background: #89b4fa; color: #1e1e2e; padding: 1px 5px;
       border-radius: 4px; margin-left: 6px; font-weight: 700; vertical-align: middle;
@@ -232,10 +232,10 @@
     .best-sub { font-size: 10px; color: #6c7086; margin-top: 3px; line-height: 1.5; }
     .best-filter { display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap; }
     .best-filter button {
-      flex: 1; min-width: 56px; background: #313244; color: #a6adc8; border: 1px solid #45475a;
-      border-radius: 8px; padding: 6px 4px; font-size: 10px; cursor: pointer; font-weight: 700;
+      flex: 1; min-width: 56px; background: linear-gradient(145deg, #3a3a4e, #2c2c3c); color: #a6adc8;
+      border: 1px solid #4a4a5e; border-radius: 8px; padding: 6px 4px; font-size: 10px; cursor: pointer; font-weight: 700;
     }
-    .best-filter button.active { background: #cba6f7; color: #1e1e2e; border-color: #cba6f7; }
+    .best-filter button.active { background: linear-gradient(145deg, #d4b5fa, #c39cf3); color: #1e1e2e; border-color: #cba6f7; }
 
     .bestcard {
       background: linear-gradient(150deg, #353548, #2a2a3a);
@@ -306,8 +306,8 @@
     .modal .m-bank { font-size: 10px; color: #6c7086; margin-top: 2px; }
     .modal .m-x { background: none; border: none; color: #6c7086; font-size: 18px; cursor: pointer; line-height: 1; padding: 0 2px; }
     .modal .m-x:hover { color: #f38ba8; }
-    .modal .m-sec { margin-top: 13px; }
-    .modal .m-sec h4 { font-size: 11px; font-weight: 800; margin-bottom: 5px; }
+    .modal .m-sec { margin-top: 16px; }
+    .modal .m-sec h4 { font-size: 14px; font-weight: 800; margin-bottom: 7px; letter-spacing: .2px; }
     .modal .m-sec.feat h4 { color: #cba6f7; }
     .modal .m-sec.pros h4 { color: #a6e3a1; }
     .modal .m-sec.cons h4 { color: #f38ba8; }
@@ -319,10 +319,10 @@
     .modal .m-sec.cons li::before { content: '✕'; position: absolute; left: 2px; color: #f38ba8; }
     .modal .m-use { font-size: 11px; color: #cdd6f4; line-height: 1.55; }
     .modal .m-apply {
-      width: 100%; margin-top: 15px; background: #a6e3a1; color: #1e1e2e; border: none;
-      border-radius: 9px; padding: 10px; font-size: 12px; font-weight: 700; cursor: pointer;
+      width: 100%; margin-top: 16px; border-radius: 11px; padding: 11px;
+      font-size: 12px; font-weight: 800; cursor: pointer; letter-spacing: .2px;
+      background: linear-gradient(145deg, #b9f3b4, #8ad885); color: #133018; border: 1px solid #a6e3a1;
     }
-    .modal .m-apply:hover { background: #94e2d5; }
     .modal .m-disc { font-size: 8px; color: #6c7086; margin-top: 7px; text-align: center; line-height: 1.4; }
 
     /* ============ CIBIL CHECKER ============ */
@@ -348,6 +348,21 @@
       padding: 4px 8px; font-size: 11px; cursor: pointer; font-weight: 700;
     }
     .mycard .pay-now:hover { background: #b4befe; }
+
+    /* ====== Global button feel — pure extension ke sab buttons elevated/glassy ====== */
+    button {
+      box-shadow: 0 2px 6px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.08);
+      transition: transform .12s ease, box-shadow .12s ease, filter .12s ease, background .12s ease;
+    }
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.14);
+      filter: brightness(1.07);
+    }
+    button:active { transform: translateY(0); box-shadow: 0 1px 3px rgba(0,0,0,.3); filter: brightness(.98); }
+    /* Icon-only close buttons — koi elevation nahi */
+    .m-x { box-shadow: none; }
+    .m-x:hover { transform: none; box-shadow: none; filter: brightness(1); }
 
     [hidden] { display: none !important; }
   </style>
