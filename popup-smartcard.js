@@ -57,7 +57,7 @@ let syncEnabled = true;// Phase 10: cloud sync (default ON; signed-in pe hi acti
 let editingId = null; // agar edit ho raha hai to uska wallet-entry id
 let cardsTab = 'credit'; // Cards section ka active tab: 'credit' | 'debit'
 let lastRanked = [];  // last recommendation results (log button ke liye)
-let bestTier = 'all'; // Best Cards (Tab 1) tier filter: all|elite|premium|solid
+let bestTier = 'elite'; // Best Cards (Tab 1) tier filter: elite|premium|solid (default Elite)
 
 // ---------- Init ----------
 async function init() {
