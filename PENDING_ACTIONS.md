@@ -80,10 +80,12 @@ Elite/Premium/Solid tiers, Info modal). Pending:
       Baad mein kahin re-enable karna hai (maybe Top Cards ya Suggest mein).
 - [ ] **Apply links** — `cardreferral.js` APPLY_URLS abhi khaali (Google-search fallback).
       Referral network (Cuelinks/bank) ke real apply links daalo.
-- [ ] **English/Hinglish language toggle** — DECIDED placement: **More tab, Account ke
-      neeche + Cloud Sync ke upar**. Build deferred (post-launch priority). ⚠️ Real kaam =
-      i18n layer: saari hardcoded Hinglish strings (popup + widget) ko en/hinglish map mein
-      nikaal ke language-pref (chrome.storage) se switch karna. Toggle UI 10-min, translation bada.
+- [x] **English/Hinglish/Hindi language switcher** — DONE. `i18n.js` + `bestcards-i18n.js`.
+      3 buttons in More tab; translates UI + badges + card detail content + icon tooltip.
+      Card names / tier names / website list / numbers stay English. Regional langs dropped.
+- [ ] **(optional) Widget i18n** — content-script widget (content-detect.js) abhi sirf Hinglish.
+      Popup translate ho gaya; widget alag context hai. Chaaho to baad mein i18n kar sakte hain.
+- [ ] **(optional) Review Hindi card translations** — model-generated, accuracy check kar lena.
 
 ---
 
