@@ -1018,7 +1018,7 @@ function renderFeatured() {
 function renderBestCards() {
   const list = $('bestCardsList');
   if (!list || typeof CardWizBestCards === 'undefined') return;
-  const { BEST_CARDS, TIER_META } = CardWizBestCards;
+  const { BEST_CARDS, TIER_META, BADGE_ICONS } = CardWizBestCards;
 
   document.querySelectorAll('#bestFilter button').forEach((b) =>
     b.classList.toggle('active', b.dataset.tier === bestTier));
@@ -1032,13 +1032,10 @@ function renderBestCards() {
     el.className = 'bestcard';
     el.innerHTML =
       `<div class="bc-top">
-         <div>
-           <div class="bc-name">${escapeHtml(card.name)}</div>
-           <div class="bc-bank">${escapeHtml(card.bank)}</div>
-         </div>
+         <div class="bc-name">${escapeHtml(card.name)}</div>
          <span class="tier ${tm.cls}">${tm.icon} ${escapeHtml(tm.label || '')}</span>
        </div>
-       <div class="bc-badges">${card.badges.map((bd) => `<span class="bc-badge">${escapeHtml(bd)}</span>`).join('')}</div>
+       <div class="bc-badges">${card.badges.map((bd) => `<span class="bc-badge">${(BADGE_ICONS[bd] || '🏷️')} ${escapeHtml(bd)}</span>`).join('')}</div>
        <div class="bc-actions">
          <button class="bc-info">ℹ️ Info</button>
          <button class="bc-apply">Apply ↗</button>

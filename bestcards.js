@@ -17,6 +17,15 @@ const TIER_META = {
   solid:   { label: 'Solid',   cls: 'tier-solid',   icon: '✅' },
 };
 
+// "Best for" badge -> icon. Naya badge add karo to yahan icon bhi daalo (warna 🏷️ default).
+const BADGE_ICONS = {
+  'Travel': '✈️', 'Air Miles': '🛫', 'Lounge': '🛋️', 'Points': '🎯',
+  'Premium': '💎', 'Cashback': '💰', 'Online Shopping': '🛒', 'Shopping': '🛍️',
+  'Bills': '🧾', 'Food': '🍔', 'Amazon': '📦', 'Flipkart': '🏷️',
+  'Lifetime Free': '🆓', 'Rewards': '🎁', 'Dining': '🍽️', 'Entertainment': '🎬',
+  'Grocery': '🥦', 'Fuel': '⛽', 'App-first': '📱', 'Customisable': '🎛️',
+};
+
 const BEST_CARDS = [
   // ---------------- ELITE ----------------
   {
@@ -351,6 +360,6 @@ const BEST_CARDS = [
 ];
 
 // ---------- Exports (browser/node) ----------
-const bestCardsApi = { TIER_META, BEST_CARDS };
+const bestCardsApi = { TIER_META, BADGE_ICONS, BEST_CARDS };
 if (typeof module !== 'undefined' && module.exports) module.exports = bestCardsApi;
 if (typeof globalThis !== 'undefined') globalThis.CardWizBestCards = bestCardsApi;
