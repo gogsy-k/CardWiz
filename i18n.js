@@ -29,7 +29,10 @@ const I18N = {
     cb_title: '📊 Check your CIBIL Score — Free', cb_btn: 'Check CIBIL Score — Free ↗',
     more_account: '👤 Account', more_language: '🌐 Language', more_sync: '☁️ Cloud Sync',
     more_premium: '⭐ Premium', more_about: 'ℹ️ About',
-    lang_hint: 'App language. Card details stay in English.',
+    act_edit: 'Edit', act_delete: 'Delete', act_pay: 'Pay ↗',
+    mc_empty: 'No cards yet — add one below 👇',
+    ext_title: 'CardWiz — find the best card',
+    lang_hint: 'App language. Card names & websites stay in English.',
   },
   hinglish: {
     nav_best: '🏆 Top Cards', nav_mycards: '💼 Mere Cards', nav_suggest: '💡 Suggest', nav_more: '⭐ More',
@@ -43,7 +46,10 @@ const I18N = {
     cb_title: '📊 Apna CIBIL Score dekho — Free', cb_btn: 'CIBIL Score check karo — Free ↗',
     more_account: '👤 Account', more_language: '🌐 Bhasha', more_sync: '☁️ Cloud Sync',
     more_premium: '⭐ Premium', more_about: 'ℹ️ About',
-    lang_hint: 'App ki bhasha. Card details English mein rehte hain.',
+    act_edit: 'Edit', act_delete: 'Delete', act_pay: 'Pay ↗',
+    mc_empty: 'Abhi koi card nahi — neeche se add karo 👇',
+    ext_title: 'CardWiz — best card batao',
+    lang_hint: 'App ki bhasha. Card names & websites English mein rehte hain.',
   },
   hi: {
     nav_best: '🏆 टॉप कार्ड', nav_mycards: '💼 मेरे कार्ड', nav_suggest: '💡 सुझाव', nav_more: '⭐ और',
@@ -57,7 +63,10 @@ const I18N = {
     cb_title: '📊 अपना CIBIL स्कोर देखें — मुफ़्त', cb_btn: 'CIBIL स्कोर चेक करें — मुफ़्त ↗',
     more_account: '👤 अकाउंट', more_language: '🌐 भाषा', more_sync: '☁️ क्लाउड सिंक',
     more_premium: '⭐ प्रीमियम', more_about: 'ℹ️ परिचय',
-    lang_hint: 'ऐप की भाषा। कार्ड की जानकारी अंग्रेज़ी में रहती है।',
+    act_edit: 'एडिट', act_delete: 'डिलीट', act_pay: 'पे ↗',
+    mc_empty: 'अभी कोई कार्ड नहीं — नीचे से जोड़ें 👇',
+    ext_title: 'CardWiz — बेस्ट कार्ड बताएँ',
+    lang_hint: 'ऐप की भाषा। कार्ड के नाम और वेबसाइट अंग्रेज़ी में रहते हैं।',
   },
 };
 
@@ -93,6 +102,23 @@ function applyStaticI18n(root) {
   });
 }
 
-const i18nApi = { LANGS, I18N, t, getLang, setLangValue, loadLang, saveLang, applyStaticI18n };
+// Badge "best for" labels -> per-language. en/hinglish = English (common terms);
+// hi = Devanagari. Brand names (Amazon/Flipkart) English hi rehte hain.
+const BADGES = {
+  hi: {
+    'Travel': 'ट्रैवल', 'Air Miles': 'एयर माइल्स', 'Lounge': 'लाउंज', 'Points': 'पॉइंट्स',
+    'Premium': 'प्रीमियम', 'Cashback': 'कैशबैक', 'Online Shopping': 'ऑनलाइन शॉपिंग', 'Shopping': 'शॉपिंग',
+    'Bills': 'बिल', 'Food': 'फूड', 'Lifetime Free': 'लाइफटाइम फ्री', 'Rewards': 'रिवॉर्ड्स',
+    'Dining': 'डाइनिंग', 'Entertainment': 'एंटरटेनमेंट', 'Grocery': 'ग्रॉसरी', 'Fuel': 'फ्यूल',
+    'App-first': 'ऐप-फर्स्ट', 'Customisable': 'कस्टमाइज़ेबल',
+  },
+};
+
+function tBadge(label) {
+  const map = BADGES[currentLang];
+  return (map && map[label]) || label;
+}
+
+const i18nApi = { LANGS, I18N, BADGES, t, tBadge, getLang, setLangValue, loadLang, saveLang, applyStaticI18n };
 if (typeof module !== 'undefined' && module.exports) module.exports = i18nApi;
 if (typeof globalThis !== 'undefined') globalThis.CardWizI18n = i18nApi;

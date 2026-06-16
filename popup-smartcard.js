@@ -63,6 +63,7 @@ let bestTier = 'elite'; // Best Cards (Tab 1) tier filter: elite|premium|solid (
 async function init() {
   await CardWizI18n.loadLang();   // language pref (default en)
   CardWizI18n.applyStaticI18n();  // static UI strings translate
+  applyExtTitle();                // icon tooltip in selected language
   DB = await CardWizCatalog.load();
   buildCategoryDropdown();
   buildCardSelect();
@@ -644,7 +645,7 @@ function renderMyCards() {
 
   if (items.length === 0) {
     els.cardsList.innerHTML =
-      `<div class="empty">Koi ${cardsTab} card nahi. Neeche se add karo 👇</div>`;
+      `<div class="empty">${escapeHtml(CardWizI18n.t('mc_empty'))}</div>`;
     return;
   }
   for (const { mc, cat } of items) els.cardsList.appendChild(makeCardRow(mc, cat));
@@ -684,18 +685,18 @@ function makeCardRow(mc, cat) {
   if (mc.dueDay) {
     const payBtn = document.createElement('button');
     payBtn.className = 'pay-now';
-    payBtn.textContent = 'Pay ↗';
+    payBtn.textContent = CardWizI18n.t('act_pay');
     payBtn.title = 'Apne bank/CRED pe bill pay karo';
     payBtn.addEventListener('click', () => payNow(cat.bank));
     actions.appendChild(payBtn);
   }
   const editBtn = document.createElement('button');
   editBtn.className = 'edit';
-  editBtn.textContent = 'Edit';
+  editBtn.textContent = CardWizI18n.t('act_edit');
   editBtn.addEventListener('click', () => openForm(mc.id));
   const delBtn = document.createElement('button');
   delBtn.className = 'del';
-  delBtn.textContent = 'Delete';
+  delBtn.textContent = CardWizI18n.t('act_delete');
   delBtn.addEventListener('click', () => deleteCard(mc.id));
   actions.appendChild(editBtn);
   actions.appendChild(delBtn);
@@ -1040,7 +1041,7 @@ function renderBestCards() {
     el.className = `bestcard lvl-${card.tier}`;
     el.innerHTML =
       `<div class="bc-name">${escapeHtml(card.name)} <span class="bc-tier-icon" title="${escapeHtml(tm.label || '')}">${tm.icon}</span></div>
-       <div class="bc-badges">${card.badges.map((bd) => `<span class="bc-badge">${(BADGE_ICONS[bd] || '🏷️')} ${escapeHtml(bd)}</span>`).join('')}</div>
+       <div class="bc-badges">${card.badges.map((bd) => `<span class="bc-badge">${(BADGE_ICONS[bd] || '🏷️')} ${escapeHtml(CardWizI18n.tBadge(bd))}</span>`).join('')}</div>
        <div class="bc-actions">
          <button class="bc-info">${escapeHtml(CardWizI18n.t('act_info'))}</button>
          <button class="bc-apply">${escapeHtml(CardWizI18n.t('act_apply'))}</button>
@@ -1105,10 +1106,20 @@ function syncLangButtons() {
     b.classList.toggle('active', b.dataset.lang === code));
 }
 
+// Extension icon ka hover tooltip (action title) — selected language mein.
+function applyExtTitle() {
+  try {
+    if (typeof chrome !== 'undefined' && chrome.action && chrome.action.setTitle) {
+      chrome.action.setTitle({ title: CardWizI18n.t('ext_title') });
+    }
+  } catch (_) { /* ignore */ }
+}
+
 function setLanguage(code) {
   CardWizI18n.saveLang(code);
   CardWizI18n.applyStaticI18n();      // static [data-i18n] strings
   syncLangButtons();
+  applyExtTitle();                    // icon tooltip
   renderBestCards();                  // dynamic (JS-generated) strings
   renderMyCards();
 }

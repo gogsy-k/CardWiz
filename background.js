@@ -7,7 +7,7 @@
  * PRINCIPLE: Sirf yaad dilata hai. Koi payment NAHI.
  */
 
-importScripts('reminders.js');
+importScripts('reminders.js', 'i18n.js');
 const R = globalThis.CardWizReminders;
 
 const ALARM = 'scs-daily-bill-check';
@@ -17,8 +17,22 @@ function ensureAlarm() {
   checkBills();
 }
 
-chrome.runtime.onInstalled.addListener(ensureAlarm);
-chrome.runtime.onStartup.addListener(ensureAlarm);
+// Extension icon ka hover tooltip — stored language mein (browser start pe bhi sahi).
+async function applyExtTitle() {
+  try {
+    await globalThis.CardWizI18n.loadLang();
+    chrome.action.setTitle({ title: globalThis.CardWizI18n.t('ext_title') });
+  } catch (_) { /* ignore */ }
+}
+
+function onBoot() { ensureAlarm(); applyExtTitle(); }
+
+chrome.runtime.onInstalled.addListener(onBoot);
+chrome.runtime.onStartup.addListener(onBoot);
+// Language change hote hi tooltip update (popup se storage badalta hai).
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === 'local' && changes.cwLang) applyExtTitle();
+});
 chrome.alarms.onAlarm.addListener((a) => {
   if (a.name === ALARM) checkBills();
 });
