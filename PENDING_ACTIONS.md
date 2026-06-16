@@ -68,6 +68,21 @@ Backend live: **https://cardwiz-backend.onrender.com** (Render free plan, Supaba
 
 ---
 
+## 🟡 4b. Extension redesign — follow-ups (Jun 2026)
+
+Popup redesign done: tabs **🏆 Top Cards → 💼 My Cards → 💡 Suggest → ⭐ More**.
+Bills tab merged into My Cards. New "Top Cards" tab (`bestcards.js`, 25 curated cards,
+Elite/Premium/Solid tiers, Info modal). Pending:
+- [ ] **CIBIL checker** — `CIBIL_PARTNER_URL` (popup-smartcard.js) abhi placeholder hai.
+      Partner (OneScore/Paisabazaar/BankBazaar) pe sign up karke referral link daalo →
+      user free check, hume commission.
+- [ ] **Sponsored card section** — abhi disabled (`renderFeatured` call-sites commented).
+      Baad mein kahin re-enable karna hai (maybe Top Cards ya Suggest mein).
+- [ ] **Apply links** — `cardreferral.js` APPLY_URLS abhi khaali (Google-search fallback).
+      Referral network (Cuelinks/bank) ke real apply links daalo.
+
+---
+
 ## ✅ 5. Testing Checklist — Sabhi Websites
 
 Har site pe **cart/checkout page** pe jaake check karo:
