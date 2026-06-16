@@ -238,12 +238,23 @@
     .best-filter button.active { background: #cba6f7; color: #1e1e2e; border-color: #cba6f7; }
 
     .bestcard {
-      background: #313244; border: 1px solid #45475a; border-radius: 12px;
-      padding: 11px 12px; margin-bottom: 9px;
+      background: linear-gradient(150deg, #353548, #2a2a3a);
+      border: 1px solid #45475a; border-left: 3px solid #45475a; border-radius: 14px;
+      padding: 13px 15px; margin-bottom: 11px;
+      transition: transform .13s ease, box-shadow .13s ease, border-color .13s ease;
     }
-    .bestcard .bc-name { font-size: 12px; font-weight: 700; color: #cdd6f4; line-height: 1.35; }
-    .bestcard .bc-tier-icon { font-size: 13px; margin-left: 3px; vertical-align: middle; }
-    .bestcard .bc-bank { font-size: 9px; color: #6c7086; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.3px; }
+    .bestcard:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(0,0,0,.4); }
+    .bestcard.lvl-elite   { border-left-color: #f9e2af; }
+    .bestcard.lvl-premium { border-left-color: #cba6f7; }
+    .bestcard.lvl-solid   { border-left-color: #89b4fa; }
+    .bestcard.lvl-elite:hover   { border-color: rgba(249,226,175,.5); border-left-color: #f9e2af; }
+    .bestcard.lvl-premium:hover { border-color: rgba(203,166,247,.5); border-left-color: #cba6f7; }
+    .bestcard.lvl-solid:hover   { border-color: rgba(137,180,250,.5); border-left-color: #89b4fa; }
+
+    .bestcard .bc-name { font-size: 13px; font-weight: 800; color: #cdd6f4; line-height: 1.4; letter-spacing: .2px; }
+    .bestcard .bc-tier-icon { font-size: 14px; margin-left: 4px; vertical-align: middle; }
+
+    /* Tier badge (modal mein use hota hai) */
     .tier {
       font-size: 9px; font-weight: 800; padding: 3px 8px; border-radius: 20px; white-space: nowrap; flex-shrink: 0;
     }
@@ -251,15 +262,17 @@
     .tier-premium { background: #cba6f7; color: #1e1e2e; }
     .tier-solid { background: #89b4fa; color: #1e1e2e; }
 
-    .bc-badges { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+    .bc-badges { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 11px; }
     .bc-badge {
-      font-size: 8px; background: #1e1e2e; color: #a6adc8; border: 1px solid #45475a;
-      padding: 2px 7px; border-radius: 10px; font-weight: 600;
+      font-size: 9px; background: #1e1e2e; color: #bac2de; border: 1px solid #3a3a4c;
+      padding: 3px 9px; border-radius: 20px; font-weight: 600;
     }
-    .bc-actions { display: flex; gap: 7px; margin-top: 10px; }
+    .bc-actions { display: flex; gap: 8px; margin-top: 13px; }
     .bc-actions button {
-      flex: 1; border: none; border-radius: 8px; padding: 7px; font-size: 11px; font-weight: 700; cursor: pointer;
+      flex: 1; border: none; border-radius: 9px; padding: 8px; font-size: 11px; font-weight: 700;
+      cursor: pointer; transition: background .12s, transform .12s;
     }
+    .bc-actions button:active { transform: scale(.97); }
     .bc-info { background: #45475a; color: #cdd6f4; }
     .bc-info:hover { background: #585b70; }
     .bc-apply { background: #a6e3a1; color: #1e1e2e; }

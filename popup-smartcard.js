@@ -1029,7 +1029,7 @@ function renderBestCards() {
   for (const card of cards) {
     const tm = TIER_META[card.tier] || {};
     const el = document.createElement('div');
-    el.className = 'bestcard';
+    el.className = `bestcard lvl-${card.tier}`;
     el.innerHTML =
       `<div class="bc-name">${escapeHtml(card.name)} <span class="bc-tier-icon" title="${escapeHtml(tm.label || '')}">${tm.icon}</span></div>
        <div class="bc-badges">${card.badges.map((bd) => `<span class="bc-badge">${(BADGE_ICONS[bd] || '🏷️')} ${escapeHtml(bd)}</span>`).join('')}</div>
