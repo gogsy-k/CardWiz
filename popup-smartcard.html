@@ -225,20 +225,134 @@
     }
     .bill-row .pay:hover { background: #b4befe; }
     .bill-right { text-align: right; display: flex; flex-direction: column; align-items: flex-end; }
+
+    /* ============ BEST CARDS (Tab 1) ============ */
+    .best-head { margin-bottom: 10px; }
+    .best-title { font-size: 14px; font-weight: 800; color: #cba6f7; }
+    .best-sub { font-size: 10px; color: #6c7086; margin-top: 3px; line-height: 1.5; }
+    .best-filter { display: flex; gap: 5px; margin-bottom: 10px; flex-wrap: wrap; }
+    .best-filter button {
+      flex: 1; min-width: 56px; background: #313244; color: #a6adc8; border: 1px solid #45475a;
+      border-radius: 8px; padding: 6px 4px; font-size: 10px; cursor: pointer; font-weight: 700;
+    }
+    .best-filter button.active { background: #cba6f7; color: #1e1e2e; border-color: #cba6f7; }
+
+    .bestcard {
+      background: #313244; border: 1px solid #45475a; border-radius: 12px;
+      padding: 11px 12px; margin-bottom: 9px;
+    }
+    .bestcard .bc-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+    .bestcard .bc-name { font-size: 12px; font-weight: 700; color: #cdd6f4; line-height: 1.3; }
+    .bestcard .bc-bank { font-size: 9px; color: #6c7086; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.3px; }
+    .tier {
+      font-size: 9px; font-weight: 800; padding: 3px 8px; border-radius: 20px; white-space: nowrap; flex-shrink: 0;
+    }
+    .tier-elite { background: #f9e2af; color: #1e1e2e; }
+    .tier-premium { background: #cba6f7; color: #1e1e2e; }
+    .tier-solid { background: #89b4fa; color: #1e1e2e; }
+
+    .bc-badges { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+    .bc-badge {
+      font-size: 8px; background: #1e1e2e; color: #a6adc8; border: 1px solid #45475a;
+      padding: 2px 7px; border-radius: 10px; font-weight: 600;
+    }
+    .bc-actions { display: flex; gap: 7px; margin-top: 10px; }
+    .bc-actions button {
+      flex: 1; border: none; border-radius: 8px; padding: 7px; font-size: 11px; font-weight: 700; cursor: pointer;
+    }
+    .bc-info { background: #45475a; color: #cdd6f4; }
+    .bc-info:hover { background: #585b70; }
+    .bc-apply { background: #a6e3a1; color: #1e1e2e; }
+    .bc-apply:hover { background: #94e2d5; }
+    .best-disclosure { font-size: 9px; color: #6c7086; line-height: 1.5; margin-top: 6px; text-align: center; }
+
+    /* ============ CARD INFO MODAL ============ */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 1000;
+      display: flex; align-items: flex-start; justify-content: center; padding: 14px; overflow-y: auto;
+    }
+    .modal {
+      background: #1e1e2e; border: 1px solid #45475a; border-radius: 14px;
+      width: 100%; max-width: 340px; padding: 16px; margin: auto 0;
+    }
+    .modal .m-hd { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+    .modal .m-name { font-size: 14px; font-weight: 800; color: #cdd6f4; line-height: 1.3; }
+    .modal .m-bank { font-size: 10px; color: #6c7086; margin-top: 2px; }
+    .modal .m-x { background: none; border: none; color: #6c7086; font-size: 18px; cursor: pointer; line-height: 1; padding: 0 2px; }
+    .modal .m-x:hover { color: #f38ba8; }
+    .modal .m-sec { margin-top: 13px; }
+    .modal .m-sec h4 { font-size: 11px; font-weight: 800; margin-bottom: 5px; }
+    .modal .m-sec.feat h4 { color: #cba6f7; }
+    .modal .m-sec.pros h4 { color: #a6e3a1; }
+    .modal .m-sec.cons h4 { color: #f38ba8; }
+    .modal .m-sec.use h4 { color: #f9e2af; }
+    .modal .m-sec ul { list-style: none; padding: 0; margin: 0; }
+    .modal .m-sec li { font-size: 11px; color: #cdd6f4; line-height: 1.55; padding: 2px 0 2px 16px; position: relative; }
+    .modal .m-sec.feat li::before { content: '•'; position: absolute; left: 3px; color: #cba6f7; }
+    .modal .m-sec.pros li::before { content: '✓'; position: absolute; left: 2px; color: #a6e3a1; }
+    .modal .m-sec.cons li::before { content: '✕'; position: absolute; left: 2px; color: #f38ba8; }
+    .modal .m-use { font-size: 11px; color: #cdd6f4; line-height: 1.55; }
+    .modal .m-apply {
+      width: 100%; margin-top: 15px; background: #a6e3a1; color: #1e1e2e; border: none;
+      border-radius: 9px; padding: 10px; font-size: 12px; font-weight: 700; cursor: pointer;
+    }
+    .modal .m-apply:hover { background: #94e2d5; }
+    .modal .m-disc { font-size: 8px; color: #6c7086; margin-top: 7px; text-align: center; line-height: 1.4; }
+
+    /* ============ CIBIL CHECKER ============ */
+    .cibil-card {
+      background: linear-gradient(135deg, #313244, #181825); border: 1px solid #45475a;
+      border-radius: 12px; padding: 14px; margin-top: 16px;
+    }
+    .cibil-title { font-size: 13px; font-weight: 800; color: #cdd6f4; }
+    .cibil-title span { color: #a6e3a1; }
+    .cibil-sub { font-size: 10px; color: #a6adc8; margin-top: 4px; line-height: 1.5; }
+    .cibil-perks { list-style: none; padding: 0; margin: 9px 0; }
+    .cibil-perks li { font-size: 10px; color: #cdd6f4; padding: 2px 0; }
+    .cibil-btn {
+      width: 100%; background: #f9e2af; color: #1e1e2e; border: none; border-radius: 9px;
+      padding: 10px; font-size: 12px; font-weight: 800; cursor: pointer; margin-top: 2px;
+    }
+    .cibil-btn:hover { background: #f5d68a; }
+    .cibil-note { font-size: 8px; color: #6c7086; margin-top: 7px; text-align: center; line-height: 1.4; }
+
+    /* My Cards — Pay button on a card row */
+    .mycard .pay-now {
+      background: #cba6f7; color: #1e1e2e; border: none; border-radius: 6px;
+      padding: 4px 8px; font-size: 11px; cursor: pointer; font-weight: 700;
+    }
+    .mycard .pay-now:hover { background: #b4befe; }
+
     [hidden] { display: none !important; }
   </style>
 </head>
 <body>
   <h2>💳 CardWiz</h2>
   <nav>
-    <button data-view="suggest" class="active">💡 Suggest</button>
-    <button data-view="mycards">💼 Cards</button>
-    <button data-view="bills">🔔 Bills</button>
+    <button data-view="best" class="active">🏆 Top Cards</button>
+    <button data-view="mycards">💼 My Cards</button>
+    <button data-view="suggest">💡 Suggest</button>
     <button data-view="more">⭐ More</button>
   </nav>
 
-  <!-- ============ SUGGEST VIEW ============ -->
-  <section id="view-suggest">
+  <!-- ============ BEST CARDS VIEW (Tab 1) ============ -->
+  <section id="view-best">
+    <div class="best-head">
+      <div class="best-title">🏆 Some of the best cards in market</div>
+      <div class="best-sub">Hand-picked top cards, scored by value. Tap <b>ℹ️ Info</b> for full details.</div>
+    </div>
+    <div class="best-filter" id="bestFilter">
+      <button data-tier="all" class="active">All</button>
+      <button data-tier="elite">👑 Elite</button>
+      <button data-tier="premium">💎 Premium</button>
+      <button data-tier="solid">✅ Solid</button>
+    </div>
+    <div id="bestCardsList"></div>
+    <div class="best-disclosure" id="bestDisclosure"></div>
+  </section>
+
+  <!-- ============ SUGGEST VIEW (Tab 3) ============ -->
+  <section id="view-suggest" hidden>
     <div class="privacy">🔒 Aapka data sirf is device pe hai — hamare server pe nahi.</div>
 
     <div class="row">
@@ -268,8 +382,23 @@
       <button id="resetCapsBtn">Caps reset</button>
     </div>
 
-    <!-- Sponsored / featured card (Phase 6.5 monetization) — FREE users only -->
+    <!-- Sponsored / featured card — TEMPORARILY DISABLED (baad mein kahin aur add karenge).
+         TODO: re-enable sponsored placement. See bestcards / renderFeatured.
     <div id="featuredBox" hidden></div>
+    -->
+
+    <!-- ============ CIBIL Score Checker ============ -->
+    <div class="cibil-card">
+      <div class="cibil-title">📊 Check your CIBIL Score — <span>Free</span></div>
+      <div class="cibil-sub">Apna credit score dekho bina kisi charge ke. Loans/cards ke liye zaroori.</div>
+      <ul class="cibil-perks">
+        <li>✅ 100% free for you</li>
+        <li>🔒 Secure — partner ke verified page pe</li>
+        <li>⚡ 2 minute mein score</li>
+      </ul>
+      <button class="cibil-btn" id="cibilBtn">Check CIBIL Score — Free ↗</button>
+      <div class="cibil-note" id="cibilNote"></div>
+    </div>
   </section>
 
   <!-- ============ MY CARDS VIEW ============ -->
@@ -375,14 +504,12 @@
     </div>
   </section>
 
-  <!-- ============ BILLS VIEW ============ -->
-  <section id="view-bills" hidden>
-    <div class="privacy">
-      🔒 Due dates <b>sirf is device pe</b>. Hum payment <b>NAHI</b> karte — sirf yaad
-      dilate hain aur "Pay Now" pe aapke bank/CRED pe bhej dete hain.
-    </div>
-    <div id="billsList"></div>
-  </section>
+  <!-- Bills tab removed — bill due date + Pay now ab "My Cards" ke har card row mein hai. -->
+
+  <!-- ============ CARD INFO MODAL (Best Cards) ============ -->
+  <div id="cardInfoModal" class="modal-overlay" hidden>
+    <div class="modal" id="cardInfoBox"></div>
+  </div>
 
   <script src="recommend.js"></script>
   <script src="reminders.js"></script>
@@ -393,6 +520,7 @@
   <script src="catalog.js"></script>
   <script src="sync.js"></script>
   <script src="cardreferral.js"></script>
+  <script src="bestcards.js"></script>
   <script src="popup-smartcard.js"></script>
 </body>
 </html>

@@ -57,6 +57,7 @@ let syncEnabled = true;// Phase 10: cloud sync (default ON; signed-in pe hi acti
 let editingId = null; // agar edit ho raha hai to uska wallet-entry id
 let cardsTab = 'credit'; // Cards section ka active tab: 'credit' | 'debit'
 let lastRanked = [];  // last recommendation results (log button ke liye)
+let bestTier = 'all'; // Best Cards (Tab 1) tier filter: all|elite|premium|solid
 
 // ---------- Init ----------
 async function init() {
@@ -71,7 +72,8 @@ async function init() {
   if (currentUser && syncEnabled) await doSyncNow(); // pull+merge+push cards
   if (currentUser && !isPremium) await autoVerifyPayment(); // Phase 11: pending payment auto-detect
   renderMyCards();
-  renderFeatured(); // Phase 6.5: sponsored card (free users)
+  renderBestCards(); // Tab 1: curated "best cards in market"
+  // renderFeatured(); // Sponsored card — TEMPORARILY DISABLED (TODO: re-enable elsewhere)
 
   // View switching
   document.querySelectorAll('nav button').forEach((btn) => {
@@ -82,6 +84,19 @@ async function init() {
   document.querySelectorAll('.cards-tabs button').forEach((btn) => {
     btn.addEventListener('click', () => { cardsTab = btn.dataset.cardtype; buildCardSelect(); renderMyCards(); });
   });
+
+  // Best Cards tier filter
+  document.querySelectorAll('#bestFilter button').forEach((btn) => {
+    btn.addEventListener('click', () => { bestTier = btn.dataset.tier; renderBestCards(); });
+  });
+
+  // Card info modal close (X button ya overlay pe click)
+  const modal = $('cardInfoModal');
+  if (modal) modal.addEventListener('click', (e) => { if (e.target === modal) closeCardInfo(); });
+
+  // CIBIL score checker button
+  const cibilBtn = $('cibilBtn');
+  if (cibilBtn) cibilBtn.addEventListener('click', openCibil);
 
   els.goBtn.addEventListener('click', runRecommendation);
   els.onlyMine.addEventListener('change', runRecommendation);
@@ -101,13 +116,13 @@ async function init() {
 function switchView(view) {
   document.querySelectorAll('nav button').forEach((b) =>
     b.classList.toggle('active', b.dataset.view === view));
+  $('view-best').hidden = view !== 'best';
   $('view-suggest').hidden = view !== 'suggest';
   $('view-mycards').hidden = view !== 'mycards';
-  $('view-bills').hidden = view !== 'bills';
   $('view-more').hidden = view !== 'more';
-  if (view === 'bills') renderBills();
+  if (view === 'best') renderBestCards();
   if (view === 'more') renderMore();
-  if (view === 'suggest') renderFeatured();
+  // if (view === 'suggest') renderFeatured(); // Sponsored — TEMPORARILY DISABLED
 }
 
 function buildCategoryDropdown() {
@@ -628,6 +643,7 @@ function renderMyCards() {
 }
 
 // Ek wallet-card ka row banao (credit + debit dono ke liye same).
+// Bill due date set ho to due-status + "Pay Now" button bhi (bills ab yahin merge).
 function makeCardRow(mc, cat) {
   const row = document.createElement('div');
   row.className = 'mycard';
@@ -640,13 +656,31 @@ function makeCardRow(mc, cat) {
   const meta = document.createElement('div');
   meta.className = 'meta';
   const last4 = mc.last4 ? ` · •••• ${mc.last4}` : '';
-  const dueInfo = mc.dueDay ? ` · 🔔 due ${mc.dueDay}` : '';
+
+  // Bill due — days-left dikhao (CardWizReminders se).
+  let dueInfo = '';
+  if (mc.dueDay && window.CardWizReminders) {
+    const st = window.CardWizReminders.dueStatus(mc.dueDay, mc.reminderDaysBefore, new Date());
+    const when = st.days <= 0 ? 'aaj due!' : st.days === 1 ? 'kal due' : `${st.days} din mein due`;
+    dueInfo = ` · 🔔 ${when}`;
+  } else if (mc.dueDay) {
+    dueInfo = ` · 🔔 due ${mc.dueDay}`;
+  }
   meta.textContent = (mc.nickname ? cat.name : cat.bank) + last4 + dueInfo;
   info.appendChild(nick);
   info.appendChild(meta);
 
   const actions = document.createElement('div');
   actions.className = 'actions';
+  // Pay Now — sirf jab bill due date set ho (credit cards).
+  if (mc.dueDay) {
+    const payBtn = document.createElement('button');
+    payBtn.className = 'pay-now';
+    payBtn.textContent = 'Pay ↗';
+    payBtn.title = 'Apne bank/CRED pe bill pay karo';
+    payBtn.addEventListener('click', () => payNow(cat.bank));
+    actions.appendChild(payBtn);
+  }
   const editBtn = document.createElement('button');
   editBtn.className = 'edit';
   editBtn.textContent = 'Edit';
@@ -978,6 +1012,86 @@ function renderFeatured() {
     const url = CardWizReferral.getFeaturedApplyUrl({ id: feat.cardId, name: cat.name });
     if (url) window.open(url, '_blank', 'noopener');
   });
+}
+
+// ---------- Best Cards (Tab 1) ----------
+function renderBestCards() {
+  const list = $('bestCardsList');
+  if (!list || typeof CardWizBestCards === 'undefined') return;
+  const { BEST_CARDS, TIER_META } = CardWizBestCards;
+
+  document.querySelectorAll('#bestFilter button').forEach((b) =>
+    b.classList.toggle('active', b.dataset.tier === bestTier));
+
+  const cards = BEST_CARDS.filter((c) => bestTier === 'all' || c.tier === bestTier);
+
+  list.innerHTML = '';
+  for (const card of cards) {
+    const tm = TIER_META[card.tier] || {};
+    const el = document.createElement('div');
+    el.className = 'bestcard';
+    el.innerHTML =
+      `<div class="bc-top">
+         <div>
+           <div class="bc-name">${escapeHtml(card.name)}</div>
+           <div class="bc-bank">${escapeHtml(card.bank)}</div>
+         </div>
+         <span class="tier ${tm.cls}">${tm.icon} ${escapeHtml(tm.label || '')}</span>
+       </div>
+       <div class="bc-badges">${card.badges.map((bd) => `<span class="bc-badge">${escapeHtml(bd)}</span>`).join('')}</div>
+       <div class="bc-actions">
+         <button class="bc-info">ℹ️ Info</button>
+         <button class="bc-apply">Apply ↗</button>
+       </div>`;
+    el.querySelector('.bc-info').addEventListener('click', () => openCardInfo(card));
+    el.querySelector('.bc-apply').addEventListener('click', () => openApply({ id: card.cardId, name: card.name }));
+    list.appendChild(el);
+  }
+
+  const disc = $('bestDisclosure');
+  if (disc) disc.textContent = (typeof CardWizReferral !== 'undefined') ? CardWizReferral.DISCLOSURE : '';
+}
+
+// Card info modal — features / pros / cons / useful-for + Apply (andar bhi).
+function openCardInfo(card) {
+  const modal = $('cardInfoModal');
+  const box = $('cardInfoBox');
+  if (!modal || !box) return;
+  const tm = (CardWizBestCards.TIER_META[card.tier]) || {};
+  const li = (arr) => (arr || []).map((x) => `<li>${escapeHtml(x)}</li>`).join('');
+  box.innerHTML =
+    `<div class="m-hd">
+       <div>
+         <div class="m-name">${escapeHtml(card.name)}</div>
+         <div class="m-bank">${escapeHtml(card.bank)} &nbsp;<span class="tier ${tm.cls}">${tm.icon} ${escapeHtml(tm.label || '')}</span></div>
+       </div>
+       <button class="m-x" id="cardInfoClose">✕</button>
+     </div>
+     <div class="m-sec feat"><h4>✨ Features</h4><ul>${li(card.features)}</ul></div>
+     <div class="m-sec pros"><h4>Pros</h4><ul>${li(card.pros)}</ul></div>
+     <div class="m-sec cons"><h4>Cons</h4><ul>${li(card.cons)}</ul></div>
+     <div class="m-sec use"><h4>👤 Useful for</h4><div class="m-use">${escapeHtml(card.usefulFor || '')}</div></div>
+     <button class="m-apply" id="cardInfoApply">Apply for this card ↗</button>
+     <div class="m-disc">${(typeof CardWizReferral !== 'undefined') ? escapeHtml(CardWizReferral.DISCLOSURE) : ''}</div>`;
+  $('cardInfoClose').addEventListener('click', closeCardInfo);
+  $('cardInfoApply').addEventListener('click', () => openApply({ id: card.cardId, name: card.name }));
+  modal.hidden = false;
+}
+
+function closeCardInfo() {
+  const modal = $('cardInfoModal');
+  if (modal) modal.hidden = true;
+}
+
+// ---------- CIBIL score checker (affiliate redirect) ----------
+// ⚠️ PLACEHOLDER: partner (OneScore / Paisabazaar / BankBazaar) pe sign up karke apna
+//    referral link yahan daalo — user free check karega, hume commission milega.
+const CIBIL_PARTNER_URL = 'https://www.cibil.com/freecibilscore';
+
+function openCibil() {
+  window.open(CIBIL_PARTNER_URL, '_blank', 'noopener');
+  const note = $('cibilNote');
+  if (note) note.textContent = 'Partner ke verified page pe ja rahe ho — CardWiz aapka data nahi maangta.';
 }
 
 init();
