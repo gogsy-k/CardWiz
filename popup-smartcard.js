@@ -61,6 +61,8 @@ let bestTier = 'elite'; // Best Cards (Tab 1) tier filter: elite|premium|solid (
 
 // ---------- Init ----------
 async function init() {
+  await CardWizI18n.loadLang();   // language pref (default en)
+  CardWizI18n.applyStaticI18n();  // static UI strings translate
   DB = await CardWizCatalog.load();
   buildCategoryDropdown();
   buildCardSelect();
@@ -97,6 +99,12 @@ async function init() {
   // CIBIL score checker button
   const cibilBtn = $('cibilBtn');
   if (cibilBtn) cibilBtn.addEventListener('click', openCibil);
+
+  // Language buttons (English / Hinglish / Hindi)
+  document.querySelectorAll('#langBtns button').forEach((btn) => {
+    btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
+  });
+  syncLangButtons();
 
   els.goBtn.addEventListener('click', runRecommendation);
   els.onlyMine.addEventListener('change', runRecommendation);
@@ -1034,8 +1042,8 @@ function renderBestCards() {
       `<div class="bc-name">${escapeHtml(card.name)} <span class="bc-tier-icon" title="${escapeHtml(tm.label || '')}">${tm.icon}</span></div>
        <div class="bc-badges">${card.badges.map((bd) => `<span class="bc-badge">${(BADGE_ICONS[bd] || '🏷️')} ${escapeHtml(bd)}</span>`).join('')}</div>
        <div class="bc-actions">
-         <button class="bc-info">ℹ️ Info</button>
-         <button class="bc-apply">Apply ↗</button>
+         <button class="bc-info">${escapeHtml(CardWizI18n.t('act_info'))}</button>
+         <button class="bc-apply">${escapeHtml(CardWizI18n.t('act_apply'))}</button>
        </div>`;
     el.querySelector('.bc-info').addEventListener('click', () => openCardInfo(card));
     el.querySelector('.bc-apply').addEventListener('click', () => openApply({ id: card.cardId, name: card.name }));
@@ -1058,11 +1066,11 @@ function openCardInfo(card) {
        <div class="m-name">${escapeHtml(card.name)} <span class="bc-tier-icon" title="${escapeHtml(tm.label || '')}">${tm.icon}</span></div>
        <button class="m-x" id="cardInfoClose">✕</button>
      </div>
-     <div class="m-sec feat"><h4>✨ Features</h4><ul>${li(card.features)}</ul></div>
-     <div class="m-sec pros"><h4>👍 Pros</h4><ul>${li(card.pros)}</ul></div>
-     <div class="m-sec cons"><h4>👎 Cons</h4><ul>${li(card.cons)}</ul></div>
-     <div class="m-sec use"><h4>🎯 Useful for</h4><div class="m-use">${escapeHtml(card.usefulFor || '')}</div></div>
-     <button class="m-apply" id="cardInfoApply">Apply for this card ↗</button>
+     <div class="m-sec feat"><h4>${escapeHtml(CardWizI18n.t('md_features'))}</h4><ul>${li(card.features)}</ul></div>
+     <div class="m-sec pros"><h4>${escapeHtml(CardWizI18n.t('md_pros'))}</h4><ul>${li(card.pros)}</ul></div>
+     <div class="m-sec cons"><h4>${escapeHtml(CardWizI18n.t('md_cons'))}</h4><ul>${li(card.cons)}</ul></div>
+     <div class="m-sec use"><h4>${escapeHtml(CardWizI18n.t('md_useful'))}</h4><div class="m-use">${escapeHtml(card.usefulFor || '')}</div></div>
+     <button class="m-apply" id="cardInfoApply">${escapeHtml(CardWizI18n.t('act_apply_this'))}</button>
      <div class="m-disc">${(typeof CardWizReferral !== 'undefined') ? escapeHtml(CardWizReferral.DISCLOSURE) : ''}</div>`;
   $('cardInfoClose').addEventListener('click', closeCardInfo);
   $('cardInfoApply').addEventListener('click', () => openApply({ id: card.cardId, name: card.name }));
@@ -1088,6 +1096,21 @@ function openCibil() {
   window.open(CIBIL_PARTNER_URL, '_blank', 'noopener');
   const note = $('cibilNote');
   if (note) note.textContent = 'Partner ke verified page pe ja rahe ho — CardWiz aapka data nahi maangta.';
+}
+
+// ---------- Language (English / Hinglish / Hindi) ----------
+function syncLangButtons() {
+  const code = CardWizI18n.getLang();
+  document.querySelectorAll('#langBtns button').forEach((b) =>
+    b.classList.toggle('active', b.dataset.lang === code));
+}
+
+function setLanguage(code) {
+  CardWizI18n.saveLang(code);
+  CardWizI18n.applyStaticI18n();      // static [data-i18n] strings
+  syncLangButtons();
+  renderBestCards();                  // dynamic (JS-generated) strings
+  renderMyCards();
 }
 
 init();

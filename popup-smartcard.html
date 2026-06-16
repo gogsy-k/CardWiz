@@ -346,6 +346,16 @@
     .cibil-btn:hover { background: #f5d68a; }
     .cibil-note { font-size: 8px; color: #6c7086; margin-top: 7px; text-align: center; line-height: 1.4; }
 
+    /* Language selector (More tab) */
+    .lang-btns { display: flex; gap: 8px; margin: 4px 0 8px; }
+    .lang-btns button {
+      flex: 1; background: linear-gradient(145deg, #3a3a4e, #2c2c3c); color: #a6adc8;
+      border: 1px solid #4a4a5e; border-radius: 9px; padding: 9px 6px; font-size: 12px;
+      font-weight: 700; cursor: pointer;
+    }
+    .lang-btns button.active { background: linear-gradient(145deg, #d4b5fa, #c39cf3); color: #1e1e2e; border-color: #cba6f7; }
+    .lang-hint { font-size: 9px; color: #6c7086; line-height: 1.5; }
+
     /* My Cards — Pay button on a card row */
     .mycard .pay-now {
       background: #cba6f7; color: #1e1e2e; border: none; border-radius: 6px;
@@ -374,17 +384,17 @@
 <body>
   <h2>💳 CardWiz</h2>
   <nav>
-    <button data-view="best" class="active">🏆 Top Cards</button>
-    <button data-view="mycards">💼 My Cards</button>
-    <button data-view="suggest">💡 Suggest</button>
-    <button data-view="more">⭐ More</button>
+    <button data-view="best" class="active" data-i18n="nav_best">🏆 Top Cards</button>
+    <button data-view="mycards" data-i18n="nav_mycards">💼 My Cards</button>
+    <button data-view="suggest" data-i18n="nav_suggest">💡 Suggest</button>
+    <button data-view="more" data-i18n="nav_more">⭐ More</button>
   </nav>
 
   <!-- ============ BEST CARDS VIEW (Tab 1) ============ -->
   <section id="view-best">
     <div class="best-head">
-      <div class="best-title">🏆 Some of the best cards in market</div>
-      <div class="best-sub">Hand-picked top cards, scored by value. Tap <b>ℹ️ Info</b> for full details.</div>
+      <div class="best-title" data-i18n="best_title">🏆 Some of the best cards in market</div>
+      <div class="best-sub" data-i18n="best_sub">Hand-picked top cards, scored by value. Tap ℹ️ Info for full details.</div>
     </div>
     <div class="best-filter" id="bestFilter">
       <button data-tier="elite" class="active">👑 Elite</button>
@@ -401,20 +411,20 @@
 
     <div class="row">
       <div>
-        <label>Kya khareed rahe ho?</label>
+        <label data-i18n="sg_q">Kya khareed rahe ho?</label>
         <select id="category"></select>
       </div>
       <div style="max-width: 110px;">
-        <label>Amount (₹)</label>
+        <label data-i18n="sg_amount">Amount (₹)</label>
         <input id="amount" type="number" min="0" placeholder="1000" value="1000">
       </div>
     </div>
 
-    <button class="primary" id="goBtn">Best card batao →</button>
+    <button class="primary" id="goBtn" data-i18n="sg_go">Best card batao →</button>
 
     <div class="toggle">
       <input type="checkbox" id="onlyMine">
-      <label for="onlyMine" style="margin:0; cursor:pointer;">Sirf mere cards dikhao</label>
+      <label for="onlyMine" style="margin:0; cursor:pointer;" data-i18n="sg_onlymine">Sirf mere cards dikhao</label>
     </div>
 
     <div class="results" id="results">
@@ -433,14 +443,14 @@
 
     <!-- ============ CIBIL Score Checker ============ -->
     <div class="cibil-card">
-      <div class="cibil-title">📊 Check your CIBIL Score — <span>Free</span></div>
+      <div class="cibil-title" data-i18n="cb_title">📊 Check your CIBIL Score — Free</div>
       <div class="cibil-sub">Apna credit score dekho bina kisi charge ke. Loans/cards ke liye zaroori.</div>
       <ul class="cibil-perks">
         <li>✅ 100% free for you</li>
         <li>🔒 Secure — partner ke verified page pe</li>
         <li>⚡ 2 minute mein score</li>
       </ul>
-      <button class="cibil-btn" id="cibilBtn">Check CIBIL Score — Free ↗</button>
+      <button class="cibil-btn" id="cibilBtn" data-i18n="cb_btn">Check CIBIL Score — Free ↗</button>
       <div class="cibil-note" id="cibilNote"></div>
     </div>
   </section>
@@ -453,13 +463,13 @@
     </div>
 
     <div class="cards-tabs">
-      <button data-cardtype="credit" class="active">💳 Credit</button>
-      <button data-cardtype="debit">🏧 Debit</button>
+      <button data-cardtype="credit" class="active" data-i18n="mc_credit">💳 Credit</button>
+      <button data-cardtype="debit" data-i18n="mc_debit">🏧 Debit</button>
     </div>
 
     <div id="cardsList"></div>
 
-    <button class="ghost" id="addCardBtn">+ Naya card add karo</button>
+    <button class="ghost" id="addCardBtn" data-i18n="mc_add">+ Naya card add karo</button>
 
     <!-- Add / Edit form -->
     <div id="cardForm" hidden>
@@ -502,18 +512,29 @@
   <section id="view-more" hidden>
     <!-- Account / Google SSO (Phase 8) -->
     <div class="more-card" id="accountCard">
-      <div class="more-title">👤 Account</div>
+      <div class="more-title" data-i18n="more_account">👤 Account</div>
       <div id="accountBox"></div>
+    </div>
+
+    <!-- Language (English / Hinglish / Hindi) -->
+    <div class="more-card" id="languageCard">
+      <div class="more-title" data-i18n="more_language">🌐 Language</div>
+      <div class="lang-btns" id="langBtns">
+        <button data-lang="en">English</button>
+        <button data-lang="hinglish">Hinglish</button>
+        <button data-lang="hi">हिन्दी</button>
+      </div>
+      <div class="lang-hint" data-i18n="lang_hint">App language. Card details stay in English.</div>
     </div>
 
     <!-- Cloud Sync (Phase 10) -->
     <div class="more-card" id="syncCard">
-      <div class="more-title">☁️ Cloud Sync</div>
+      <div class="more-title" data-i18n="more_sync">☁️ Cloud Sync</div>
       <div id="syncBox"></div>
     </div>
 
     <div class="more-card" id="premiumCard">
-      <div class="more-title">⭐ Premium</div>
+      <div class="more-title" data-i18n="more_premium">⭐ Premium</div>
       <div class="more-sub" id="premiumStatus"></div>
       <ul class="perks">
         <li>♾️ Unlimited cards (free: 3 tak)</li>
@@ -536,7 +557,7 @@
     </div>
 
     <div class="more-card">
-      <div class="more-title">ℹ️ About</div>
+      <div class="more-title" data-i18n="more_about">ℹ️ About</div>
       <div class="more-sub">
         🔒 India-first, privacy-first. Aapka data sirf is device pe. Hum payment nahi karte,
         card number/CVV nahi maangte.
@@ -555,6 +576,7 @@
     <div class="modal" id="cardInfoBox"></div>
   </div>
 
+  <script src="i18n.js"></script>
   <script src="recommend.js"></script>
   <script src="reminders.js"></script>
   <script src="captracker.js"></script>
