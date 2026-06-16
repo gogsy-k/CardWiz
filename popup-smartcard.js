@@ -1067,13 +1067,16 @@ function openCardInfo(card) {
   $('cardInfoClose').addEventListener('click', closeCardInfo);
   $('cardInfoApply').addEventListener('click', () => openApply({ id: card.cardId, name: card.name }));
   modal.hidden = false;
-  document.body.style.overflow = 'hidden'; // background scroll lock jab modal khula ho
+  // Background scroll lock — html + body dono (popup scroll html pe hota hai).
+  document.documentElement.style.overflow = 'hidden';
+  document.body.style.overflow = 'hidden';
 }
 
 function closeCardInfo() {
   const modal = $('cardInfoModal');
   if (modal) modal.hidden = true;
-  document.body.style.overflow = ''; // scroll wapas allow
+  document.documentElement.style.overflow = '';
+  document.body.style.overflow = '';
 }
 
 // ---------- CIBIL score checker (affiliate redirect) ----------

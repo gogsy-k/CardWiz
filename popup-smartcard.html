@@ -251,8 +251,11 @@
     .bestcard.lvl-premium:hover { border-color: rgba(203,166,247,.5); border-left-color: #cba6f7; }
     .bestcard.lvl-solid:hover   { border-color: rgba(137,180,250,.5); border-left-color: #89b4fa; }
 
-    .bestcard .bc-name { font-size: 13px; font-weight: 800; color: #cdd6f4; line-height: 1.4; letter-spacing: .2px; }
-    .bestcard .bc-tier-icon { font-size: 14px; margin-left: 4px; vertical-align: middle; }
+    .bestcard .bc-name {
+      font-size: 13px; font-weight: 800; color: #cdd6f4; line-height: 1.4; letter-spacing: .2px;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .bc-tier-icon { font-size: 14px; flex-shrink: 0; }
 
     /* Tier badge (modal mein use hota hai) */
     .tier {
@@ -295,14 +298,15 @@
     /* ============ CARD INFO MODAL ============ */
     .modal-overlay {
       position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 1000;
-      display: flex; align-items: flex-start; justify-content: center; padding: 14px; overflow-y: auto;
+      display: flex; align-items: flex-start; justify-content: center; padding: 14px;
+      overflow-y: auto; overscroll-behavior: contain;
     }
     .modal {
       background: #1e1e2e; border: 1px solid #45475a; border-radius: 14px;
       width: 100%; max-width: 340px; padding: 16px; margin: auto 0;
     }
     .modal .m-hd { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
-    .modal .m-name { font-size: 14px; font-weight: 800; color: #cdd6f4; line-height: 1.3; }
+    .modal .m-name { font-size: 14px; font-weight: 800; color: #cdd6f4; line-height: 1.3; display: flex; align-items: center; gap: 6px; }
     .modal .m-bank { font-size: 10px; color: #6c7086; margin-top: 2px; }
     .modal .m-x { background: none; border: none; color: #6c7086; font-size: 18px; cursor: pointer; line-height: 1; padding: 0 2px; }
     .modal .m-x:hover { color: #f38ba8; }
