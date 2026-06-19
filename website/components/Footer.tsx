@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useLang } from "@/contexts/LangContext";
 
 const legal = [
   { href: "/privacy", label: "Privacy" },
@@ -9,12 +12,14 @@ const legal = [
 ];
 
 export default function Footer() {
+  const { t } = useLang();
+
   return (
     <footer className="mt-auto border-t border-border">
       <div className="mx-auto flex max-w-6xl flex-col gap-4 px-5 py-7 sm:flex-row sm:items-center sm:justify-between">
         <div className="text-sm text-muted">
-          💳 <span className="font-bold text-accent">CardWiz</span> &nbsp;·&nbsp; India-first,
-          privacy-first
+          💳 <span className="font-bold text-accent">CardWiz</span> &nbsp;·&nbsp;{" "}
+          {t("footer_tagline")}
         </div>
         <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
           {legal.map((l) => (
@@ -25,8 +30,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="border-t border-border/50 px-5 py-3 text-center text-xs text-muted">
-        © {new Date().getFullYear()} CardWiz · Hum kabhi aapka full card number / CVV store nahi
-        karte.
+        © {new Date().getFullYear()} CardWiz · {t("footer_no_cvv")}
       </div>
     </footer>
   );

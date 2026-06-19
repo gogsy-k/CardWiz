@@ -1,0 +1,123 @@
+"use client";
+
+import { useState } from "react";
+import { PLANS, priceFor, yearlySaving, type BillingPeriod } from "@/lib/plans";
+import { useLang } from "@/contexts/LangContext";
+
+const CHROME_STORE_URL = "https://chrome.google.com/webstore";
+const NOTIFY_EMAIL = "gurpreetsj8871@gmail.com";
+
+export default function PricingPlans() {
+  const [period, setPeriod] = useState<BillingPeriod>("monthly");
+  const { t } = useLang();
+  const maxSaving = Math.max(...PLANS.map(yearlySaving));
+
+  return (
+    <div>
+      {/* Billing period toggle */}
+      <div className="mx-auto mb-10 flex w-fit items-center gap-1 rounded-full border border-border bg-surface2 p-1">
+        {(["monthly", "yearly"] as BillingPeriod[]).map((p) => (
+          <button
+            key={p}
+            onClick={() => setPeriod(p)}
+            className={`rounded-full px-5 py-2 text-sm font-bold transition-colors ${
+              period === p ? "bg-accent text-bg" : "text-subtle hover:text-fg"
+            }`}
+          >
+            {p === "monthly" ? t("toggle_monthly") : t("toggle_yearly")}
+            {p === "yearly" && (
+              <span className="ml-1.5 text-xs font-semibold text-green">
+                {t("toggle_save", { n: maxSaving })}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* Plan cards */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        {PLANS.map((plan) => {
+          const price = priceFor(plan, period);
+          const saving = yearlySaving(plan);
+          const isFree = plan.monthly === 0;
+
+          return (
+            <div
+              key={plan.id}
+              className={`relative flex flex-col rounded-2xl border p-7 ${
+                plan.highlighted
+                  ? "border-accent bg-surface2 shadow-2xl lg:-mt-3 lg:mb-3"
+                  : "border-border bg-surface2"
+              }`}
+            >
+              {plan.badge && (
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-3 py-1 text-xs font-bold text-bg">
+                  {plan.badge}
+                </span>
+              )}
+
+              <h3 className="text-lg font-extrabold text-accent">{plan.name}</h3>
+              <p className="mt-1 text-sm text-muted">{plan.tagline}</p>
+
+              {/* Price */}
+              <div className="mt-5 flex items-end gap-1">
+                <span className="text-4xl font-black">₹{price}</span>
+                {!isFree && (
+                  <span className="mb-1 text-sm text-muted">
+                    /{period === "yearly" ? "year" : "month"}
+                  </span>
+                )}
+              </div>
+              <div className="mt-1 h-4 text-xs font-semibold text-green">
+                {!isFree && period === "yearly" && saving > 0
+                  ? t("plan_save_yr", { n: saving })
+                  : ""}
+                {!isFree && period === "monthly" ? t("plan_trial") : ""}
+              </div>
+
+              {/* CTA */}
+              {plan.cta === "install" ? (
+                <a
+                  href={CHROME_STORE_URL}
+                  target="_blank"
+                  rel="noopener"
+                  className="mt-6 rounded-xl bg-accent px-5 py-3 text-center text-sm font-bold text-bg transition-colors hover:bg-blue"
+                >
+                  {t("cta_install")}
+                </a>
+              ) : (
+                <a
+                  href={`mailto:${NOTIFY_EMAIL}?subject=${encodeURIComponent(
+                    `CardWiz ${plan.name} — notify me`
+                  )}&body=${encodeURIComponent(
+                    `Mujhe CardWiz ${plan.name} plan live hone par batana.`
+                  )}`}
+                  className={`mt-6 rounded-xl px-5 py-3 text-center text-sm font-bold transition-colors ${
+                    plan.highlighted
+                      ? "bg-accent text-bg hover:bg-blue"
+                      : "border border-border text-accent hover:border-accent"
+                  }`}
+                >
+                  {t("cta_notify")}
+                </a>
+              )}
+
+              {/* Pros */}
+              <ul className="mt-6 space-y-2.5">
+                {plan.pros.map((pro) => (
+                  <li key={pro} className="flex items-start gap-2 text-sm text-subtle">
+                    <span className="mt-0.5 text-green">✓</span>
+                    <span>{pro}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Payment-not-live note */}
+      <p className="mt-10 text-center text-xs text-muted">{t("plan_note")}</p>
+    </div>
+  );
+}

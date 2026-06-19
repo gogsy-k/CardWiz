@@ -2,18 +2,22 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useLang } from "@/contexts/LangContext";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 
 const CHROME_STORE_URL = "https://chrome.google.com/webstore";
 
-const links = [
-  { href: "/", label: "Home" },
-  { href: "/cards", label: "Find Cards" },
-  { href: "/#how", label: "How it works" },
-  { href: "/contact", label: "Contact" },
-];
-
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const { t } = useLang();
+
+  const links = [
+    { href: "/", key: "nav_home" },
+    { href: "/cards", key: "nav_cards" },
+    { href: "/pricing", key: "nav_pricing" },
+    { href: "/#how", key: "nav_how" },
+    { href: "/contact", key: "nav_contact" },
+  ];
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur-md">
@@ -23,23 +27,24 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop links */}
-        <div className="hidden items-center gap-7 md:flex">
+        <div className="hidden items-center gap-6 md:flex">
           {links.map((l) => (
             <Link
               key={l.href}
               href={l.href}
               className="text-sm font-medium text-subtle transition-colors hover:text-fg"
             >
-              {l.label}
+              {t(l.key)}
             </Link>
           ))}
+          <LanguageSwitcher compact />
           <a
             href={CHROME_STORE_URL}
             target="_blank"
             rel="noopener"
             className="rounded-lg bg-accent px-4 py-2 text-sm font-bold text-bg transition-colors hover:bg-blue"
           >
-            Add to Chrome
+            {t("nav_add")}
           </a>
         </div>
 
@@ -63,16 +68,19 @@ export default function Navbar() {
               onClick={() => setOpen(false)}
               className="rounded-lg px-2 py-2 text-sm font-medium text-subtle hover:bg-surface hover:text-fg"
             >
-              {l.label}
+              {t(l.key)}
             </Link>
           ))}
+          <div className="mt-2 px-2">
+            <LanguageSwitcher />
+          </div>
           <a
             href={CHROME_STORE_URL}
             target="_blank"
             rel="noopener"
             className="mt-1 rounded-lg bg-accent px-4 py-2 text-center text-sm font-bold text-bg"
           >
-            Add to Chrome
+            {t("nav_add")}
           </a>
         </div>
       )}
