@@ -226,9 +226,9 @@ function loadPremium() {
 }
 
 function togglePremium() {
-  // Signed in: free -> real Razorpay upgrade; premium -> kuch nahi.
+  // Signed in & not premium: pricing website pe bhejo (payment ab extension mein direct nahi).
   if (currentUser) {
-    if (!isPremium) startUpgrade();
+    if (!isPremium) openPricing();
     return;
   }
   // Signed out: dev toggle (local testing ke liye).
@@ -236,6 +236,12 @@ function togglePremium() {
   if (typeof chrome !== 'undefined' && chrome.storage) chrome.storage.local.set({ isPremium });
   renderMore();
   renderMyCards(); // card-limit gating refresh
+}
+
+// Subscribe ab direct pay nahi karta — cardwiz.in/pricing kholta hai (3 plans wahan).
+function openPricing() {
+  const url = (window.CardWizPremium && window.CardWizPremium.PRICING_URL) || 'https://cardwiz.in/pricing';
+  window.open(url, '_blank', 'noopener');
 }
 
 // ---------- Premium upgrade (Razorpay Subscriptions — free trial + auto-pay) ----------
@@ -263,116 +269,6 @@ async function autoVerifyPayment() {
       applyAuthToPremium();
     }
   } catch (e) { /* offline / koi pending nahi — ignore */ }
-}
-
-// Plan selector dikhao — monthly ya yearly chunne do, phir subscribe karo.
-function startUpgrade() {
-  const msg = $('upgradeMsg');
-  if (typeof CardWizAuth === 'undefined') return;
-  const P = window.CardWizPremium;
-  const yearlySaving = P.PREMIUM_MONTHLY_INR * 12 - P.PREMIUM_YEARLY_INR;
-
-  msg.innerHTML = `
-    <div class="upgrade-note" style="text-align:left;padding:12px;">
-      <div style="font-weight:700;font-size:12px;margin-bottom:10px;text-align:center;color:#cdd6f4;">
-        Plan chuniye 👇
-      </div>
-      <div class="plan-selector">
-        <div class="plan-card selected" id="planMonthly">
-          <div class="plan-price">₹${P.PREMIUM_MONTHLY_INR}</div>
-          <div class="plan-label">/ month</div>
-          <div class="plan-trial">1st month FREE</div>
-        </div>
-        <div class="plan-card" id="planYearly">
-          <div class="plan-badge">SAVE ₹${yearlySaving}!</div>
-          <div class="plan-price">₹${P.PREMIUM_YEARLY_INR}</div>
-          <div class="plan-label">/ year</div>
-          <div class="plan-trial">1st month FREE</div>
-          <div class="plan-label" style="margin-top:2px;">₹${Math.round(P.PREMIUM_YEARLY_INR / 12)}/mo effective</div>
-        </div>
-      </div>
-      <button class="plan-confirm" id="confirmUpgradeBtn">
-        ⭐ 1st mahina FREE — Shuru karo
-      </button>
-      <div style="font-size:9px;color:#6c7086;text-align:center;margin-top:6px;">
-        🔒 Card abhi save hoga, charge ${P.PREMIUM_TRIAL_DAYS} din baad. Cancel kabhi bhi.
-      </div>
-    </div>`;
-
-  let selectedPlan = 'monthly';
-
-  function updateSelection() {
-    const pm = $('planMonthly'), py = $('planYearly'), btn = $('confirmUpgradeBtn');
-    if (pm) pm.classList.toggle('selected', selectedPlan === 'monthly');
-    if (py) py.classList.toggle('selected', selectedPlan === 'yearly');
-    if (btn) btn.textContent = selectedPlan === 'yearly'
-      ? `⭐ ₹${P.PREMIUM_YEARLY_INR}/year — Shuru karo`
-      : `⭐ 1st mahina FREE, phir ₹${P.PREMIUM_MONTHLY_INR}/month`;
-  }
-
-  const pm = $('planMonthly'), py = $('planYearly');
-  if (pm) pm.addEventListener('click', () => { selectedPlan = 'monthly'; updateSelection(); });
-  if (py) py.addEventListener('click', () => { selectedPlan = 'yearly'; updateSelection(); });
-
-  const btn = $('confirmUpgradeBtn');
-  if (btn) btn.addEventListener('click', () => doSubscribe(selectedPlan));
-}
-
-// Subscription create karo aur user ko Razorpay hosted checkout pe bhejo.
-async function doSubscribe(plan) {
-  const msg = $('upgradeMsg');
-  if (!msg || typeof CardWizAuth === 'undefined') return;
-  msg.innerHTML = '<div class="more-sub" style="text-align:center;padding:12px;">Subscription ban raha hai…</div>';
-  try {
-    const res = await CardWizAuth.authedFetch('/payment/subscribe', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ plan }),
-    });
-    if (!res.ok) {
-      throw new Error(res.status === 503
-        ? 'Payments abhi enable nahi — backend pe Razorpay keys daalo (README).'
-        : 'Subscribe fail (' + res.status + ')');
-    }
-    const data = await res.json(); // { shortUrl, plan, trialDays }
-    window.open(data.shortUrl, '_blank', 'noopener');
-    msg.innerHTML =
-      `<div class="upgrade-note">
-         Naye tab mein apna card save karo (${data.trialDays} din free trial).<br>
-         Card save ho jaye to yahan wapas aao 👇<br>
-         <button id="verifySubBtn">✅ Card save kar diya</button>
-       </div>`;
-    const vb = $('verifySubBtn');
-    if (vb) vb.addEventListener('click', verifySubscription);
-  } catch (e) {
-    if (msg) msg.innerHTML = `<div class="acct-err">${escapeHtml((e && e.message) || 'Subscribe fail')}</div>`;
-  }
-}
-
-// Subscription verify — 'authenticated' matlab card save hua = premium.
-async function verifySubscription() {
-  const msg = $('upgradeMsg');
-  const vb = $('verifySubBtn');
-  if (vb) { vb.disabled = true; vb.textContent = 'Check kar rahe hain…'; }
-  try {
-    const res = await CardWizAuth.authedFetch('/payment/verify-subscription', { method: 'POST' });
-    const data = await res.json();
-    if (data.status === 'active' || data.plan === 'premium') {
-      currentUser = await CardWizAuth.fetchMe();
-      applyAuthToPremium();
-      if (msg) msg.innerHTML = '<div class="upgrade-note">🎉 Premium active! Pehla charge 30 din baad. Shukriya! 🙏</div>';
-      renderMore();
-      renderMyCards();
-    } else if (data.status === 'pending') {
-      if (msg) msg.innerHTML =
-        '<div class="upgrade-note">Card abhi verify nahi hua. Thodi der mein dobara try karo.<br><button id="verifySubBtn">🔄 Dobara check</button></div>';
-      const vb2 = $('verifySubBtn'); if (vb2) vb2.addEventListener('click', verifySubscription);
-    } else {
-      if (msg) msg.innerHTML = '<div class="more-sub">Subscription nahi mila. Upgrade dobara shuru karo.</div>';
-    }
-  } catch (e) {
-    if (msg) msg.innerHTML = `<div class="acct-err">${escapeHtml((e && e.message) || 'Check fail')}</div>`;
-  }
 }
 
 // ---------- Account / Google SSO (Phase 8) ----------
@@ -415,14 +311,13 @@ function renderAccount() {
          </div>
          <span class="pill ${isPremium ? 'pro' : 'free'}">${isPremium ? 'PREMIUM' : 'FREE'}</span>
        </div>
-       <button class="ghost" id="signOutBtn" style="margin-top:10px;">Sign out</button>`;
+       <button class="ghost" id="signOutBtn" style="margin-top:10px;">${escapeHtml(CardWizI18n.t('acc_signout'))}</button>`;
     const b = $('signOutBtn');
     if (b) b.addEventListener('click', doSignOut);
   } else {
     box.innerHTML =
-      `<div class="more-sub">Sign in karke apna plan sync karo + cross-device. Hum sirf
-        naam/email lete hain — card number/CVV <b>kabhi nahi</b>.</div>
-       <button class="signin-btn" id="signInBtn">🔵 Sign in with Google</button>
+      `<div class="more-sub">${escapeHtml(CardWizI18n.t('acc_blurb'))}</div>
+       <button class="signin-btn" id="signInBtn">${escapeHtml(CardWizI18n.t('acc_signin'))}</button>
        <div class="acct-err" id="acctErr"></div>`;
     const b = $('signInBtn');
     if (b) b.addEventListener('click', doSignIn);
@@ -432,7 +327,7 @@ function renderAccount() {
 async function doSignIn() {
   const btn = $('signInBtn');
   const err = $('acctErr');
-  if (btn) { btn.disabled = true; btn.textContent = 'Sign in ho raha hai…'; }
+  if (btn) { btn.disabled = true; btn.textContent = CardWizI18n.t('acc_signing'); }
   if (err) err.textContent = '';
   try {
     currentUser = await CardWizAuth.signIn();
@@ -442,7 +337,7 @@ async function doSignIn() {
     renderMyCards(); // card-limit gating refresh
   } catch (e) {
     if (err) err.textContent = (e && e.message) || 'Sign-in fail ho gaya';
-    if (btn) { btn.disabled = false; btn.textContent = '🔵 Sign in with Google'; }
+    if (btn) { btn.disabled = false; btn.textContent = CardWizI18n.t('acc_signin'); }
   }
 }
 
@@ -509,19 +404,17 @@ function renderSync() {
   const box = $('syncBox');
   if (!box) return;
   if (!currentUser) {
-    box.innerHTML =
-      '<div class="more-sub">Sign in karke cloud sync on karo — phir kisi bhi browser pe login karo, cards apne aap ready. 🔒 Sirf last-4, poora number nahi.</div>';
+    box.innerHTML = `<div class="more-sub">${CardWizI18n.t('sync_signin')}</div>`;
     return;
   }
   if (syncEnabled) {
     box.innerHTML =
-      `<div class="more-sub">✅ <b>ON</b> — aapke cards account se synced. Kahin bhi login karo, sab kuch wahin.
-         <br>🔒 Sirf card type, nickname, last-4 (poora number nahi) aur due date.</div>
-       <button class="ghost" id="syncToggle" style="margin-top:8px;">Cloud sync OFF karo</button>`;
+      `<div class="more-sub">${CardWizI18n.t('sync_on_msg')}</div>
+       <button class="ghost" id="syncToggle" style="margin-top:8px;">${escapeHtml(CardWizI18n.t('sync_off_btn'))}</button>`;
   } else {
     box.innerHTML =
-      `<div class="more-sub">Cloud sync <b>OFF</b> — cards sirf is device pe. On karo to har browser pe milenge.</div>
-       <button class="signin-btn" id="syncToggle" style="margin-top:8px;">☁️ Cloud sync ON karo</button>`;
+      `<div class="more-sub">${CardWizI18n.t('sync_off_msg')}</div>
+       <button class="signin-btn" id="syncToggle" style="margin-top:8px;">${escapeHtml(CardWizI18n.t('sync_on_btn'))}</button>`;
   }
   const b = $('syncToggle');
   if (b) b.addEventListener('click', toggleSync);
@@ -532,9 +425,9 @@ function updateCardsPrivacy() {
   const el = $('cardsPrivacy');
   if (!el) return;
   if (currentUser && syncEnabled) {
-    el.innerHTML = '☁️ Aapke cards account se <b>synced</b> (sirf last-4, poora number nahi). More tab se off kar sakte ho.';
+    el.innerHTML = CardWizI18n.t('cards_synced');
   } else {
-    el.innerHTML = '🔒 Aapki details <b>sirf is device pe</b> save hain.<br>Hum full card number ya CVV <b>kabhi</b> nahi maangte/store karte.';
+    el.innerHTML = CardWizI18n.t('cards_local');
   }
 }
 
@@ -546,23 +439,26 @@ function renderMore() {
   renderSync(); // Cloud Sync card (Phase 10)
 
   // Premium status + toggle
+  const freeMsg = CardWizI18n.t('prem_free')
+    .replace('{m}', P.PREMIUM_MONTHLY_INR).replace('{y}', P.PREMIUM_YEARLY_INR)
+    .replace('{s}', P.PREMIUM_MONTHLY_INR * 12 - P.PREMIUM_YEARLY_INR);
   els.premiumStatus.innerHTML = isPremium
-    ? '<span class="pill pro">PREMIUM</span> Saari features unlocked. Shukriya! 🙏'
-    : `<span class="pill free">FREE</span> 1st mahina FREE, phir ₹${P.PREMIUM_MONTHLY_INR}/month · ya ₹${P.PREMIUM_YEARLY_INR}/year (save ₹${P.PREMIUM_MONTHLY_INR * 12 - P.PREMIUM_YEARLY_INR}!).`;
+    ? `<span class="pill pro">PREMIUM</span> ${escapeHtml(CardWizI18n.t('prem_active'))}`
+    : `<span class="pill free">FREE</span> ${escapeHtml(freeMsg)}`;
   // Action button — signed in free: plan selector + Razorpay subscription; premium: hidden;
   // signed out: dev toggle (local testing).
   const devNote = $('premiumDevNote');
   const btn = els.premiumToggle;
   if (currentUser) {
     btn.hidden = isPremium;
-    btn.textContent = `⭐ 1st Mahina FREE — Upgrade karo`;
+    btn.textContent = CardWizI18n.t('prem_upgrade');
     if (devNote) devNote.textContent = isPremium
-      ? 'Premium active — account se synced, har device pe.'
-      : '🔒 Card save hoga, charge 30 din baad. Auto-renew. Cancel kabhi bhi.';
+      ? CardWizI18n.t('prem_note_active')
+      : CardWizI18n.t('prem_note_upgrade');
   } else {
     btn.hidden = false;
-    btn.textContent = isPremium ? '↩ Free pe wapas (dev)' : '⭐ Premium on karo (dev)';
-    if (devNote) devNote.textContent = 'Sign in karke real upgrade — ya dev toggle (local test).';
+    btn.textContent = isPremium ? CardWizI18n.t('prem_dev_off') : CardWizI18n.t('prem_dev_on');
+    if (devNote) devNote.textContent = CardWizI18n.t('prem_note_out');
   }
 
   // Analytics (premium-gated)
@@ -593,8 +489,8 @@ function renderAnalytics() {
   const P = window.CardWizPremium;
   if (!P.canUseFeature('spending_analytics', isPremium)) {
     els.analyticsBox.innerHTML =
-      `<div class="upgrade-note">🔒 Premium feature<br>Is mahine kis card pe kitna reward kamaaya — dekho.
-       <button id="analyticsUpgrade">⭐ 1st mahina FREE — Upgrade karo</button></div>`;
+      `<div class="upgrade-note">${CardWizI18n.t('an_locked')}
+       <button id="analyticsUpgrade">${escapeHtml(CardWizI18n.t('prem_upgrade'))}</button></div>`;
     const b = $('analyticsUpgrade');
     if (b) b.addEventListener('click', togglePremium);
     return;
@@ -608,11 +504,11 @@ function renderAnalytics() {
   }
   const entries = Object.entries(byCard).sort((a, b) => b[1] - a[1]);
   if (entries.length === 0) {
-    els.analyticsBox.innerHTML = '<div class="more-sub">Abhi koi reward log nahi. Suggest tab pe "✓ Use kiya" se track karo.</div>';
+    els.analyticsBox.innerHTML = `<div class="more-sub">${escapeHtml(CardWizI18n.t('an_none'))}</div>`;
     return;
   }
   const total = entries.reduce((s, [, v]) => s + v, 0);
-  let html = `<div class="more-sub">Is mahine (${capUsage.period}) total reward: <b>₹${Math.round(total)}</b></div>`;
+  let html = `<div class="more-sub">${escapeHtml(CardWizI18n.t('an_total'))} (${capUsage.period}): <b>₹${Math.round(total)}</b></div>`;
   for (const [cardId, val] of entries) {
     const cat = catalogCard(cardId);
     html += `<div class="more-sub">• ${cat ? cat.name : cardId}: ₹${Math.round(val)}</div>`;
@@ -888,7 +784,7 @@ function runRecommendation() {
     const owned = ownedUniqueIds();
     if (owned.length === 0) {
       els.results.innerHTML =
-        '<div class="empty">Pehle "💼 Cards" mein apne cards add karo.</div>';
+        `<div class="empty">${escapeHtml(CardWizI18n.t('sg_add_first'))}</div>`;
       els.capsFoot.hidden = true;
       return;
     }
@@ -924,7 +820,7 @@ function nicknameFor(cardId) {
 function renderResults(ranked) {
   els.results.innerHTML = '';
   if (ranked.length === 0) {
-    els.results.innerHTML = '<div class="empty">Koi card nahi mila</div>';
+    els.results.innerHTML = `<div class="empty">${escapeHtml(CardWizI18n.t('sg_no_card'))}</div>`;
     return;
   }
 
@@ -952,7 +848,7 @@ function renderResults(ranked) {
     }
     const sub = document.createElement('div');
     sub.className = 'sub';
-    sub.textContent = r.excluded ? 'Is category pe reward nahi' : (nick ? r.name : r.note);
+    sub.textContent = r.excluded ? CardWizI18n.t('sg_no_reward') : (nick ? r.name : r.note);
     left.appendChild(name);
     left.appendChild(sub);
 
@@ -961,13 +857,13 @@ function renderResults(ranked) {
       if (ownedSet.has(r.id)) {
         const logBtn = document.createElement('button');
         logBtn.className = 'log-btn';
-        logBtn.textContent = '✓ Ye card use kiya';
+        logBtn.textContent = CardWizI18n.t('sg_used');
         logBtn.addEventListener('click', () => logUsageFor(r));
         left.appendChild(logBtn);
       } else {
         const applyBtn = document.createElement('button');
         applyBtn.className = 'apply-btn';
-        applyBtn.textContent = 'Apply for this card ↗';
+        applyBtn.textContent = CardWizI18n.t('act_apply_this');
         applyBtn.addEventListener('click', () => openApply({ id: r.id, name: r.name }));
         left.appendChild(applyBtn);
       }
@@ -982,7 +878,7 @@ function renderResults(ranked) {
     save.innerHTML = r.savings > 0 ? `₹${r.savings}${badge}` : '—';
     const rate = document.createElement('div');
     rate.className = 'rate';
-    rate.textContent = r.savings > 0 ? `${r.rate}% reward` : '';
+    rate.textContent = r.savings > 0 ? `${r.rate}% ${CardWizI18n.t('sg_reward')}` : '';
     right.appendChild(save);
     right.appendChild(rate);
 
@@ -1131,6 +1027,7 @@ function setLanguage(code) {
   applyExtTitle();                    // icon tooltip
   renderBestCards();                  // dynamic (JS-generated) strings
   renderMyCards();
+  renderMore();                       // account/sync/premium/analytics dynamic strings
 }
 
 init();

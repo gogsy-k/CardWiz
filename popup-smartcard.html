@@ -124,28 +124,6 @@
       border:none; border-radius:6px; padding:7px; font-size:11px; font-weight:700; cursor:pointer;
     }
 
-    /* Plan selector (subscription flow) */
-    .plan-selector { display:flex; gap:8px; margin:8px 0; }
-    .plan-card {
-      flex:1; background:#1e1e2e; border:2px solid #45475a; border-radius:10px;
-      padding:10px 8px; text-align:center; cursor:pointer; transition:border-color 0.15s; position:relative;
-    }
-    .plan-card.selected { border-color:#cba6f7; background:#2a2a3e; }
-    .plan-badge {
-      position:absolute; top:-9px; left:50%; transform:translateX(-50%);
-      background:#a6e3a1; color:#1e1e2e; font-size:8px; font-weight:700;
-      padding:2px 8px; border-radius:10px; white-space:nowrap;
-    }
-    .plan-price { font-size:16px; font-weight:700; color:#cdd6f4; }
-    .plan-label { font-size:9px; color:#a6adc8; margin-top:1px; }
-    .plan-trial { font-size:9px; color:#a6e3a1; margin-top:5px; font-weight:600; }
-    .plan-confirm {
-      width:100%; margin-top:8px; padding:10px; background:#cba6f7; color:#1e1e2e;
-      border:none; border-radius:8px; font-size:12px; font-weight:700; cursor:pointer;
-    }
-    .plan-confirm:hover { background:#b4befe; }
-    .plan-confirm:disabled { opacity:0.6; cursor:default; }
-
     /* Account / SSO */
     .acct-row { display: flex; align-items: center; gap: 10px; }
     .acct-avatar {
@@ -407,7 +385,7 @@
 
   <!-- ============ SUGGEST VIEW (Tab 3) ============ -->
   <section id="view-suggest" hidden>
-    <div class="privacy">🔒 Aapka data sirf is device pe hai — hamare server pe nahi.</div>
+    <div class="privacy" data-i18n="sg_privacy">🔒 Aapka data sirf is device pe hai — hamare server pe nahi.</div>
 
     <div class="row">
       <div>
@@ -428,12 +406,12 @@
     </div>
 
     <div class="results" id="results">
-      <div class="empty">Category chuno aur "Best card batao" dabao 👆</div>
+      <div class="empty" data-i18n="sg_results_empty">Category chuno aur best card dekho 👆</div>
     </div>
 
     <div class="caps-foot" id="capsFoot" hidden>
       <span id="capsPeriod"></span>
-      <button id="resetCapsBtn">Caps reset</button>
+      <button id="resetCapsBtn" data-i18n="sg_caps_reset">Caps reset</button>
     </div>
 
     <!-- Sponsored / featured card — TEMPORARILY DISABLED (baad mein kahin aur add karenge).
@@ -444,11 +422,11 @@
     <!-- ============ CIBIL Score Checker ============ -->
     <div class="cibil-card">
       <div class="cibil-title" data-i18n="cb_title">📊 Check your CIBIL Score — Free</div>
-      <div class="cibil-sub">Apna credit score dekho bina kisi charge ke. Loans/cards ke liye zaroori.</div>
+      <div class="cibil-sub" data-i18n="cb_sub">Apna credit score dekho bina kisi charge ke. Loans/cards ke liye zaroori.</div>
       <ul class="cibil-perks">
-        <li>✅ 100% free for you</li>
-        <li>🔒 Secure — partner ke verified page pe</li>
-        <li>⚡ 2 minute mein score</li>
+        <li data-i18n="cb_p1">✅ 100% free for you</li>
+        <li data-i18n="cb_p2">🔒 Secure — partner ke verified page pe</li>
+        <li data-i18n="cb_p3">⚡ 2 minute mein score</li>
       </ul>
       <button class="cibil-btn" id="cibilBtn" data-i18n="cb_btn">Check CIBIL Score — Free ↗</button>
       <div class="cibil-note" id="cibilNote"></div>
@@ -537,33 +515,32 @@
       <div class="more-title" data-i18n="more_premium">⭐ Premium</div>
       <div class="more-sub" id="premiumStatus"></div>
       <ul class="perks">
-        <li>♾️ Unlimited cards (free: 3 tak)</li>
-        <li>📊 Spending analytics</li>
-        <li>🚀 Future advanced features</li>
+        <li data-i18n="prem_p1">♾️ Unlimited cards (free: 3 tak)</li>
+        <li data-i18n="prem_p2">📊 Spending analytics</li>
+        <li data-i18n="prem_p3">🚀 Future advanced features</li>
       </ul>
       <button class="primary" id="premiumToggle"></button>
       <div class="hint" id="premiumDevNote">Dev toggle — abhi koi real payment nahi.</div>
-      <div id="upgradeMsg"></div>
     </div>
 
     <div class="more-card">
-      <div class="more-title">📊 Spending Analytics</div>
+      <div class="more-title" data-i18n="more_analytics">📊 Spending Analytics</div>
       <div id="analyticsBox"></div>
     </div>
 
     <div class="more-card">
-      <div class="more-title">🤝 Disclosure</div>
+      <div class="more-title" data-i18n="more_disclosure">🤝 Disclosure</div>
       <div class="more-sub" id="affDisclosure"></div>
     </div>
 
     <div class="more-card">
       <div class="more-title" data-i18n="more_about">ℹ️ About</div>
-      <div class="more-sub">
+      <div class="more-sub" data-i18n="about_text">
         🔒 India-first, privacy-first. Aapka data sirf is device pe. Hum payment nahi karte,
         card number/CVV nahi maangte.
       </div>
       <div class="more-sub" style="margin-top:8px;">
-        <a href="#" id="privacyLink" style="color:#89b4fa;">📄 Privacy Policy</a>
+        <a href="#" id="privacyLink" style="color:#89b4fa;" data-i18n="about_privacy">📄 Privacy Policy</a>
         &nbsp;·&nbsp; <span id="versionLabel" style="color:#6c7086;"></span>
       </div>
     </div>
