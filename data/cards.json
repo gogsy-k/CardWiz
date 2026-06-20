@@ -61,6 +61,19 @@
         "government"
       ],
       "fuelSurchargeWaiver": true,
+      "welcomeBonus": {
+        "spendTarget": null,
+        "periodDays": null,
+        "rewardText": "10,000 Reward Points on card activation",
+        "estimatedValue": 10000
+      },
+      "benefits": {
+        "loungePerYear": null,
+        "loungeType": "both",
+        "moviePerMonth": 0,
+        "fuelSurchargeWaiver": true,
+        "lastVerified": "2026-06"
+      },
       "lastVerified": "2026-06-09"
     },
     {
@@ -96,6 +109,19 @@
         "government"
       ],
       "fuelSurchargeWaiver": true,
+      "welcomeBonus": {
+        "spendTarget": null,
+        "periodDays": null,
+        "rewardText": "5,000 Reward Points on joining",
+        "estimatedValue": 5000
+      },
+      "benefits": {
+        "loungePerYear": null,
+        "loungeType": "both",
+        "moviePerMonth": 0,
+        "fuelSurchargeWaiver": true,
+        "lastVerified": "2026-06"
+      },
       "lastVerified": "2026-06-09"
     },
     {
@@ -129,6 +155,19 @@
         "government"
       ],
       "fuelSurchargeWaiver": true,
+      "welcomeBonus": {
+        "spendTarget": null,
+        "periodDays": null,
+        "rewardText": "2,500 Reward Points on joining",
+        "estimatedValue": 2500
+      },
+      "benefits": {
+        "loungePerYear": 12,
+        "loungeType": "domestic",
+        "moviePerMonth": 1,
+        "fuelSurchargeWaiver": true,
+        "lastVerified": "2026-06"
+      },
       "lastVerified": "2026-06-09"
     },
     {
@@ -164,6 +203,19 @@
         "rent",
         "fuel"
       ],
+      "welcomeBonus": {
+        "spendTarget": 1000,
+        "periodDays": 90,
+        "rewardText": "1,000 CashPoints on ₹1,000 spend",
+        "estimatedValue": 1000
+      },
+      "benefits": {
+        "loungePerYear": 8,
+        "loungeType": "domestic",
+        "moviePerMonth": 0,
+        "fuelSurchargeWaiver": false,
+        "lastVerified": "2026-06"
+      },
       "lastVerified": "2026-06-09"
     },
     {
@@ -424,6 +476,14 @@
         "government",
         "gaming"
       ],
+      "welcomeBonus": null,
+      "benefits": {
+        "loungePerYear": 8,
+        "loungeType": "domestic",
+        "moviePerMonth": 0,
+        "fuelSurchargeWaiver": false,
+        "lastVerified": "2026-06"
+      },
       "lastVerified": "2026-06-09"
     },
     {
@@ -543,6 +603,19 @@
         "utilities"
       ],
       "fuelSurchargeWaiver": true,
+      "welcomeBonus": {
+        "spendTarget": null,
+        "periodDays": null,
+        "rewardText": "5,000 Reward Points on joining",
+        "estimatedValue": 1250
+      },
+      "benefits": {
+        "loungePerYear": 8,
+        "loungeType": "domestic",
+        "moviePerMonth": 1,
+        "fuelSurchargeWaiver": true,
+        "lastVerified": "2026-06"
+      },
       "lastVerified": "2026-06-09"
     },
     {
@@ -585,6 +658,19 @@
         "wallet"
       ],
       "fuelSurchargeWaiver": true,
+      "welcomeBonus": {
+        "spendTarget": null,
+        "periodDays": null,
+        "rewardText": "10,000 Reward Points on joining",
+        "estimatedValue": 2500
+      },
+      "benefits": {
+        "loungePerYear": 8,
+        "loungeType": "both",
+        "moviePerMonth": 2,
+        "fuelSurchargeWaiver": true,
+        "lastVerified": "2026-06"
+      },
       "lastVerified": "2026-06-09"
     },
     {
@@ -760,6 +846,19 @@
         "government"
       ],
       "fuelSurchargeWaiver": true,
+      "welcomeBonus": {
+        "spendTarget": null,
+        "periodDays": null,
+        "rewardText": "12,500 EDGE Miles on joining",
+        "estimatedValue": 12500
+      },
+      "benefits": {
+        "loungePerYear": null,
+        "loungeType": "both",
+        "moviePerMonth": 0,
+        "fuelSurchargeWaiver": true,
+        "lastVerified": "2026-06"
+      },
       "lastVerified": "2026-06-09"
     },
     {
@@ -793,6 +892,19 @@
         "government"
       ],
       "fuelSurchargeWaiver": true,
+      "welcomeBonus": {
+        "spendTarget": 300000,
+        "periodDays": 90,
+        "rewardText": "50,000 EDGE Miles",
+        "estimatedValue": 50000
+      },
+      "benefits": {
+        "loungePerYear": null,
+        "loungeType": "both",
+        "moviePerMonth": 0,
+        "fuelSurchargeWaiver": true,
+        "lastVerified": "2026-06"
+      },
       "lastVerified": "2026-06-09"
     },
     {
@@ -837,6 +949,14 @@
         "government",
         "gaming"
       ],
+      "welcomeBonus": null,
+      "benefits": {
+        "loungePerYear": 0,
+        "loungeType": "none",
+        "moviePerMonth": 0,
+        "fuelSurchargeWaiver": false,
+        "lastVerified": "2026-06"
+      },
       "lastVerified": "2026-06-09"
     },
     {
@@ -923,6 +1043,19 @@
         "government",
         "gaming"
       ],
+      "welcomeBonus": {
+        "spendTarget": null,
+        "periodDays": null,
+        "rewardText": "5,000 EDGE Miles on joining",
+        "estimatedValue": 5000
+      },
+      "benefits": {
+        "loungePerYear": 8,
+        "loungeType": "domestic",
+        "moviePerMonth": 0,
+        "fuelSurchargeWaiver": false,
+        "lastVerified": "2026-06"
+      },
       "lastVerified": "2026-06-09"
     },
     {
@@ -1203,6 +1336,14 @@
       ],
       "exclusions": [],
       "fuelSurchargeWaiver": true,
+      "welcomeBonus": null,
+      "benefits": {
+        "loungePerYear": 0,
+        "loungeType": "none",
+        "moviePerMonth": 0,
+        "fuelSurchargeWaiver": true,
+        "lastVerified": "2026-06"
+      },
       "lastVerified": "2026-06-09"
     },
     {
@@ -1237,6 +1378,19 @@
         "government"
       ],
       "fuelSurchargeWaiver": true,
+      "welcomeBonus": {
+        "spendTarget": 150000,
+        "periodDays": 90,
+        "rewardText": "10,000 ICICI Reward Points",
+        "estimatedValue": 5000
+      },
+      "benefits": {
+        "loungePerYear": null,
+        "loungeType": "both",
+        "moviePerMonth": 2,
+        "fuelSurchargeWaiver": true,
+        "lastVerified": "2026-06"
+      },
       "lastVerified": "2026-06-09"
     },
     {
@@ -1270,6 +1424,19 @@
         "government"
       ],
       "fuelSurchargeWaiver": true,
+      "welcomeBonus": {
+        "spendTarget": null,
+        "periodDays": null,
+        "rewardText": "4,000 PAYBACK Points on joining",
+        "estimatedValue": 1600
+      },
+      "benefits": {
+        "loungePerYear": 8,
+        "loungeType": "domestic",
+        "moviePerMonth": 1,
+        "fuelSurchargeWaiver": true,
+        "lastVerified": "2026-06"
+      },
       "lastVerified": "2026-06-09"
     },
     {
@@ -1336,6 +1503,19 @@
         "government"
       ],
       "fuelSurchargeWaiver": true,
+      "welcomeBonus": {
+        "spendTarget": 50000,
+        "periodDays": 90,
+        "rewardText": "1,000 PAYBACK Points",
+        "estimatedValue": 400
+      },
+      "benefits": {
+        "loungePerYear": 8,
+        "loungeType": "domestic",
+        "moviePerMonth": 1,
+        "fuelSurchargeWaiver": true,
+        "lastVerified": "2026-06"
+      },
       "lastVerified": "2026-06-09"
     },
     {
@@ -1561,6 +1741,19 @@
         "wallet",
         "government"
       ],
+      "welcomeBonus": {
+        "spendTarget": null,
+        "periodDays": null,
+        "rewardText": "1,000 Reward Points on joining",
+        "estimatedValue": 50
+      },
+      "benefits": {
+        "loungePerYear": 8,
+        "loungeType": "domestic",
+        "moviePerMonth": 0,
+        "fuelSurchargeWaiver": false,
+        "lastVerified": "2026-06"
+      },
       "lastVerified": "2026-06-09"
     },
     {
@@ -1661,6 +1854,19 @@
         "government"
       ],
       "fuelSurchargeWaiver": true,
+      "welcomeBonus": {
+        "spendTarget": null,
+        "periodDays": null,
+        "rewardText": "5,000 Reward Points on joining",
+        "estimatedValue": 500
+      },
+      "benefits": {
+        "loungePerYear": 8,
+        "loungeType": "domestic",
+        "moviePerMonth": 0,
+        "fuelSurchargeWaiver": true,
+        "lastVerified": "2026-06"
+      },
       "lastVerified": "2026-06-09"
     },
     {
@@ -1793,6 +1999,19 @@
         "government"
       ],
       "fuelSurchargeWaiver": true,
+      "welcomeBonus": {
+        "spendTarget": 500000,
+        "periodDays": 90,
+        "rewardText": "50,000 Yes Reward Points",
+        "estimatedValue": 5000
+      },
+      "benefits": {
+        "loungePerYear": null,
+        "loungeType": "both",
+        "moviePerMonth": 2,
+        "fuelSurchargeWaiver": true,
+        "lastVerified": "2026-06"
+      },
       "lastVerified": "2026-06-09"
     },
     {
@@ -2104,6 +2323,19 @@
         "government"
       ],
       "fuelSurchargeWaiver": true,
+      "welcomeBonus": {
+        "spendTarget": null,
+        "periodDays": null,
+        "rewardText": "20,000 Reward Points on joining",
+        "estimatedValue": 3000
+      },
+      "benefits": {
+        "loungePerYear": null,
+        "loungeType": "domestic",
+        "moviePerMonth": 0,
+        "fuelSurchargeWaiver": true,
+        "lastVerified": "2026-06"
+      },
       "lastVerified": "2026-06-09"
     },
     {
@@ -2217,6 +2449,19 @@
         "insurance",
         "government"
       ],
+      "welcomeBonus": {
+        "spendTarget": 15000,
+        "periodDays": 90,
+        "rewardText": "2,000 Membership Rewards Points",
+        "estimatedValue": 1000
+      },
+      "benefits": {
+        "loungePerYear": 0,
+        "loungeType": "none",
+        "moviePerMonth": 0,
+        "fuelSurchargeWaiver": false,
+        "lastVerified": "2026-06"
+      },
       "lastVerified": "2026-06-09"
     },
     {
@@ -2250,6 +2495,19 @@
         "utilities",
         "government"
       ],
+      "welcomeBonus": {
+        "spendTarget": 20000,
+        "periodDays": 90,
+        "rewardText": "2,000 Membership Rewards Points",
+        "estimatedValue": 1000
+      },
+      "benefits": {
+        "loungePerYear": 4,
+        "loungeType": "domestic",
+        "moviePerMonth": 0,
+        "fuelSurchargeWaiver": false,
+        "lastVerified": "2026-06"
+      },
       "lastVerified": "2026-06-09"
     },
     {
@@ -2282,6 +2540,19 @@
         "utilities",
         "government"
       ],
+      "welcomeBonus": {
+        "spendTarget": 40000,
+        "periodDays": 90,
+        "rewardText": "10,000 Membership Rewards Points",
+        "estimatedValue": 5000
+      },
+      "benefits": {
+        "loungePerYear": 8,
+        "loungeType": "domestic",
+        "moviePerMonth": 0,
+        "fuelSurchargeWaiver": false,
+        "lastVerified": "2026-06"
+      },
       "lastVerified": "2026-06-09"
     },
     {
@@ -2353,6 +2624,19 @@
         "fuel",
         "wallet"
       ],
+      "welcomeBonus": {
+        "spendTarget": 30000,
+        "periodDays": 90,
+        "rewardText": "3,000 Reward Points",
+        "estimatedValue": 3000
+      },
+      "benefits": {
+        "loungePerYear": 4,
+        "loungeType": "domestic",
+        "moviePerMonth": 0,
+        "fuelSurchargeWaiver": false,
+        "lastVerified": "2026-06"
+      },
       "lastVerified": "2026-06-09"
     },
     {
@@ -2385,6 +2669,19 @@
         "wallet",
         "government"
       ],
+      "welcomeBonus": {
+        "spendTarget": 20000,
+        "periodDays": 90,
+        "rewardText": "1,500 Reward Points",
+        "estimatedValue": 1500
+      },
+      "benefits": {
+        "loungePerYear": 4,
+        "loungeType": "domestic",
+        "moviePerMonth": 0,
+        "fuelSurchargeWaiver": false,
+        "lastVerified": "2026-06"
+      },
       "lastVerified": "2026-06-09"
     },
     {
@@ -2633,6 +2930,19 @@
         "government"
       ],
       "fuelSurchargeWaiver": true,
+      "welcomeBonus": {
+        "spendTarget": 50000,
+        "periodDays": 90,
+        "rewardText": "10,000 Reward Points",
+        "estimatedValue": 500
+      },
+      "benefits": {
+        "loungePerYear": 8,
+        "loungeType": "domestic",
+        "moviePerMonth": 1,
+        "fuelSurchargeWaiver": true,
+        "lastVerified": "2026-06"
+      },
       "lastVerified": "2026-06-09"
     },
     {
@@ -2763,6 +3073,19 @@
         "wallet",
         "government"
       ],
+      "welcomeBonus": {
+        "spendTarget": 50000,
+        "periodDays": 90,
+        "rewardText": "₹1,500 cashback",
+        "estimatedValue": 1500
+      },
+      "benefits": {
+        "loungePerYear": 4,
+        "loungeType": "domestic",
+        "moviePerMonth": 0,
+        "fuelSurchargeWaiver": false,
+        "lastVerified": "2026-06"
+      },
       "lastVerified": "2026-06-09"
     },
     {
@@ -3572,6 +3895,19 @@
         "government",
         "utilities"
       ],
+      "welcomeBonus": {
+        "spendTarget": null,
+        "periodDays": null,
+        "rewardText": "1,000 Reward Points on first swipe",
+        "estimatedValue": 100
+      },
+      "benefits": {
+        "loungePerYear": 0,
+        "loungeType": "none",
+        "moviePerMonth": 0,
+        "fuelSurchargeWaiver": false,
+        "lastVerified": "2026-06"
+      },
       "lastVerified": "2026-06-14"
     },
     {
@@ -3953,6 +4289,19 @@
         "government"
       ],
       "fuelSurchargeWaiver": true,
+      "welcomeBonus": {
+        "spendTarget": null,
+        "periodDays": null,
+        "rewardText": "2,500 Reward Points on joining",
+        "estimatedValue": 2500
+      },
+      "benefits": {
+        "loungePerYear": 8,
+        "loungeType": "domestic",
+        "moviePerMonth": 1,
+        "fuelSurchargeWaiver": true,
+        "lastVerified": "2026-06"
+      },
       "lastVerified": "2026-06-14"
     },
     {
@@ -3989,6 +4338,19 @@
         "government"
       ],
       "fuelSurchargeWaiver": true,
+      "welcomeBonus": {
+        "spendTarget": null,
+        "periodDays": null,
+        "rewardText": "50,000 EDGE Miles on joining",
+        "estimatedValue": 50000
+      },
+      "benefits": {
+        "loungePerYear": null,
+        "loungeType": "both",
+        "moviePerMonth": 0,
+        "fuelSurchargeWaiver": true,
+        "lastVerified": "2026-06"
+      },
       "lastVerified": "2026-06-14"
     },
     {
@@ -4319,6 +4681,19 @@
         "government"
       ],
       "fuelSurchargeWaiver": true,
+      "welcomeBonus": {
+        "spendTarget": null,
+        "periodDays": null,
+        "rewardText": "25,000 Reward Points on joining",
+        "estimatedValue": 2500
+      },
+      "benefits": {
+        "loungePerYear": null,
+        "loungeType": "both",
+        "moviePerMonth": 1,
+        "fuelSurchargeWaiver": true,
+        "lastVerified": "2026-06"
+      },
       "lastVerified": "2026-06-14"
     },
     {
