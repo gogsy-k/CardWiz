@@ -41,3 +41,25 @@ body {
 .legal a { color: #89b4fa; }
 .legal a:hover { text-decoration: underline; }
 .legal b { color: #cdd6f4; }
+
+/* News/blog markdown (PostBody) — Catppuccin Mocha */
+.prose-cw { color: #cdd6f4; font-size: 1rem; line-height: 1.8; }
+.prose-cw h1 { color: #cdd6f4; font-size: 1.8rem; font-weight: 800; margin: 1.75rem 0 0.75rem; }
+.prose-cw h2 { color: #a6e3a1; font-size: 1.4rem; font-weight: 700; margin: 1.75rem 0 0.6rem; }
+.prose-cw h3 { color: #a6e3a1; font-size: 1.15rem; font-weight: 700; margin: 1.4rem 0 0.5rem; }
+.prose-cw p { margin: 0.75rem 0; }
+.prose-cw a { color: #89b4fa; text-decoration: underline; }
+.prose-cw a:hover { color: #cba6f7; }
+.prose-cw ul { padding-left: 1.4rem; list-style: disc; margin: 0.75rem 0; }
+.prose-cw ol { padding-left: 1.4rem; list-style: decimal; margin: 0.75rem 0; }
+.prose-cw li { margin-bottom: 0.35rem; }
+.prose-cw img { border-radius: 0.75rem; margin: 1.25rem 0; max-width: 100%; height: auto; border: 1px solid #45475a; }
+.prose-cw blockquote { border-left: 3px solid #cba6f7; padding-left: 1rem; margin: 1rem 0; color: #a6adc8; font-style: italic; }
+.prose-cw code { background: #313244; padding: 0.15rem 0.4rem; border-radius: 0.35rem; font-size: 0.875em; }
+.prose-cw pre { background: #181825; padding: 1rem; border-radius: 0.75rem; overflow-x: auto; margin: 1rem 0; border: 1px solid #45475a; }
+.prose-cw pre code { background: none; padding: 0; }
+.prose-cw strong { color: #f9e2af; }
+.prose-cw hr { border: 0; border-top: 1px solid #45475a; margin: 2rem 0; }
+.prose-cw table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+.prose-cw th, .prose-cw td { border: 1px solid #45475a; padding: 0.5rem 0.75rem; text-align: left; }
+.prose-cw th { background: #313244; }

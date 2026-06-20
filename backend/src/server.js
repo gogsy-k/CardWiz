@@ -15,6 +15,8 @@ const authRoutes    = require('./routes/auth');
 const cardsRoutes   = require('./routes/cards');
 const paymentRoutes = require('./routes/payment');
 const catalogRoutes = require('./routes/catalog');
+const postsRoutes   = require('./routes/posts');
+const adminRoutes   = require('./routes/admin');
 const { autoSeedIfEmpty } = require('./routes/catalog');
 
 const app = express();
@@ -50,6 +52,8 @@ app.use('/auth', authRoutes);
 app.use('/cards', cardsRoutes);
 app.use('/payment', paymentRoutes);
 app.use('/catalog', catalogRoutes);
+app.use('/posts', postsRoutes);
+app.use('/admin', adminRoutes);
 
 // 404 fallback
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));

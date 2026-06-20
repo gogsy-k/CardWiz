@@ -106,6 +106,37 @@ async function init(databaseUrl) {
   await pool.query(`
     ALTER TABLE card_catalog ADD COLUMN IF NOT EXISTS card_variant TEXT DEFAULT 'credit';
   `);
+
+  // News/blog posts — admin-authored. content = markdown.
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS posts (
+      id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      slug          TEXT UNIQUE NOT NULL,
+      title         TEXT NOT NULL,
+      excerpt       TEXT,
+      cover_image   TEXT,
+      content       TEXT NOT NULL,
+      category      TEXT,
+      author_id     UUID REFERENCES users(id) ON DELETE SET NULL,
+      author_name   TEXT,
+      status        TEXT NOT NULL DEFAULT 'draft',
+      published_at  TIMESTAMPTZ,
+      created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+      updated_at    TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS posts_status_published_idx ON posts (status, published_at DESC);
+  `);
+
+  // Admin allowlist — emails jinke paas admin access hai (super-admins config mein alag).
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS admins (
+      email       TEXT PRIMARY KEY,
+      added_by    TEXT,
+      created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+  `);
 }
 
 // DB row -> humara user shape (camelCase, consistent JSON store ke saath).
@@ -322,9 +353,119 @@ async function upsertCard(card) {
   ]);
 }
 
+// ---- Posts (news/blog) ----
+function rowToPost(r) {
+  if (!r) return null;
+  return {
+    id: r.id,
+    slug: r.slug,
+    title: r.title,
+    excerpt: r.excerpt || '',
+    coverImage: r.cover_image || '',
+    content: r.content,
+    category: r.category || '',
+    authorId: r.author_id,
+    authorName: r.author_name || '',
+    status: r.status,
+    publishedAt: r.published_at,
+    createdAt: r.created_at,
+    updatedAt: r.updated_at,
+  };
+}
+
+async function listPublishedPosts({ limit = 50, offset = 0 } = {}) {
+  const res = await pool.query(
+    "SELECT * FROM posts WHERE status='published' ORDER BY published_at DESC NULLS LAST LIMIT $1 OFFSET $2",
+    [limit, offset]
+  );
+  return res.rows.map(rowToPost);
+}
+
+async function listAllPosts() {
+  const res = await pool.query('SELECT * FROM posts ORDER BY updated_at DESC');
+  return res.rows.map(rowToPost);
+}
+
+async function getPostBySlug(slug) {
+  const res = await pool.query('SELECT * FROM posts WHERE slug = $1', [slug]);
+  return rowToPost(res.rows[0]);
+}
+
+async function getPostById(id) {
+  const res = await pool.query('SELECT * FROM posts WHERE id = $1', [id]);
+  return rowToPost(res.rows[0]);
+}
+
+async function createPost(p) {
+  const publishedAt = p.status === 'published' ? new Date().toISOString() : null;
+  const res = await pool.query(
+    `INSERT INTO posts (slug, title, excerpt, cover_image, content, category, author_id, author_name, status, published_at)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *`,
+    [p.slug, p.title, p.excerpt || null, p.coverImage || null, p.content, p.category || null,
+     p.authorId || null, p.authorName || null, p.status || 'draft', publishedAt]
+  );
+  return rowToPost(res.rows[0]);
+}
+
+async function updatePost(id, patch) {
+  const cur = await getPostById(id);
+  if (!cur) return null;
+  // First-publish pe hi published_at set karo (re-publish pe original date rakho).
+  let publishedAt = cur.publishedAt;
+  if (patch.status === 'published' && !cur.publishedAt) publishedAt = new Date().toISOString();
+  const res = await pool.query(
+    `UPDATE posts SET
+       title=$2, excerpt=$3, cover_image=$4, content=$5, category=$6, status=$7,
+       published_at=$8, updated_at=now()
+     WHERE id=$1 RETURNING *`,
+    [
+      id,
+      patch.title ?? cur.title,
+      patch.excerpt ?? cur.excerpt,
+      patch.coverImage ?? cur.coverImage,
+      patch.content ?? cur.content,
+      patch.category ?? cur.category,
+      patch.status ?? cur.status,
+      publishedAt,
+    ]
+  );
+  return rowToPost(res.rows[0]);
+}
+
+async function deletePost(id) {
+  const res = await pool.query('DELETE FROM posts WHERE id = $1 RETURNING id', [id]);
+  return res.rowCount > 0;
+}
+
+// ---- Admins (allowlist) ----
+async function listAdmins() {
+  const res = await pool.query('SELECT email, added_by, created_at FROM admins ORDER BY created_at');
+  return res.rows.map((r) => ({ email: r.email, addedBy: r.added_by || '', createdAt: r.created_at }));
+}
+
+async function hasAdmin(email) {
+  const res = await pool.query('SELECT 1 FROM admins WHERE email = $1', [email]);
+  return res.rowCount > 0;
+}
+
+async function addAdmin(email, addedBy) {
+  await pool.query(
+    'INSERT INTO admins (email, added_by) VALUES ($1,$2) ON CONFLICT (email) DO NOTHING',
+    [email, addedBy || null]
+  );
+  return { email, addedBy: addedBy || '' };
+}
+
+async function removeAdmin(email) {
+  const res = await pool.query('DELETE FROM admins WHERE email = $1 RETURNING email', [email]);
+  return res.rowCount > 0;
+}
+
 module.exports = {
   kind: 'postgres', init, upsertByGoogleId, findById, updatePlan, listCards, replaceCards,
   createPayment, findPendingPayments, markPaymentPaid,
   createSubscription, findPendingSubscriptions, markSubscriptionActive,
   listCatalog, countCatalog, upsertCard, deleteNotInCatalog,
+  listPublishedPosts, listAllPosts, getPostBySlug, getPostById, createPost, updatePost, deletePost,
+  listAdmins, hasAdmin, addAdmin, removeAdmin,
 };

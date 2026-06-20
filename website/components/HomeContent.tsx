@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useLang } from "@/contexts/LangContext";
 import QuizTeaser from "@/components/QuizTeaser";
+import PostCard from "@/components/PostCard";
+import type { Post } from "@/lib/posts";
 
 const CHROME_STORE_URL = "https://chrome.google.com/webstore";
 
@@ -12,10 +14,12 @@ export default function HomeContent({
   total,
   credit,
   banks,
+  posts = [],
 }: {
   total: number;
   credit: number;
   banks: number;
+  posts?: Post[];
 }) {
   const { t } = useLang();
 
@@ -145,6 +149,26 @@ export default function HomeContent({
 
       {/* QUIZ TEASER */}
       <QuizTeaser />
+
+      {/* LATEST NEWS */}
+      {posts.length > 0 && (
+        <section className="mx-auto max-w-5xl px-5 py-16">
+          <div className="flex items-end justify-between">
+            <div>
+              <h2 className="text-3xl font-extrabold">{t("home_news_h")}</h2>
+              <p className="mt-2 text-muted">{t("home_news_sub")}</p>
+            </div>
+            <Link href="/news" className="shrink-0 text-sm font-semibold text-accent hover:underline">
+              {t("home_news_all")} →
+            </Link>
+          </div>
+          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {posts.map((p) => (
+              <PostCard key={p.id} post={p} />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* HOW */}
       <section id="how" className="mx-auto max-w-5xl px-5 pb-20">

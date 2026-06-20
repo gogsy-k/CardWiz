@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useLang } from "@/contexts/LangContext";
+import { useAuth } from "@/contexts/AuthContext";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import AuthButton from "@/components/AuthButton";
 
@@ -11,13 +12,14 @@ const CHROME_STORE_URL = "https://chrome.google.com/webstore";
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const { t } = useLang();
+  const { user } = useAuth();
 
   const links = [
     { href: "/", key: "nav_home" },
     { href: "/cards", key: "nav_cards" },
     { href: "/find-my-card", key: "nav_findcard" },
+    { href: "/news", key: "nav_news" },
     { href: "/pricing", key: "nav_pricing" },
-    { href: "/#how", key: "nav_how" },
     { href: "/contact", key: "nav_contact" },
   ];
 
@@ -39,6 +41,11 @@ export default function Navbar() {
               {t(l.key)}
             </Link>
           ))}
+          {user?.isAdmin && (
+            <Link href="/admin" className="text-sm font-bold text-pink transition-colors hover:text-pink/80">
+              {t("nav_admin")}
+            </Link>
+          )}
           <LanguageSwitcher compact />
           <AuthButton />
           <a
@@ -74,6 +81,15 @@ export default function Navbar() {
               {t(l.key)}
             </Link>
           ))}
+          {user?.isAdmin && (
+            <Link
+              href="/admin"
+              onClick={() => setOpen(false)}
+              className="rounded-lg px-2 py-2 text-sm font-bold text-pink hover:bg-surface"
+            >
+              {t("nav_admin")}
+            </Link>
+          )}
           <div className="mt-2 flex items-center justify-between px-2">
             <LanguageSwitcher />
             <AuthButton />

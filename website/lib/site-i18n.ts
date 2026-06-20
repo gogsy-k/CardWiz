@@ -200,6 +200,16 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
     auth_plan_premium: "Premium",
     auth_blurb:
       "Sign in to sync your plan across devices. We only take your name & email — never card number or CVV.",
+
+    // News
+    nav_news: "News",
+    nav_admin: "Admin",
+    news_title: "News & Updates",
+    news_sub: "Credit card and personal finance news, tips and updates.",
+    news_empty: "No articles yet — check back soon.",
+    home_news_h: "Latest news",
+    home_news_sub: "Credit card & finance updates",
+    home_news_all: "All news",
   },
 
   hinglish: {
@@ -395,6 +405,16 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
     auth_plan_premium: "Premium",
     auth_blurb:
       "Sign in karke apna plan har device pe sync karo. Hum sirf naam & email lete hain — card number ya CVV kabhi nahi.",
+
+    // News
+    nav_news: "News",
+    nav_admin: "Admin",
+    news_title: "News & Updates",
+    news_sub: "Credit card aur personal finance ki news, tips aur updates.",
+    news_empty: "Abhi koi article nahi — jaldi wapas aao.",
+    home_news_h: "Latest news",
+    home_news_sub: "Credit card & finance updates",
+    home_news_all: "Saari news",
   },
 
   hi: {
@@ -590,6 +610,16 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
     auth_plan_premium: "Premium",
     auth_blurb:
       "Sign in करके अपना plan हर device पर sync करें। हम सिर्फ़ नाम & email लेते हैं — card number या CVV कभी नहीं।",
+
+    // News
+    nav_news: "समाचार",
+    nav_admin: "Admin",
+    news_title: "News & Updates",
+    news_sub: "Credit card और personal finance की news, tips और updates।",
+    news_empty: "अभी कोई article नहीं — जल्दी वापस आएं।",
+    home_news_h: "ताज़ा समाचार",
+    home_news_sub: "Credit card & finance updates",
+    home_news_all: "सारी news",
   },
 };
 

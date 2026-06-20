@@ -51,4 +51,21 @@ const catalog = {
   deleteNotIn: (...a) => driver.deleteNotInCatalog(...a),
 };
 
-module.exports = { init, users, cards, payments, subscriptions, catalog, get kind() { return driver && driver.kind; } };
+const posts = {
+  listPublished: (...a) => driver.listPublishedPosts(...a),
+  listAll:       (...a) => driver.listAllPosts(...a),
+  getBySlug:     (...a) => driver.getPostBySlug(...a),
+  getById:       (...a) => driver.getPostById(...a),
+  create:        (...a) => driver.createPost(...a),
+  update:        (...a) => driver.updatePost(...a),
+  remove:        (...a) => driver.deletePost(...a),
+};
+
+const admins = {
+  list:   (...a) => driver.listAdmins(...a),
+  has:    (...a) => driver.hasAdmin(...a),
+  add:    (...a) => driver.addAdmin(...a),
+  remove: (...a) => driver.removeAdmin(...a),
+};
+
+module.exports = { init, users, cards, payments, subscriptions, catalog, posts, admins, get kind() { return driver && driver.kind; } };

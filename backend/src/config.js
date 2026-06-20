@@ -24,6 +24,12 @@ const config = {
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean),
+  // Super-admins — hamesha admin, UI se remove nahi ho sakte. Baaki admins DB table mein.
+  // Normalized (lowercase+trim) taaki email comparison consistent rahe.
+  superAdminEmails: (process.env.SUPER_ADMIN_EMAILS || 'gurpreetsj8871@gmail.com')
+    .split(',')
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean),
   // Razorpay (Phase 11 — premium payments)
   razorpayKeyId: process.env.RAZORPAY_KEY_ID || '',
   razorpayKeySecret: process.env.RAZORPAY_KEY_SECRET || '',

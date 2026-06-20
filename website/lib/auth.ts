@@ -13,6 +13,7 @@ export type AuthUser = {
   name: string;
   picture: string;
   plan: "free" | "premium";
+  isAdmin?: boolean;
 };
 
 export type StoredAuth = { token: string; user: AuthUser };
@@ -69,4 +70,26 @@ export async function getMe(token: string, cached?: AuthUser): Promise<AuthUser 
   } catch {
     return cached ?? null;
   }
+}
+
+// Current session token (for authed admin calls).
+export function getToken(): string | null {
+  return getStoredAuth()?.token ?? null;
+}
+
+// Bearer fetch for admin writes. 401 → clear session + throw.
+export async function authedFetch(path: string, opts: RequestInit = {}): Promise<Response> {
+  const token = getToken();
+  if (!token) throw new Error("Not signed in");
+  const headers: Record<string, string> = {
+    ...((opts.headers as Record<string, string>) || {}),
+    Authorization: `Bearer ${token}`,
+  };
+  if (opts.body && !headers["Content-Type"]) headers["Content-Type"] = "application/json";
+  const res = await fetch(`${BACKEND_URL}${path}`, { ...opts, headers });
+  if (res.status === 401) {
+    clearStoredAuth();
+    throw new Error("Session expired");
+  }
+  return res;
 }

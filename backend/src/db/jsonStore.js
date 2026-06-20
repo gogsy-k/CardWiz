@@ -28,6 +28,8 @@ function load() {
   if (!cache.cardsByUser || typeof cache.cardsByUser !== 'object') cache.cardsByUser = {};
   if (!Array.isArray(cache.payments)) cache.payments = [];
   if (!Array.isArray(cache.subscriptions)) cache.subscriptions = [];
+  if (!Array.isArray(cache.posts)) cache.posts = [];
+  if (!Array.isArray(cache.admins)) cache.admins = [];
   return cache;
 }
 
@@ -173,9 +175,118 @@ async function countCatalog() {
 async function upsertCard() { /* no-op — json driver mein seeding nahi hoti */ }
 async function deleteNotInCatalog() { return 0; /* no-op */ }
 
+// ---- Posts (news/blog) ----
+async function listPublishedPosts({ limit = 50, offset = 0 } = {}) {
+  load();
+  return cache.posts
+    .filter((p) => p.status === 'published')
+    .sort((a, b) => {
+      const ad = a.publishedAt || a.createdAt || '';
+      const bd = b.publishedAt || b.createdAt || '';
+      return ad < bd ? 1 : -1; // newest first
+    })
+    .slice(offset, offset + limit);
+}
+
+async function listAllPosts() {
+  load();
+  return [...cache.posts].sort((a, b) => ((a.updatedAt || '') < (b.updatedAt || '') ? 1 : -1));
+}
+
+async function getPostBySlug(slug) {
+  load();
+  return cache.posts.find((p) => p.slug === slug) || null;
+}
+
+async function getPostById(id) {
+  load();
+  return cache.posts.find((p) => p.id === id) || null;
+}
+
+async function createPost(p) {
+  load();
+  const now = new Date().toISOString();
+  const post = {
+    id: crypto.randomUUID(),
+    slug: p.slug,
+    title: p.title,
+    excerpt: p.excerpt || '',
+    coverImage: p.coverImage || '',
+    content: p.content,
+    category: p.category || '',
+    authorId: p.authorId || null,
+    authorName: p.authorName || '',
+    status: p.status || 'draft',
+    publishedAt: p.status === 'published' ? now : null,
+    createdAt: now,
+    updatedAt: now,
+  };
+  cache.posts.push(post);
+  persist();
+  return post;
+}
+
+async function updatePost(id, patch) {
+  load();
+  const p = cache.posts.find((x) => x.id === id);
+  if (!p) return null;
+  if (patch.title !== undefined) p.title = patch.title;
+  if (patch.excerpt !== undefined) p.excerpt = patch.excerpt;
+  if (patch.coverImage !== undefined) p.coverImage = patch.coverImage;
+  if (patch.content !== undefined) p.content = patch.content;
+  if (patch.category !== undefined) p.category = patch.category;
+  if (patch.status !== undefined) {
+    p.status = patch.status;
+    if (patch.status === 'published' && !p.publishedAt) p.publishedAt = new Date().toISOString();
+  }
+  p.updatedAt = new Date().toISOString();
+  persist();
+  return p;
+}
+
+async function deletePost(id) {
+  load();
+  const idx = cache.posts.findIndex((x) => x.id === id);
+  if (idx < 0) return false;
+  cache.posts.splice(idx, 1);
+  persist();
+  return true;
+}
+
+// ---- Admins (allowlist) ----
+async function listAdmins() {
+  load();
+  return cache.admins.map((a) => ({ email: a.email, addedBy: a.addedBy || '', createdAt: a.createdAt }));
+}
+
+async function hasAdmin(email) {
+  load();
+  return cache.admins.some((a) => a.email === email);
+}
+
+async function addAdmin(email, addedBy) {
+  load();
+  if (!cache.admins.some((a) => a.email === email)) {
+    cache.admins.push({ email, addedBy: addedBy || '', createdAt: new Date().toISOString() });
+    persist();
+  }
+  return { email, addedBy: addedBy || '' };
+}
+
+async function removeAdmin(email) {
+  load();
+  const idx = cache.admins.findIndex((a) => a.email === email);
+  if (idx < 0) return false;
+  cache.admins.splice(idx, 1);
+  persist();
+  return true;
+}
+
 module.exports = {
   kind: 'json', init, upsertByGoogleId, findById, updatePlan, listCards, replaceCards,
   createPayment, findPendingPayments, markPaymentPaid,
   createSubscription, findPendingSubscriptions, markSubscriptionActive,
   listCatalog, countCatalog, upsertCard, deleteNotInCatalog,
+  listPublishedPosts, listAllPosts, getPostBySlug, getPostById, createPost, updatePost, deletePost,
+  listAdmins, hasAdmin, addAdmin, removeAdmin,
 };
