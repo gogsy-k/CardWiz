@@ -591,6 +591,25 @@ function renderMyCards() {
 
 function fmtINR(n) { return Number(n).toLocaleString('en-IN'); }
 
+function bankAccentColor(bank) {
+  if (!bank) return '#cba6f7';
+  const b = bank.toLowerCase();
+  if (b.includes('hdfc'))    return '#f9e2af';
+  if (b.includes('sbi'))     return '#89b4fa';
+  if (b.includes('axis'))    return '#cba6f7';
+  if (b.includes('icici'))   return '#fab387';
+  if (b.includes('kotak'))   return '#f9e2af';
+  if (b.includes('indusind'))return '#f38ba8';
+  if (b.includes('yes'))     return '#89b4fa';
+  if (b.includes('idfc'))    return '#94e2d5';
+  if (b.includes('au ') || b === 'au') return '#89dceb';
+  if (b.includes('hsbc'))    return '#f38ba8';
+  if (b.includes('amex') || b.includes('american express')) return '#a6e3a1';
+  if (b.includes('standard chartered')) return '#a6e3a1';
+  if (b.includes('rbl'))     return '#fab387';
+  return '#cba6f7';
+}
+
 function hasAnyTrackerData(cat) {
   if (!cat) return false;
   if (cat.feeWaiverSpend > 0 && cat.annualFee > 0) return true;
@@ -774,76 +793,125 @@ function makeCardDetail(mc, cat) {
   return detail;
 }
 
-// Ek wallet-card ka row banao (credit + debit dono ke liye same).
-// Bill due date set ho to due-status + "Pay Now" button bhi (bills ab yahin merge).
+// Open Card Detail Modal (Sprint 2).
+function openCardDetailModal(mc, cat) {
+  const overlay = $('cardDetailModal');
+  const content = $('cardDetailContent');
+  if (!overlay || !content) return;
+  content.innerHTML = '';
+
+  // Header
+  const hd = document.createElement('div');
+  hd.className = 'cd-hd';
+  const titleWrap = document.createElement('div');
+  const title = document.createElement('div');
+  title.className = 'cd-title';
+  title.textContent = mc.nickname || cat.name;
+  const sub = document.createElement('div');
+  sub.className = 'cd-sub';
+  sub.textContent = cat.name + (mc.last4 ? ` · •••• ${mc.last4}` : '') + (cat.annualFee > 0 ? ` · ₹${fmtINR(cat.annualFee)} annual fee` : ' · Lifetime free');
+  titleWrap.appendChild(title);
+  titleWrap.appendChild(sub);
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'cd-close';
+  closeBtn.textContent = '✕';
+  closeBtn.addEventListener('click', () => { overlay.hidden = true; });
+  hd.appendChild(titleWrap);
+  hd.appendChild(closeBtn);
+  content.appendChild(hd);
+
+  const detail = makeCardDetail(mc, cat);
+  detail.style.marginTop = '0';
+  content.appendChild(detail);
+
+  overlay.hidden = false;
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.hidden = true; }, { once: false });
+}
+
+// Wallet-card row — redesigned to match bestcard visual quality.
 function makeCardRow(mc, cat) {
   const row = document.createElement('div');
   row.className = 'mycard';
+  const accent = bankAccentColor(cat.bank);
+  row.style.borderLeftColor = accent;
+
+  // ── Top section: icon circle + card info ──
+  const top = document.createElement('div');
+  top.className = 'mycard-top';
+
+  const iconCircle = document.createElement('div');
+  iconCircle.className = 'mycard-icon-circle';
+  iconCircle.style.background = `linear-gradient(145deg, ${accent}cc, ${accent}88)`;
+  iconCircle.textContent = (cat.bank || '?')[0].toUpperCase();
 
   const info = document.createElement('div');
-  info.className = 'info';
-  const nick = document.createElement('div');
-  nick.className = 'nick';
-  nick.textContent = mc.nickname ? `${mc.nickname}` : cat.name;
-  const meta = document.createElement('div');
-  meta.className = 'meta';
-  const last4 = mc.last4 ? ` · •••• ${mc.last4}` : '';
+  info.className = 'mycard-info';
 
-  // Bill due — days-left dikhao (CardWizReminders se).
-  let dueInfo = '';
-  if (mc.dueDay && window.CardWizReminders) {
-    const st = window.CardWizReminders.dueStatus(mc.dueDay, mc.reminderDaysBefore, new Date());
-    const when = st.days <= 0 ? 'aaj due!' : st.days === 1 ? 'kal due' : `${st.days} din mein due`;
-    dueInfo = ` · 🔔 ${when}`;
-  } else if (mc.dueDay) {
-    dueInfo = ` · 🔔 due ${mc.dueDay}`;
+  const nameEl = document.createElement('div');
+  nameEl.className = 'mycard-name';
+  nameEl.textContent = mc.nickname || cat.name;
+
+  const bankEl = document.createElement('div');
+  bankEl.className = 'mycard-bank';
+  bankEl.textContent = (mc.nickname ? cat.name : cat.bank) + (mc.last4 ? ` · •••• ${mc.last4}` : '');
+
+  info.appendChild(nameEl);
+  info.appendChild(bankEl);
+
+  // Due date pill
+  if (mc.dueDay) {
+    const duePill = document.createElement('div');
+    duePill.className = 'mycard-due';
+    if (window.CardWizReminders) {
+      const st = window.CardWizReminders.dueStatus(mc.dueDay, mc.reminderDaysBefore, new Date());
+      if (st.days <= 0)     { duePill.className += ' urgent'; duePill.textContent = '🔔 Due today!'; }
+      else if (st.days <= (mc.reminderDaysBefore || 3)) { duePill.className += ' soon'; duePill.textContent = `🔔 Due in ${st.days} day${st.days > 1 ? 's' : ''}`; }
+      else                  { duePill.className += ' ok';     duePill.textContent = `🔔 Due ${mc.dueDay}th`; }
+    } else {
+      duePill.className += ' ok';
+      duePill.textContent = `🔔 Due ${mc.dueDay}th`;
+    }
+    info.appendChild(duePill);
   }
-  meta.textContent = (mc.nickname ? cat.name : cat.bank) + last4 + dueInfo;
-  info.appendChild(nick);
-  info.appendChild(meta);
 
+  top.appendChild(iconCircle);
+  top.appendChild(info);
+  row.appendChild(top);
+
+  // ── Action buttons ──
   const actions = document.createElement('div');
-  actions.className = 'actions';
-  // Pay Now — sirf jab bill due date set ho (credit cards).
+  actions.className = 'mycard-actions';
+
+  if (hasAnyTrackerData(cat)) {
+    const detBtn = document.createElement('button');
+    detBtn.className = 'mc-btn-det';
+    detBtn.textContent = CardWizI18n.t('tr_details');
+    detBtn.addEventListener('click', () => openCardDetailModal(mc, cat));
+    actions.appendChild(detBtn);
+  }
+
   if (mc.dueDay) {
     const payBtn = document.createElement('button');
-    payBtn.className = 'pay-now';
+    payBtn.className = 'mc-btn-pay';
     payBtn.textContent = CardWizI18n.t('act_pay');
-    payBtn.title = 'Apne bank/CRED pe bill pay karo';
     payBtn.addEventListener('click', () => payNow(cat.bank));
     actions.appendChild(payBtn);
   }
+
   const editBtn = document.createElement('button');
-  editBtn.className = 'edit';
+  editBtn.className = 'mc-btn-edit';
   editBtn.textContent = CardWizI18n.t('act_edit');
   editBtn.addEventListener('click', () => openForm(mc.id));
+
   const delBtn = document.createElement('button');
-  delBtn.className = 'del';
+  delBtn.className = 'mc-btn-del';
   delBtn.textContent = CardWizI18n.t('act_delete');
   delBtn.addEventListener('click', () => deleteCard(mc.id));
+
   actions.appendChild(editBtn);
   actions.appendChild(delBtn);
+  row.appendChild(actions);
 
-  // Sprint 2: detail toggle (Fee Waiver / Welcome Bonus / Benefits)
-  if (hasAnyTrackerData(cat)) {
-    const detailSection = makeCardDetail(mc, cat);
-    detailSection.hidden = true;
-    const detailBtn = document.createElement('button');
-    detailBtn.className = 'detail-toggle-btn';
-    detailBtn.textContent = CardWizI18n.t('tr_details');
-    detailBtn.addEventListener('click', () => {
-      const showing = !detailSection.hidden;
-      detailSection.hidden = showing;
-      detailBtn.textContent = showing ? CardWizI18n.t('tr_details') : CardWizI18n.t('tr_hide_det');
-    });
-    actions.appendChild(detailBtn);
-    row.appendChild(info);
-    row.appendChild(actions);
-    row.appendChild(detailSection);
-  } else {
-    row.appendChild(info);
-    row.appendChild(actions);
-  }
   return row;
 }
 
