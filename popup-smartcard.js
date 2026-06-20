@@ -639,11 +639,14 @@ function makeCardDetail(mc, cat) {
 
     const block = document.createElement('div');
     block.className = 'tracker-block';
+    const remaining = Math.max(0, target - effective);
+    const doneMsg = pct >= 100 ? '✅ Fee waiver achieved!' : `₹${fmtINR(remaining)} more to go`;
     block.innerHTML =
       `<div class="tracker-label">${escapeHtml(CardWizI18n.t('tr_fee_waiver'))}</div>` +
-      `<div class="tracker-subtext">${escapeHtml(CardWizI18n.t('tr_target').replace('{d}', fmtINR(target)))} → ₹${cat.annualFee} fee waived</div>` +
+      `<div class="tracker-subtext">Spend ₹${fmtINR(target)} this year → ₹${fmtINR(cat.annualFee)} annual fee waived</div>` +
       `<div class="tracker-bar-row"><div class="tracker-bar"><div class="${fillClass}" style="width:${pct}%"></div></div><span class="tracker-pct">${pct}%</span></div>` +
-      `<div class="tracker-tracked">${escapeHtml(CardWizI18n.t('tr_tracked').replace('{d}', fmtINR(tracked)))} · estimate only</div>`;
+      `<div class="tracker-tracked">${doneMsg}</div>` +
+      `<div class="tracker-tracked" style="margin-top:2px">Tracked via CardWiz: ₹${fmtINR(tracked)} · estimate only</div>`;
 
     const manualRow = document.createElement('div');
     manualRow.className = 'tracker-manual-row';
@@ -688,13 +691,14 @@ function makeCardDetail(mc, cat) {
     else if (expired) statusHtml = `<div class="tracker-status expired">${escapeHtml(CardWizI18n.t('tr_bonus_expired'))}</div>`;
     else if (daysLeft !== null) statusHtml = `<div class="tracker-days">${escapeHtml(CardWizI18n.t('tr_days_left').replace('{d}', daysLeft))}</div>`;
 
+    const wbRemaining = Math.max(0, target - effective);
     block.innerHTML =
       `<div class="tracker-label">${escapeHtml(CardWizI18n.t('tr_welcome'))}</div>` +
-      `<div class="tracker-subtext">${escapeHtml(wb.rewardText)} · est. ₹${fmtINR(wb.estimatedValue)}</div>` +
-      `<div class="tracker-subtext">${escapeHtml(CardWizI18n.t('tr_target').replace('{d}', fmtINR(target)))} in ${periodDays} days</div>` +
+      `<div class="tracker-subtext" style="font-weight:700;color:#cdd6f4">${escapeHtml(wb.rewardText)}</div>` +
+      `<div class="tracker-subtext">Worth ₹${fmtINR(wb.estimatedValue)} · Spend ₹${fmtINR(target)} in ${periodDays} days</div>` +
       statusHtml +
       `<div class="tracker-bar-row"><div class="tracker-bar"><div class="tracker-fill" style="width:${pct}%"></div></div><span class="tracker-pct">${pct}%</span></div>` +
-      `<div class="tracker-tracked">${escapeHtml(CardWizI18n.t('tr_tracked').replace('{d}', fmtINR(tracked)))}</div>`;
+      (achieved ? '' : `<div class="tracker-tracked">₹${fmtINR(wbRemaining)} more to go · Tracked: ₹${fmtINR(tracked)}</div>`);
 
     const manualRow = document.createElement('div');
     manualRow.className = 'tracker-manual-row';
