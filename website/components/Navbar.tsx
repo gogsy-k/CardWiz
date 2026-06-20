@@ -14,6 +14,7 @@ export default function Navbar() {
   const links = [
     { href: "/", key: "nav_home" },
     { href: "/cards", key: "nav_cards" },
+    { href: "/find-my-card", key: "nav_findcard" },
     { href: "/pricing", key: "nav_pricing" },
     { href: "/#how", key: "nav_how" },
     { href: "/contact", key: "nav_contact" },

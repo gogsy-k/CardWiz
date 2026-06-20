@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useLang } from "@/contexts/LangContext";
+import QuizTeaser from "@/components/QuizTeaser";
 
 const CHROME_STORE_URL = "https://chrome.google.com/webstore";
 
@@ -141,6 +142,9 @@ export default function HomeContent({
           ))}
         </div>
       </section>
+
+      {/* QUIZ TEASER */}
+      <QuizTeaser />
 
       {/* HOW */}
       <section id="how" className="mx-auto max-w-5xl px-5 pb-20">
