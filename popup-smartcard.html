@@ -324,6 +324,22 @@
     .cibil-btn:hover { background: #f5d68a; }
     .cibil-note { font-size: 8px; color: #6c7086; margin-top: 7px; text-align: center; line-height: 1.4; }
 
+    /* "Why this card" — comparison hint on top result */
+    .why-cmp { font-size: 9px; color: #a6e3a1; margin-top: 5px; font-weight: 600; }
+
+    /* Quiz teaser card (Suggest tab) */
+    .quiz-teaser {
+      background: linear-gradient(135deg, #313244, #181825); border: 1px solid #45475a;
+      border-left: 3px solid #cba6f7; border-radius: 12px; padding: 12px; margin-top: 12px;
+    }
+    .quiz-teaser-title { font-size: 12px; font-weight: 800; color: #cba6f7; }
+    .quiz-teaser-desc { font-size: 10px; color: #a6adc8; margin-top: 3px; line-height: 1.5; }
+    .quiz-teaser-btn {
+      width: 100%; background: #cba6f7; color: #1e1e2e; border: none;
+      border-radius: 8px; padding: 9px; font-size: 11px; font-weight: 800; cursor: pointer; margin-top: 8px;
+    }
+    .quiz-teaser-btn:hover { background: #b4befe; }
+
     /* Language selector (More tab) */
     .lang-btns { display: flex; gap: 8px; margin: 4px 0 8px; }
     .lang-btns button {
@@ -429,7 +445,14 @@
         <li data-i18n="cb_p3">⚡ 2 minute mein score</li>
       </ul>
       <button class="cibil-btn" id="cibilBtn" data-i18n="cb_btn">Check CIBIL Score — Free ↗</button>
-      <div class="cibil-note" id="cibilNote"></div>
+      <div class="cibil-note" id="cibilNote" data-i18n="cb_note">Free check via Paisabazaar · Your data stays on this device</div>
+    </div>
+
+    <!-- ============ Find My Card Quiz Teaser ============ -->
+    <div class="quiz-teaser">
+      <div class="quiz-teaser-title" data-i18n="quiz_teaser_title">🔍 Looking for a new card?</div>
+      <div class="quiz-teaser-desc" data-i18n="quiz_teaser_desc">Answer 8 questions & get a personalised recommendation.</div>
+      <button class="quiz-teaser-btn" id="quizTeaserBtn" data-i18n="quiz_teaser_cta">Find My Card →</button>
     </div>
   </section>
 

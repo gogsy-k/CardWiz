@@ -63,6 +63,12 @@ const I18N = {
     an_none: 'No rewards logged yet. Track via "✓ Used" on the Suggest tab.',
     an_total: 'Total reward this month',
     lang_hint: 'App language. Card names & websites stay in English.',
+    why_extra: '+₹{d} vs next best card',
+    cb_note: 'Free check via Paisabazaar · Your data stays on this device',
+    cb_redirect: 'Opening Paisabazaar — CardWiz does not collect your data.',
+    quiz_teaser_title: '🔍 Looking for a new card?',
+    quiz_teaser_desc: 'Answer 8 questions & get a personalised recommendation.',
+    quiz_teaser_cta: 'Find My Card →',
   },
   hinglish: {
     nav_best: '🏆 Top Cards', nav_mycards: '💼 Mere Cards', nav_suggest: '💡 Suggest', nav_more: '⭐ More',
@@ -110,6 +116,12 @@ const I18N = {
     an_none: 'Abhi koi reward log nahi. Suggest tab pe "✓ Use kiya" se track karo.',
     an_total: 'Is mahine total reward',
     lang_hint: 'App ki bhasha. Card names & websites English mein rehte hain.',
+    why_extra: '+₹{d} next se zyada',
+    cb_note: 'Free check via Paisabazaar · Aapka data device pe hi rehta hai',
+    cb_redirect: 'Paisabazaar pe ja rahe ho — CardWiz aapka data nahi leta.',
+    quiz_teaser_title: '🔍 Naya card dhundh rahe ho?',
+    quiz_teaser_desc: '8 sawaalon mein apna perfect card pata karo.',
+    quiz_teaser_cta: 'Mera Card Dhundo →',
   },
   hi: {
     nav_best: '🏆 टॉप कार्ड', nav_mycards: '💼 मेरे कार्ड', nav_suggest: '💡 सुझाव', nav_more: '⭐ और',
@@ -157,6 +169,12 @@ const I18N = {
     an_none: 'अभी कोई रिवॉर्ड log नहीं। Suggest tab पर "✓ यूज़ किया" से track करें।',
     an_total: 'इस महीने कुल रिवॉर्ड',
     lang_hint: 'ऐप की भाषा। कार्ड के नाम और वेबसाइट अंग्रेज़ी में रहते हैं।',
+    why_extra: '+₹{d} अगले से ज़्यादा',
+    cb_note: 'Free check via Paisabazaar · आपका डेटा इसी डिवाइस पर',
+    cb_redirect: 'Paisabazaar पर जा रहे हैं — CardWiz आपका डेटा नहीं लेता।',
+    quiz_teaser_title: '🔍 नया कार्ड ढूँढ रहे हैं?',
+    quiz_teaser_desc: '8 सवालों में अपना परफ़ेक्ट कार्ड जानें।',
+    quiz_teaser_cta: 'मेरा कार्ड ढूँढें →',
   },
 };
 

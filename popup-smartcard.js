@@ -101,6 +101,12 @@ async function init() {
   const cibilBtn = $('cibilBtn');
   if (cibilBtn) cibilBtn.addEventListener('click', openCibil);
 
+  // Quiz teaser → open /find-my-card on cardwiz.in
+  const quizTeaserBtn = $('quizTeaserBtn');
+  if (quizTeaserBtn) quizTeaserBtn.addEventListener('click', () => {
+    window.open('https://cardwiz.in/find-my-card', '_blank', 'noopener');
+  });
+
   // Language buttons (English / Hinglish / Hindi)
   document.querySelectorAll('#langBtns button').forEach((btn) => {
     btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
@@ -867,6 +873,17 @@ function renderResults(ranked) {
         applyBtn.addEventListener('click', () => openApply({ id: r.id, name: r.name }));
         left.appendChild(applyBtn);
       }
+
+      // "Why this card" — show savings gap vs next best
+      if (ranked.length > 1) {
+        const diff = r.savings - ranked[1].savings;
+        if (diff > 0) {
+          const whyEl = document.createElement('div');
+          whyEl.className = 'why-cmp';
+          whyEl.textContent = CardWizI18n.t('why_extra').replace('{d}', diff);
+          left.appendChild(whyEl);
+        }
+      }
     }
 
     const right = document.createElement('div');
@@ -994,14 +1011,14 @@ function closeCardInfo() {
 }
 
 // ---------- CIBIL score checker (affiliate redirect) ----------
-// ⚠️ PLACEHOLDER: partner (OneScore / Paisabazaar / BankBazaar) pe sign up karke apna
-//    referral link yahan daalo — user free check karega, hume commission milega.
-const CIBIL_PARTNER_URL = 'https://www.cibil.com/freecibilscore';
+// ⚠️ TODO: Replace with your Paisabazaar affiliate deep link once sign-up is done.
+//    Affiliate program: https://www.paisabazaar.com/affiliate
+const CIBIL_PARTNER_URL = 'https://www.paisabazaar.com/credit-score/';
 
 function openCibil() {
   window.open(CIBIL_PARTNER_URL, '_blank', 'noopener');
   const note = $('cibilNote');
-  if (note) note.textContent = 'Partner ke verified page pe ja rahe ho — CardWiz aapka data nahi maangta.';
+  if (note) note.textContent = CardWizI18n.t('cb_redirect');
 }
 
 // ---------- Language (English / Hinglish / Hindi) ----------

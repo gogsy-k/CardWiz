@@ -300,7 +300,9 @@ function renderWidget(site, amount, ranked, usingWallet, otherOffers, myCards) {
       const offerLine = r.offerValue > 0 ? `<span class="offer">+₹${r.offerValue} instant off</span>` : '';
       const capLine = r.capExhausted ? '<span class="capnote khatam">cap khatam</span>'
                     : (r.capped ? '<span class="capnote">cap tak</span>' : '');
-      right = rewardRow + offerLine + capLine;
+      const diff = (i === 0 && top3.length > 1) ? r.savings - top3[1].savings : 0;
+      const whyLine = diff > 0 ? `<span class="whydiff">+₹${diff} vs next</span>` : '';
+      right = rewardRow + offerLine + capLine + whyLine;
     } else {
       right = `<span class="rewardrow"><span class="reward">${r.rate}%</span><span class="pill ${typeClass}">${typeLabel}</span></span>`;
     }
@@ -377,6 +379,7 @@ function renderWidget(site, amount, ranked, usingWallet, otherOffers, myCards) {
       .tag-cash { background:#a6e3a1; color:#1e1e2e; }
       .tag-pts  { background:#89b4fa; color:#1e1e2e; }
       .tag-miles { background:#f9e2af; color:#1e1e2e; }
+      .whydiff { font-size:8px; font-weight:700; color:#a6e3a1; margin-top:2px; display:block; }
       .offers { font-size:9px; color:#89b4fa; margin-top:2px; line-height:1.4; }
       .buy {
         width:100%; margin-top:8px; background:#f9e2af; color:#1e1e2e; border:none;
