@@ -65,9 +65,22 @@ function makeGetRemaining(usage, date) {
   return (card, rule) => remaining(usage, card, rule, date);
 }
 
+// ---------- Cumulative spend tracker (fee waiver + welcome bonus) ----------
+// waiverSpend: { "card-id": totalINRSpend } — grows every time user clicks "Use kiya".
+// Manual override stored separately on wallet card; this is just the tracked floor.
+function totalTrackedSpend(waiverSpend, cardId) {
+  return (waiverSpend && waiverSpend[cardId]) ? waiverSpend[cardId] : 0;
+}
+
+function addTrackedSpend(waiverSpend, cardId, amount) {
+  const w = waiverSpend ? { ...waiverSpend } : {};
+  w[cardId] = (w[cardId] || 0) + (Number(amount) || 0);
+  return w;
+}
+
 // ---------- Exports (browser/worker/node) ----------
 // NOTE: unique const naam (har module alag) — popup/content-script mein saare classic
 // scripts ek hi global scope share karte hain, to `const api` collide kar jaata.
-const capTrackerApi = { currentPeriod, ruleKey, normalize, getUsed, remaining, logUsage, resetAll, makeGetRemaining };
+const capTrackerApi = { currentPeriod, ruleKey, normalize, getUsed, remaining, logUsage, resetAll, makeGetRemaining, totalTrackedSpend, addTrackedSpend };
 if (typeof module !== 'undefined' && module.exports) module.exports = capTrackerApi;
 if (typeof globalThis !== 'undefined') globalThis.CardWizCapTracker = capTrackerApi;

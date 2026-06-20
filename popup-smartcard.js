@@ -58,6 +58,8 @@ let editingId = null; // agar edit ho raha hai to uska wallet-entry id
 let cardsTab = 'credit'; // Cards section ka active tab: 'credit' | 'debit'
 let lastRanked = [];  // last recommendation results (log button ke liye)
 let bestTier = 'elite'; // Best Cards (Tab 1) tier filter: elite|premium|solid (default Elite)
+let waiverSpend = {};   // cumulative spend per cardId, grows on "Use kiya"
+let benefitsUsed = {};  // { "card-id::lounge::2026": 3, "card-id::movie::2026-06": 1 }
 
 // ---------- Init ----------
 async function init() {
@@ -69,6 +71,8 @@ async function init() {
   buildCardSelect();
   await loadWallet();
   await loadCapUsage();
+  await loadWaiverSpend();
+  await loadBenefitsUsed();
   await loadPremium();
   await loadAuth(); // Phase 8: signed-in user + plan sync (backend)
   await loadSyncPref(); // Phase 10: cloud sync pref (default ON)
@@ -233,6 +237,26 @@ function resetCaps() {
   capUsage = window.CardWizCapTracker.resetAll(new Date());
   saveCapUsage();
   runRecommendation();
+}
+
+// ---------- Waiver spend + benefits storage (Sprint 2) ----------
+function loadWaiverSpend() {
+  return new Promise((resolve) => {
+    if (typeof chrome === 'undefined' || !chrome.storage) return resolve();
+    chrome.storage.local.get(['waiverSpend'], (r) => { waiverSpend = r.waiverSpend || {}; resolve(); });
+  });
+}
+function saveWaiverSpend() {
+  if (typeof chrome !== 'undefined' && chrome.storage) chrome.storage.local.set({ waiverSpend });
+}
+function loadBenefitsUsed() {
+  return new Promise((resolve) => {
+    if (typeof chrome === 'undefined' || !chrome.storage) return resolve();
+    chrome.storage.local.get(['benefitsUsed'], (r) => { benefitsUsed = r.benefitsUsed || {}; resolve(); });
+  });
+}
+function saveBenefitsUsed() {
+  if (typeof chrome !== 'undefined' && chrome.storage) chrome.storage.local.set({ benefitsUsed });
 }
 
 // ---------- Premium (Phase 6) ----------
@@ -565,6 +589,191 @@ function renderMyCards() {
   for (const { mc, cat } of items) els.cardsList.appendChild(makeCardRow(mc, cat));
 }
 
+function fmtINR(n) { return Number(n).toLocaleString('en-IN'); }
+
+function hasAnyTrackerData(cat) {
+  if (!cat) return false;
+  if (cat.feeWaiverSpend > 0 && cat.annualFee > 0) return true;
+  if (cat.welcomeBonus) return true;
+  if (cat.benefits && (
+    (cat.benefits.loungePerYear !== 0 && cat.benefits.loungePerYear !== undefined) ||
+    cat.benefits.moviePerMonth > 0 ||
+    cat.benefits.fuelSurchargeWaiver ||
+    cat.fuelSurchargeWaiver
+  )) return true;
+  return false;
+}
+
+// Sprint 2: Card detail section (Fee Waiver + Welcome Bonus + Benefits Dashboard).
+function makeCardDetail(mc, cat) {
+  const detail = document.createElement('div');
+  detail.className = 'card-detail';
+
+  // ── Fee Waiver Tracker ──
+  if (cat.feeWaiverSpend > 0 && cat.annualFee > 0) {
+    const tracked = window.CardWizCapTracker.totalTrackedSpend(waiverSpend, cat.id);
+    const manual = Number(mc.feeWaiverManualSpend) || 0;
+    const effective = manual > 0 ? manual : tracked;
+    const target = cat.feeWaiverSpend;
+    const pct = Math.min(100, Math.round(effective / target * 100));
+    const fillClass = pct >= 100 ? 'tracker-fill done' : 'tracker-fill';
+
+    const block = document.createElement('div');
+    block.className = 'tracker-block';
+    block.innerHTML =
+      `<div class="tracker-label">${escapeHtml(CardWizI18n.t('tr_fee_waiver'))}</div>` +
+      `<div class="tracker-subtext">${escapeHtml(CardWizI18n.t('tr_target').replace('{d}', fmtINR(target)))} → ₹${cat.annualFee} fee waived</div>` +
+      `<div class="tracker-bar-row"><div class="tracker-bar"><div class="${fillClass}" style="width:${pct}%"></div></div><span class="tracker-pct">${pct}%</span></div>` +
+      `<div class="tracker-tracked">${escapeHtml(CardWizI18n.t('tr_tracked').replace('{d}', fmtINR(tracked)))} · estimate only</div>`;
+
+    const manualRow = document.createElement('div');
+    manualRow.className = 'tracker-manual-row';
+    const lbl = document.createElement('label');
+    lbl.textContent = CardWizI18n.t('tr_manual_hint');
+    const inp = document.createElement('input');
+    inp.className = 'tracker-manual-input'; inp.type = 'number';
+    inp.placeholder = '₹ actual spend'; inp.value = manual > 0 ? manual : '';
+    inp.addEventListener('change', () => {
+      mc.feeWaiverManualSpend = Number(inp.value) || null;
+      saveWallet();
+      const nd = makeCardDetail(mc, cat); nd.hidden = detail.hidden;
+      detail.parentNode && detail.parentNode.replaceChild(nd, detail);
+    });
+    manualRow.appendChild(lbl); manualRow.appendChild(inp);
+    block.appendChild(manualRow);
+    detail.appendChild(block);
+  }
+
+  // ── Welcome Bonus Tracker ──
+  if (cat.welcomeBonus && cat.welcomeBonus.spendTarget) {
+    const wb = cat.welcomeBonus;
+    const tracked = window.CardWizCapTracker.totalTrackedSpend(waiverSpend, cat.id);
+    const manual = Number(mc.welcomeBonusManualSpend) || 0;
+    const effective = manual > 0 ? manual : tracked;
+    const target = wb.spendTarget;
+    const pct = Math.min(100, Math.round(effective / target * 100));
+    const periodDays = wb.periodDays || 90;
+    const achieved = effective >= target;
+
+    let daysLeft = null;
+    if (mc.cardAddedDate) {
+      const elapsed = Math.floor((Date.now() - new Date(mc.cardAddedDate).getTime()) / 86400000);
+      daysLeft = Math.max(0, periodDays - elapsed);
+    }
+    const expired = daysLeft !== null && daysLeft === 0 && !achieved;
+
+    const block = document.createElement('div');
+    block.className = 'tracker-block';
+    let statusHtml = '';
+    if (achieved) statusHtml = `<div class="tracker-status done">${escapeHtml(CardWizI18n.t('tr_bonus_done'))}</div>`;
+    else if (expired) statusHtml = `<div class="tracker-status expired">${escapeHtml(CardWizI18n.t('tr_bonus_expired'))}</div>`;
+    else if (daysLeft !== null) statusHtml = `<div class="tracker-days">${escapeHtml(CardWizI18n.t('tr_days_left').replace('{d}', daysLeft))}</div>`;
+
+    block.innerHTML =
+      `<div class="tracker-label">${escapeHtml(CardWizI18n.t('tr_welcome'))}</div>` +
+      `<div class="tracker-subtext">${escapeHtml(wb.rewardText)} · est. ₹${fmtINR(wb.estimatedValue)}</div>` +
+      `<div class="tracker-subtext">${escapeHtml(CardWizI18n.t('tr_target').replace('{d}', fmtINR(target)))} in ${periodDays} days</div>` +
+      statusHtml +
+      `<div class="tracker-bar-row"><div class="tracker-bar"><div class="tracker-fill" style="width:${pct}%"></div></div><span class="tracker-pct">${pct}%</span></div>` +
+      `<div class="tracker-tracked">${escapeHtml(CardWizI18n.t('tr_tracked').replace('{d}', fmtINR(tracked)))}</div>`;
+
+    const manualRow = document.createElement('div');
+    manualRow.className = 'tracker-manual-row';
+    const lbl = document.createElement('label');
+    lbl.textContent = CardWizI18n.t('tr_manual_hint');
+    const inp = document.createElement('input');
+    inp.className = 'tracker-manual-input'; inp.type = 'number';
+    inp.placeholder = '₹ actual spend'; inp.value = manual > 0 ? manual : '';
+    inp.addEventListener('change', () => {
+      mc.welcomeBonusManualSpend = Number(inp.value) || null;
+      saveWallet();
+      const nd = makeCardDetail(mc, cat); nd.hidden = detail.hidden;
+      detail.parentNode && detail.parentNode.replaceChild(nd, detail);
+    });
+    manualRow.appendChild(lbl); manualRow.appendChild(inp);
+    block.appendChild(manualRow);
+    detail.appendChild(block);
+  }
+
+  // ── Benefits Dashboard ──
+  if (cat.benefits) {
+    const b = cat.benefits;
+    const hasLounge = b.loungePerYear !== 0 && b.loungePerYear !== undefined;
+    const hasMovie = b.moviePerMonth > 0;
+    const hasFuel = b.fuelSurchargeWaiver || cat.fuelSurchargeWaiver;
+
+    if (hasLounge || hasMovie || hasFuel) {
+      const block = document.createElement('div');
+      block.className = 'tracker-block';
+      const lbl = document.createElement('div');
+      lbl.className = 'tracker-label';
+      lbl.textContent = CardWizI18n.t('tr_benefits');
+      block.appendChild(lbl);
+
+      if (hasLounge) {
+        const year = new Date().getFullYear();
+        const key = `${cat.id}::lounge::${year}`;
+        const used = benefitsUsed[key] || 0;
+        const maxStr = b.loungePerYear === null ? CardWizI18n.t('tr_unlimited') : b.loungePerYear;
+        const row = document.createElement('div'); row.className = 'ben-row';
+        const benLbl = document.createElement('span'); benLbl.className = 'ben-label'; benLbl.textContent = CardWizI18n.t('tr_lounge');
+        const cnt = document.createElement('span'); cnt.className = 'ben-count'; cnt.textContent = `${used} / ${maxStr} ${CardWizI18n.t('tr_per_year')}`;
+        const plus = document.createElement('button'); plus.className = 'ben-btn'; plus.textContent = '+1';
+        plus.addEventListener('click', () => {
+          if (b.loungePerYear !== null && used >= b.loungePerYear) return;
+          benefitsUsed[key] = used + 1; saveBenefitsUsed();
+          const nd = makeCardDetail(mc, cat); nd.hidden = detail.hidden;
+          detail.parentNode && detail.parentNode.replaceChild(nd, detail);
+        });
+        const edit = document.createElement('button'); edit.className = 'ben-btn'; edit.textContent = '✏️'; edit.title = CardWizI18n.t('tr_edit_count');
+        edit.addEventListener('click', () => {
+          const v = prompt(CardWizI18n.t('tr_edit_count') + ':', used); if (v === null) return;
+          const n = parseInt(v, 10); if (!isNaN(n) && n >= 0) { benefitsUsed[key] = n; saveBenefitsUsed(); }
+          const nd = makeCardDetail(mc, cat); nd.hidden = detail.hidden;
+          detail.parentNode && detail.parentNode.replaceChild(nd, detail);
+        });
+        row.appendChild(benLbl); row.appendChild(cnt); row.appendChild(plus); row.appendChild(edit);
+        block.appendChild(row);
+      }
+
+      if (hasMovie) {
+        const period = window.CardWizCapTracker.currentPeriod(new Date());
+        const key = `${cat.id}::movie::${period}`;
+        const used = benefitsUsed[key] || 0;
+        const row = document.createElement('div'); row.className = 'ben-row';
+        const benLbl = document.createElement('span'); benLbl.className = 'ben-label'; benLbl.textContent = CardWizI18n.t('tr_movie');
+        const cnt = document.createElement('span'); cnt.className = 'ben-count'; cnt.textContent = `${used} / ${b.moviePerMonth} ${CardWizI18n.t('tr_per_month')}`;
+        const plus = document.createElement('button'); plus.className = 'ben-btn'; plus.textContent = '+1';
+        plus.addEventListener('click', () => {
+          if (used >= b.moviePerMonth) return;
+          benefitsUsed[key] = used + 1; saveBenefitsUsed();
+          const nd = makeCardDetail(mc, cat); nd.hidden = detail.hidden;
+          detail.parentNode && detail.parentNode.replaceChild(nd, detail);
+        });
+        const edit = document.createElement('button'); edit.className = 'ben-btn'; edit.textContent = '✏️'; edit.title = CardWizI18n.t('tr_edit_count');
+        edit.addEventListener('click', () => {
+          const v = prompt(CardWizI18n.t('tr_edit_count') + ':', used); if (v === null) return;
+          const n = parseInt(v, 10); if (!isNaN(n) && n >= 0) { benefitsUsed[key] = n; saveBenefitsUsed(); }
+          const nd = makeCardDetail(mc, cat); nd.hidden = detail.hidden;
+          detail.parentNode && detail.parentNode.replaceChild(nd, detail);
+        });
+        row.appendChild(benLbl); row.appendChild(cnt); row.appendChild(plus); row.appendChild(edit);
+        block.appendChild(row);
+      }
+
+      if (hasFuel) {
+        const fuelDiv = document.createElement('div'); fuelDiv.className = 'ben-fuel';
+        fuelDiv.textContent = CardWizI18n.t('tr_fuel_badge');
+        block.appendChild(fuelDiv);
+      }
+
+      detail.appendChild(block);
+    }
+  }
+
+  return detail;
+}
+
 // Ek wallet-card ka row banao (credit + debit dono ke liye same).
 // Bill due date set ho to due-status + "Pay Now" button bhi (bills ab yahin merge).
 function makeCardRow(mc, cat) {
@@ -615,8 +824,26 @@ function makeCardRow(mc, cat) {
   actions.appendChild(editBtn);
   actions.appendChild(delBtn);
 
-  row.appendChild(info);
-  row.appendChild(actions);
+  // Sprint 2: detail toggle (Fee Waiver / Welcome Bonus / Benefits)
+  if (hasAnyTrackerData(cat)) {
+    const detailSection = makeCardDetail(mc, cat);
+    detailSection.hidden = true;
+    const detailBtn = document.createElement('button');
+    detailBtn.className = 'detail-toggle-btn';
+    detailBtn.textContent = CardWizI18n.t('tr_details');
+    detailBtn.addEventListener('click', () => {
+      const showing = !detailSection.hidden;
+      detailSection.hidden = showing;
+      detailBtn.textContent = showing ? CardWizI18n.t('tr_details') : CardWizI18n.t('tr_hide_det');
+    });
+    actions.appendChild(detailBtn);
+    row.appendChild(info);
+    row.appendChild(actions);
+    row.appendChild(detailSection);
+  } else {
+    row.appendChild(info);
+    row.appendChild(actions);
+  }
   return row;
 }
 
@@ -702,12 +929,15 @@ function saveCard() {
 
   // Debit card pe bill due nahi — force null (defense, fields hidden hote hi hain).
   if (cardTypeOf(catalogCard(cardId)) === 'debit') dueDay = null;
-  const fields = { cardId, nickname, last4, dueDay, reminderDaysBefore, updatedAt: new Date().toISOString() };
+  const now = new Date();
+  const fields = { cardId, nickname, last4, dueDay, reminderDaysBefore, updatedAt: now.toISOString() };
   if (editingId) {
     const mc = myCards.find((c) => c.id === editingId);
     Object.assign(mc, fields);
   } else {
-    myCards.push({ id: uid(), ...fields });
+    const cardAddedDate = now.toISOString().slice(0, 10);
+    const feeWaiverStartMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    myCards.push({ id: uid(), ...fields, cardAddedDate, feeWaiverStartMonth });
   }
   cardsTab = cardTypeOf(catalogCard(cardId)); // added/edited card ke tab pe switch
   saveWallet();
@@ -821,11 +1051,15 @@ function runRecommendation() {
   els.capsFoot.hidden = false;
 }
 
-// "✓ Use kiya" — top card ka reward is mahine ke cap mein log karo.
-function logUsageFor(result) {
+// "✓ Use kiya" — top card ka reward log karo + cumulative spend track karo.
+function logUsageFor(result, spendAmount) {
   if (!result || !result.rule || result.savings <= 0) return;
   capUsage = window.CardWizCapTracker.logUsage(capUsage, result.id, result.rule, result.savings, new Date());
   saveCapUsage();
+  if (spendAmount > 0) {
+    waiverSpend = window.CardWizCapTracker.addTrackedSpend(waiverSpend, result.id, spendAmount);
+    saveWaiverSpend();
+  }
   runRecommendation(); // re-rank with updated caps
 }
 
@@ -889,7 +1123,7 @@ function renderResults(ranked) {
         const logBtn = document.createElement('button');
         logBtn.className = 'log-btn';
         logBtn.textContent = CardWizI18n.t('sg_used');
-        logBtn.addEventListener('click', () => logUsageFor(r));
+        logBtn.addEventListener('click', () => logUsageFor(r, Number(els.amount.value)));
         left.appendChild(logBtn);
       } else {
         const applyBtn = document.createElement('button');

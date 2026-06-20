@@ -363,6 +363,37 @@
     .lang-btns button.active { background: linear-gradient(145deg, #d4b5fa, #c39cf3); color: #1e1e2e; border-color: #cba6f7; }
     .lang-hint { font-size: 9px; color: #6c7086; line-height: 1.5; }
 
+    /* ====== Sprint 2: Card Trackers & Benefits Dashboard ====== */
+    .card-detail { margin-top: 8px; border-top: 1px solid #313244; padding-top: 8px; display: flex; flex-direction: column; gap: 10px; }
+    .tracker-block { background: #181825; border-radius: 8px; padding: 8px 10px; }
+    .tracker-label { font-size: 10px; font-weight: 700; color: #cba6f7; margin-bottom: 4px; letter-spacing: 0.4px; }
+    .tracker-subtext { font-size: 10px; color: #6c7086; margin-bottom: 4px; }
+    .tracker-bar-row { display: flex; align-items: center; gap: 6px; margin: 4px 0; }
+    .tracker-bar { flex: 1; height: 6px; background: #313244; border-radius: 4px; overflow: hidden; }
+    .tracker-fill { height: 100%; background: linear-gradient(90deg, #a6e3a1, #94e2d5); border-radius: 4px; transition: width 0.3s; }
+    .tracker-fill.warn { background: linear-gradient(90deg, #fab387, #f38ba8); }
+    .tracker-pct { font-size: 9px; color: #a6adc8; min-width: 28px; text-align: right; }
+    .tracker-tracked { font-size: 9px; color: #6c7086; }
+    .tracker-manual-row { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+    .tracker-manual-row label { font-size: 9px; color: #6c7086; white-space: nowrap; }
+    .tracker-manual-input { flex: 1; background: #1e1e2e; border: 1px solid #45475a; border-radius: 5px; color: #cdd6f4; font-size: 10px; padding: 3px 6px; width: 0; }
+    .tracker-manual-input:focus { outline: none; border-color: #cba6f7; }
+    .tracker-status { font-size: 10px; font-weight: 700; margin-top: 2px; }
+    .tracker-status.done { color: #a6e3a1; }
+    .tracker-status.expired { color: #6c7086; }
+    .tracker-days { font-size: 10px; color: #89dceb; font-weight: 600; margin-bottom: 2px; }
+    /* Benefits counters */
+    .ben-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+    .ben-row:last-child { margin-bottom: 0; }
+    .ben-label { font-size: 10px; color: #cdd6f4; flex: 1; }
+    .ben-count { font-size: 10px; color: #a6e3a1; font-weight: 700; min-width: 55px; }
+    .ben-btn { background: #313244; border: 1px solid #45475a; border-radius: 5px; color: #cdd6f4; font-size: 10px; padding: 2px 7px; cursor: pointer; width: auto; box-shadow: none; }
+    .ben-btn:hover { background: #45475a; border-color: #6c7086; transform: none; box-shadow: none; filter: none; }
+    .ben-fuel { font-size: 9px; color: #a6e3a1; margin-top: 2px; }
+    /* Detail toggle button */
+    .detail-toggle-btn { background: transparent; color: #6c7086; border: 1px solid #313244; border-radius: 5px; padding: 2px 7px; font-size: 9px; cursor: pointer; width: auto; box-shadow: none; margin-left: 4px; }
+    .detail-toggle-btn:hover { border-color: #cba6f7; color: #cba6f7; transform: none; box-shadow: none; filter: none; }
+
     /* My Cards — Pay button on a card row */
     .mycard .pay-now {
       background: #cba6f7; color: #1e1e2e; border: none; border-radius: 6px;
