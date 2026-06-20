@@ -17,6 +17,13 @@ const config = {
     .split(',')
     .map((s) => s.trim())
     .filter(Boolean),
+  // Website origins jo backend ko call kar sakti hain (CORS). Prod defaults baked in;
+  // ALLOWED_WEB_ORIGINS env se override ho sakta hai.
+  allowedWebOrigins: (process.env.ALLOWED_WEB_ORIGINS ||
+    'https://cardwiz.in,https://www.cardwiz.in,http://localhost:3000')
+    .split(',')
+    .map((s) => s.trim())
+    .filter(Boolean),
   // Razorpay (Phase 11 — premium payments)
   razorpayKeyId: process.env.RAZORPAY_KEY_ID || '',
   razorpayKeySecret: process.env.RAZORPAY_KEY_SECRET || '',

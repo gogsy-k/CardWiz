@@ -1,0 +1,72 @@
+/*
+ * CardWiz website auth — talks to the SAME backend + user DB as the extension.
+ * Mirrors the extension's auth.js: Google ID token → POST /auth/google → session
+ * JWT, stored in localStorage, sent as `Authorization: Bearer` on every call.
+ *
+ * PRINCIPLE: only account/plan crosses the wire. Never cards / CVV.
+ */
+import { BACKEND_URL } from "./api";
+
+export type AuthUser = {
+  id: string;
+  email: string;
+  name: string;
+  picture: string;
+  plan: "free" | "premium";
+};
+
+export type StoredAuth = { token: string; user: AuthUser };
+
+const STORAGE_KEY = "cwAuth";
+
+// ---- localStorage helpers (browser only) ----
+export function getStoredAuth(): StoredAuth | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? (JSON.parse(raw) as StoredAuth) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function setStoredAuth(auth: StoredAuth): void {
+  if (typeof window === "undefined") return;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(auth));
+}
+
+export function clearStoredAuth(): void {
+  if (typeof window === "undefined") return;
+  localStorage.removeItem(STORAGE_KEY);
+}
+
+// ---- backend calls ----
+
+// Exchange a Google ID token for our session JWT + user (creates/updates the
+// shared user row by google_id on the backend).
+export async function googleLogin(idToken: string): Promise<StoredAuth> {
+  const res = await fetch(`${BACKEND_URL}/auth/google`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ idToken }),
+  });
+  if (!res.ok) throw new Error(`Sign-in failed (${res.status})`);
+  const data = (await res.json()) as StoredAuth; // { token, user }
+  return data;
+}
+
+// Refresh the current user from the backend. 401 → token invalid/expired → null.
+// Network hiccup → fall back to the cached user (don't sign out on a blip).
+export async function getMe(token: string, cached?: AuthUser): Promise<AuthUser | null> {
+  try {
+    const res = await fetch(`${BACKEND_URL}/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.status === 401) return null;
+    if (!res.ok) return cached ?? null;
+    const data = (await res.json()) as { user: AuthUser };
+    return data.user;
+  } catch {
+    return cached ?? null;
+  }
+}

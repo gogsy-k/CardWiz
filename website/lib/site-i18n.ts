@@ -192,6 +192,14 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
     quiz_disc_redemption:
       "₹ value assumes best-case redemption (points/miles redeemed optimally).",
     quiz_freshness: "Card data last updated: {date}",
+
+    // Auth
+    auth_signin: "Sign in",
+    auth_signout: "Sign out",
+    auth_plan_free: "Free",
+    auth_plan_premium: "Premium",
+    auth_blurb:
+      "Sign in to sync your plan across devices. We only take your name & email — never card number or CVV.",
   },
 
   hinglish: {
@@ -379,6 +387,14 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
     quiz_disc_redemption:
       "₹ value best-case redemption pe based hai (points/miles optimally redeem karne pe).",
     quiz_freshness: "Card data last updated: {date}",
+
+    // Auth
+    auth_signin: "Sign in",
+    auth_signout: "Sign out",
+    auth_plan_free: "Free",
+    auth_plan_premium: "Premium",
+    auth_blurb:
+      "Sign in karke apna plan har device pe sync karo. Hum sirf naam & email lete hain — card number ya CVV kabhi nahi.",
   },
 
   hi: {
@@ -566,6 +582,14 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
     quiz_disc_redemption:
       "₹ value best-case redemption पर based है (points/miles optimally redeem करने पर)।",
     quiz_freshness: "Card data last updated: {date}",
+
+    // Auth
+    auth_signin: "Sign in",
+    auth_signout: "Sign out",
+    auth_plan_free: "Free",
+    auth_plan_premium: "Premium",
+    auth_blurb:
+      "Sign in करके अपना plan हर device पर sync करें। हम सिर्फ़ नाम & email लेते हैं — card number या CVV कभी नहीं।",
   },
 };
 

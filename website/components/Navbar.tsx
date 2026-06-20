@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useLang } from "@/contexts/LangContext";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import AuthButton from "@/components/AuthButton";
 
 const CHROME_STORE_URL = "https://chrome.google.com/webstore";
 
@@ -39,6 +40,7 @@ export default function Navbar() {
             </Link>
           ))}
           <LanguageSwitcher compact />
+          <AuthButton />
           <a
             href={CHROME_STORE_URL}
             target="_blank"
@@ -72,8 +74,9 @@ export default function Navbar() {
               {t(l.key)}
             </Link>
           ))}
-          <div className="mt-2 px-2">
+          <div className="mt-2 flex items-center justify-between px-2">
             <LanguageSwitcher />
+            <AuthButton />
           </div>
           <a
             href={CHROME_STORE_URL}

@@ -20,16 +20,20 @@ const { autoSeedIfEmpty } = require('./routes/catalog');
 const app = express();
 
 // --- CORS ---
-// Extension popup/service-worker se aane wali requests chrome-extension:// origin
-// se aati hain. Dev mein sabhi extension origins allow; production mein sirf
-// configured extension ID(s).
-const allowed = config.allowedExtensionIds.map((id) => `chrome-extension://${id}`);
+// Do tarah ke clients: extension (chrome-extension:// origin) aur website
+// (https://cardwiz.in). Extension: dev mein sab allow, prod mein configured IDs.
+// Website: allowedWebOrigins whitelist (Bearer token, koi cookie nahi -> credentials nahi).
+const extOrigins = config.allowedExtensionIds.map((id) => `chrome-extension://${id}`);
+const webOrigins = config.allowedWebOrigins;
 app.use(
   cors({
     origin(origin, cb) {
       if (!origin) return cb(null, true); // curl / health checks
-      if (allowed.length === 0) return cb(null, true); // dev: sab allow
-      return cb(null, allowed.includes(origin));
+      if (origin.startsWith('chrome-extension://')) {
+        if (extOrigins.length === 0) return cb(null, true); // dev: sabhi extensions
+        return cb(null, extOrigins.includes(origin)); // prod: whitelist
+      }
+      return cb(null, webOrigins.includes(origin)); // website origins
     },
   })
 );
