@@ -107,6 +107,18 @@ async function init() {
     window.open('https://cardwiz.in/find-my-card', '_blank', 'noopener');
   });
 
+  // Results collapse / expand toggle
+  const resultsToggleBtn = $('resultsToggleBtn');
+  if (resultsToggleBtn) {
+    resultsToggleBtn.addEventListener('click', () => {
+      const nowVisible = els.results.hidden;
+      els.results.hidden = !nowVisible;
+      resultsToggleBtn.textContent = nowVisible
+        ? CardWizI18n.t('results_hide')
+        : CardWizI18n.t('results_show');
+    });
+  }
+
   // Language buttons (English / Hinglish / Hindi)
   document.querySelectorAll('#langBtns button').forEach((btn) => {
     btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
@@ -825,6 +837,19 @@ function nicknameFor(cardId) {
 
 function renderResults(ranked) {
   els.results.innerHTML = '';
+
+  // Show/hide toggle row and reset to expanded on every new result set
+  const toggleRow = $('resultsToggle');
+  const toggleLabel = $('resultsToggleLabel');
+  const toggleBtn = $('resultsToggleBtn');
+  const hasResults = ranked.length > 0;
+  if (toggleRow) toggleRow.hidden = !hasResults;
+  if (hasResults) {
+    els.results.hidden = false;
+    if (toggleLabel) toggleLabel.textContent = CardWizI18n.t('results_count').replace('{n}', ranked.length);
+    if (toggleBtn) toggleBtn.textContent = CardWizI18n.t('results_hide');
+  }
+
   if (ranked.length === 0) {
     els.results.innerHTML = `<div class="empty">${escapeHtml(CardWizI18n.t('sg_no_card'))}</div>`;
     return;

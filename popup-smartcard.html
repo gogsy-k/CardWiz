@@ -327,6 +327,19 @@
     /* "Why this card" — comparison hint on top result */
     .why-cmp { font-size: 9px; color: #a6e3a1; margin-top: 5px; font-weight: 600; }
 
+    /* Results collapse toggle row */
+    .results-toggle-row {
+      display: flex; justify-content: space-between; align-items: center;
+      margin: 6px 0 4px;
+    }
+    .results-toggle-row span { font-size: 10px; color: #6c7086; }
+    .results-toggle-btn {
+      background: transparent; color: #6c7086; border: 1px solid #45475a;
+      border-radius: 6px; padding: 2px 10px; font-size: 10px; cursor: pointer;
+      width: auto; box-shadow: none;
+    }
+    .results-toggle-btn:hover { border-color: #cba6f7; color: #cba6f7; transform: none; box-shadow: none; filter: none; }
+
     /* Quiz teaser card (Suggest tab) */
     .quiz-teaser {
       background: linear-gradient(135deg, #313244, #181825); border: 1px solid #45475a;
@@ -421,6 +434,12 @@
       <label for="onlyMine" style="margin:0; cursor:pointer;" data-i18n="sg_onlymine">Sirf mere cards dikhao</label>
     </div>
 
+    <!-- Results collapse toggle (hidden until results appear) -->
+    <div class="results-toggle-row" id="resultsToggle" hidden>
+      <span id="resultsToggleLabel"></span>
+      <button class="results-toggle-btn" id="resultsToggleBtn"></button>
+    </div>
+
     <div class="results" id="results">
       <div class="empty" data-i18n="sg_results_empty">Category chuno aur best card dekho 👆</div>
     </div>
@@ -435,6 +454,13 @@
     <div id="featuredBox" hidden></div>
     -->
 
+    <!-- ============ Find My Card Quiz Teaser — above CIBIL ============ -->
+    <div class="quiz-teaser">
+      <div class="quiz-teaser-title" data-i18n="quiz_teaser_title">✨ Personalized Card Just for You</div>
+      <div class="quiz-teaser-desc" data-i18n="quiz_teaser_desc">AI-powered card suggestion based on your spending habits. Know your perfect card in 2 minutes.</div>
+      <button class="quiz-teaser-btn" id="quizTeaserBtn" data-i18n="quiz_teaser_cta">Get My Card →</button>
+    </div>
+
     <!-- ============ CIBIL Score Checker ============ -->
     <div class="cibil-card">
       <div class="cibil-title" data-i18n="cb_title">📊 Check your CIBIL Score — Free</div>
@@ -446,13 +472,6 @@
       </ul>
       <button class="cibil-btn" id="cibilBtn" data-i18n="cb_btn">Check CIBIL Score — Free ↗</button>
       <div class="cibil-note" id="cibilNote" data-i18n="cb_note">Free check via Paisabazaar · Your data stays on this device</div>
-    </div>
-
-    <!-- ============ Find My Card Quiz Teaser ============ -->
-    <div class="quiz-teaser">
-      <div class="quiz-teaser-title" data-i18n="quiz_teaser_title">🔍 Looking for a new card?</div>
-      <div class="quiz-teaser-desc" data-i18n="quiz_teaser_desc">Answer 8 questions & get a personalised recommendation.</div>
-      <button class="quiz-teaser-btn" id="quizTeaserBtn" data-i18n="quiz_teaser_cta">Find My Card →</button>
     </div>
   </section>
 
