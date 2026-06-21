@@ -2,13 +2,9 @@
 
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
+import PortfolioScoreWidget from "@/components/PortfolioScoreWidget";
 
 const COMING_SOON = [
-  {
-    emoji: "🏆",
-    title: "Portfolio Score",
-    desc: "See how well your cards cover all spending categories — and which gaps cost you the most.",
-  },
   {
     emoji: "💸",
     title: "Missed Savings Report",
@@ -92,6 +88,9 @@ export default function AccountPage() {
         )}
       </div>
 
+      {/* ── Portfolio Score ── */}
+      <PortfolioScoreWidget isPremium={isPremium} />
+
       {/* ── Upgrade banner for free users ── */}
       {!isPremium && (
         <div className="rounded-2xl border border-accent/30 bg-accent/5 p-6 text-center">
@@ -112,7 +111,7 @@ export default function AccountPage() {
 
       {/* ── Coming soon features ── */}
       <div>
-        <h2 className="mb-1 text-lg font-black">Coming to your account</h2>
+        <h2 className="mb-1 text-lg font-black">Coming soon</h2>
         <p className="mb-5 text-sm text-muted">These features are being built — check back soon.</p>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {COMING_SOON.map((f) => (

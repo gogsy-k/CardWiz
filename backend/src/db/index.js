@@ -68,4 +68,10 @@ const admins = {
   remove: (...a) => driver.removeAdmin(...a),
 };
 
-module.exports = { init, users, cards, payments, subscriptions, catalog, posts, admins, get kind() { return driver && driver.kind; } };
+const reviews = {
+  listForCard: (...a) => driver.listReviewsForCard(...a),
+  upsert:      (...a) => driver.upsertReview(...a),
+  remove:      (...a) => driver.removeReview(...a),
+};
+
+module.exports = { init, users, cards, payments, subscriptions, catalog, posts, admins, reviews, get kind() { return driver && driver.kind; } };

@@ -54,9 +54,12 @@ export const PLANS: Plan[] = [
     pros: [
       "Sab kuch Free wala, plus —",
       "Unlimited cards",
-      "Spending analytics",
       "Cloud sync (multi-device)",
-      "(aur features jald hi)",
+      "Portfolio Score + gap recommendations",
+      "Fee Waiver & Welcome Bonus Trackers",
+      "Card Benefits Dashboard (lounge, movies, fuel)",
+      "Manual Transactions + Missed Savings Report",
+      "Monthly CardWiz Report Email (opt-in)",
     ],
   },
   {

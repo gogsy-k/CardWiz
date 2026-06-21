@@ -137,6 +137,27 @@ async function init(databaseUrl) {
       created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
     );
   `);
+
+  // Card reviews — 1 per (card, user). User authenticates to write; reading is public.
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS reviews (
+      id           UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      card_id      TEXT NOT NULL,
+      user_id      UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      user_name    TEXT,
+      user_picture TEXT,
+      user_plan    TEXT NOT NULL DEFAULT 'free',
+      rating       SMALLINT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+      title        TEXT,
+      body         TEXT,
+      created_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+      updated_at   TIMESTAMPTZ NOT NULL DEFAULT now(),
+      UNIQUE (card_id, user_id)
+    );
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS reviews_card_idx ON reviews (card_id, created_at DESC);
+  `);
 }
 
 // DB row -> humara user shape (camelCase, consistent JSON store ke saath).
@@ -461,6 +482,46 @@ async function removeAdmin(email) {
   return res.rowCount > 0;
 }
 
+// ---- Reviews ----
+function rowToReview(r) {
+  if (!r) return null;
+  return {
+    id: r.id, cardId: r.card_id, userId: r.user_id,
+    userName: r.user_name || '', userPicture: r.user_picture || '',
+    userPlan: r.user_plan || 'free',
+    rating: r.rating, title: r.title || '', body: r.body || '',
+    createdAt: r.created_at, updatedAt: r.updated_at,
+  };
+}
+
+async function listReviewsForCard(cardId) {
+  const res = await pool.query(
+    'SELECT * FROM reviews WHERE card_id = $1 ORDER BY created_at DESC',
+    [cardId]
+  );
+  return res.rows.map(rowToReview);
+}
+
+async function upsertReview({ cardId, userId, userName, userPicture, userPlan, rating, title, body }) {
+  const res = await pool.query(
+    `INSERT INTO reviews (card_id, user_id, user_name, user_picture, user_plan, rating, title, body)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+     ON CONFLICT (card_id, user_id) DO UPDATE SET
+       rating=$6, title=$7, body=$8, user_plan=$5, updated_at=now()
+     RETURNING *`,
+    [cardId, userId, userName || null, userPicture || null, userPlan || 'free', rating, title || null, body || null]
+  );
+  return rowToReview(res.rows[0]);
+}
+
+async function removeReview(cardId, userId) {
+  const res = await pool.query(
+    'DELETE FROM reviews WHERE card_id=$1 AND user_id=$2 RETURNING id',
+    [cardId, userId]
+  );
+  return res.rowCount > 0;
+}
+
 module.exports = {
   kind: 'postgres', init, upsertByGoogleId, findById, updatePlan, listCards, replaceCards,
   createPayment, findPendingPayments, markPaymentPaid,
@@ -468,4 +529,5 @@ module.exports = {
   listCatalog, countCatalog, upsertCard, deleteNotInCatalog,
   listPublishedPosts, listAllPosts, getPostBySlug, getPostById, createPost, updatePost, deletePost,
   listAdmins, hasAdmin, addAdmin, removeAdmin,
+  listReviewsForCard, upsertReview, removeReview,
 };

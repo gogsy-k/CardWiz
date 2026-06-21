@@ -9,6 +9,7 @@ import {
   TYPE_LABEL,
   prettyCategory,
 } from "@/lib/cards";
+import CardReviews from "@/components/CardReviews";
 
 const CHROME_STORE_URL = "https://chrome.google.com/webstore";
 
@@ -167,6 +168,11 @@ export default async function CardDetail(props: PageProps<"/cards/[id]">) {
           </div>
         </>
       )}
+
+      {/* Reviews */}
+      <div className="mt-12">
+        <CardReviews cardId={id} />
+      </div>
 
       {card.lastVerified && (
         <p className="mt-10 text-center text-xs text-muted">

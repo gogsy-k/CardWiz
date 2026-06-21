@@ -30,6 +30,7 @@ function load() {
   if (!Array.isArray(cache.subscriptions)) cache.subscriptions = [];
   if (!Array.isArray(cache.posts)) cache.posts = [];
   if (!Array.isArray(cache.admins)) cache.admins = [];
+  if (!Array.isArray(cache.reviews)) cache.reviews = [];
   return cache;
 }
 
@@ -282,6 +283,40 @@ async function removeAdmin(email) {
   return true;
 }
 
+// ---- Reviews ----
+async function listReviewsForCard(cardId) {
+  load();
+  return cache.reviews
+    .filter((r) => r.cardId === cardId)
+    .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+}
+
+async function upsertReview({ cardId, userId, userName, userPicture, userPlan, rating, title, body }) {
+  load();
+  const now = new Date().toISOString();
+  const idx = cache.reviews.findIndex((r) => r.cardId === cardId && r.userId === userId);
+  const review = {
+    id: idx >= 0 ? cache.reviews[idx].id : crypto.randomUUID(),
+    cardId, userId, userName: userName || '', userPicture: userPicture || '',
+    userPlan: userPlan || 'free', rating, title: title || '', body: body || '',
+    createdAt: idx >= 0 ? cache.reviews[idx].createdAt : now,
+    updatedAt: now,
+  };
+  if (idx >= 0) cache.reviews[idx] = review;
+  else cache.reviews.push(review);
+  persist();
+  return review;
+}
+
+async function removeReview(cardId, userId) {
+  load();
+  const idx = cache.reviews.findIndex((r) => r.cardId === cardId && r.userId === userId);
+  if (idx < 0) return false;
+  cache.reviews.splice(idx, 1);
+  persist();
+  return true;
+}
+
 module.exports = {
   kind: 'json', init, upsertByGoogleId, findById, updatePlan, listCards, replaceCards,
   createPayment, findPendingPayments, markPaymentPaid,
@@ -289,4 +324,5 @@ module.exports = {
   listCatalog, countCatalog, upsertCard, deleteNotInCatalog,
   listPublishedPosts, listAllPosts, getPostBySlug, getPostById, createPost, updatePost, deletePost,
   listAdmins, hasAdmin, addAdmin, removeAdmin,
+  listReviewsForCard, upsertReview, removeReview,
 };

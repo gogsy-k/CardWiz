@@ -573,6 +573,11 @@ function renderMyCards() {
 
   els.cardsList.innerHTML = '';
 
+  // Portfolio Score — rendered for ALL wallet cards (not just active tab)
+  if (myCards.length > 0 && DB && DB.cards && typeof CardWizPortfolioScore !== 'undefined') {
+    els.cardsList.appendChild(buildPortfolioScoreWidget());
+  }
+
   // Sirf active tab (credit ya debit) ke cards dikhao.
   const items = [];
   for (const mc of myCards) {
@@ -582,11 +587,69 @@ function renderMyCards() {
   }
 
   if (items.length === 0) {
-    els.cardsList.innerHTML =
-      `<div class="empty">${escapeHtml(CardWizI18n.t('mc_empty'))}</div>`;
+    const empty = document.createElement('div');
+    empty.className = 'empty';
+    empty.textContent = CardWizI18n.t('mc_empty');
+    els.cardsList.appendChild(empty);
     return;
   }
   for (const { mc, cat } of items) els.cardsList.appendChild(makeCardRow(mc, cat));
+}
+
+function buildPortfolioScoreWidget() {
+  const { portfolioScore, SCORE_CATS } = CardWizPortfolioScore;
+  const result = portfolioScore(myCards, DB.cards);
+  const { score, details, gaps } = result;
+
+  const colorClass = score >= 80 ? 'ps-high' : score >= 40 ? 'ps-mid' : 'ps-low';
+
+  const widget = document.createElement('div');
+  widget.className = 'portfolio-score-card';
+
+  // Header
+  const hdr = document.createElement('div');
+  hdr.className = 'ps-header';
+  const titleEl = document.createElement('span');
+  titleEl.className = 'ps-title';
+  titleEl.textContent = '🏆 Portfolio Score';
+  const scoreEl = document.createElement('span');
+  scoreEl.className = `ps-score ${colorClass}`;
+  scoreEl.textContent = String(score);
+  hdr.appendChild(titleEl);
+  hdr.appendChild(scoreEl);
+  widget.appendChild(hdr);
+
+  // Progress bar segments
+  const barRow = document.createElement('div');
+  barRow.className = 'ps-bar-row';
+  SCORE_CATS.forEach((cat) => {
+    const seg = document.createElement('div');
+    const detail = details.find((d) => d.id === cat.id);
+    seg.className = 'ps-bar-seg' + (detail && detail.covered ? ` filled ${colorClass.replace('ps-', '')}` : '');
+    barRow.appendChild(seg);
+  });
+  widget.appendChild(barRow);
+
+  // Category pills
+  const catsRow = document.createElement('div');
+  catsRow.className = 'ps-cats';
+  for (const d of details) {
+    const pill = document.createElement('span');
+    pill.className = `ps-cat ${d.covered ? 'ok' : 'gap'}`;
+    pill.textContent = `${d.emoji} ${d.label}`;
+    catsRow.appendChild(pill);
+  }
+  widget.appendChild(catsRow);
+
+  // Gap note
+  if (gaps.length > 0) {
+    const gapNote = document.createElement('div');
+    gapNote.className = 'ps-gap-note';
+    gapNote.textContent = `⚠️ Missing: ${gaps.map((g) => g.label).join(', ')}`;
+    widget.appendChild(gapNote);
+  }
+
+  return widget;
 }
 
 function fmtINR(n) { return Number(n).toLocaleString('en-IN'); }

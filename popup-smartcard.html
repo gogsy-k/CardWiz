@@ -143,6 +143,29 @@
     .signin-btn:disabled { opacity: 0.6; cursor: default; }
     .acct-err { color: #f38ba8; font-size: 10px; margin-top: 6px; min-height: 12px; }
 
+    /* ====== Portfolio Score widget ====== */
+    .portfolio-score-card {
+      background: linear-gradient(135deg, #252535, #1e1e2e);
+      border: 1px solid #35354e; border-radius: 14px;
+      padding: 13px 15px; margin-bottom: 12px;
+    }
+    .ps-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .ps-title  { font-size: 11px; font-weight: 700; color: #cba6f7; text-transform: uppercase; letter-spacing: .5px; }
+    .ps-score  { font-size: 26px; font-weight: 900; line-height: 1; color: #cdd6f4; }
+    .ps-score.ps-high { color: #a6e3a1; }
+    .ps-score.ps-mid  { color: #f9e2af; }
+    .ps-score.ps-low  { color: #f38ba8; }
+    .ps-bar-row { display: flex; gap: 3px; margin-bottom: 8px; }
+    .ps-bar-seg { flex: 1; height: 5px; border-radius: 3px; background: #313244; }
+    .ps-bar-seg.filled      { background: #a6e3a1; }
+    .ps-bar-seg.filled.mid  { background: #f9e2af; }
+    .ps-bar-seg.filled.low  { background: #f38ba8; }
+    .ps-cats { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px; }
+    .ps-cat { font-size: 10px; padding: 2px 7px; border-radius: 20px; }
+    .ps-cat.ok  { background: rgba(166,227,161,.15); color: #a6e3a1; border: 1px solid rgba(166,227,161,.3); }
+    .ps-cat.gap { background: rgba(243,139,168,.12); color: #f38ba8; border: 1px solid rgba(243,139,168,.25); }
+    .ps-gap-note { font-size: 10px; color: #f38ba8; margin-top: 2px; }
+
     /* ====== My Cards — redesigned ====== */
     .mycard {
       background: linear-gradient(150deg, #353548, #2a2a3a);
@@ -709,6 +732,7 @@
   <script src="recommend.js"></script>
   <script src="reminders.js"></script>
   <script src="captracker.js"></script>
+  <script src="portfolioscore.js"></script>
   <script src="affiliate.js"></script>
   <script src="premium.js"></script>
   <script src="auth.js"></script>
