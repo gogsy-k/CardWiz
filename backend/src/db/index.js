@@ -74,4 +74,11 @@ const reviews = {
   remove:      (...a) => driver.removeReview(...a),
 };
 
-module.exports = { init, users, cards, payments, subscriptions, catalog, posts, admins, reviews, get kind() { return driver && driver.kind; } };
+const transactions = {
+  create: (...a) => driver.createTransaction(...a),
+  list:   (...a) => driver.listTransactions(...a),
+  count:  (...a) => driver.countTransactions(...a),
+  remove: (...a) => driver.deleteTransaction(...a),
+};
+
+module.exports = { init, users, cards, payments, subscriptions, catalog, posts, admins, reviews, transactions, get kind() { return driver && driver.kind; } };

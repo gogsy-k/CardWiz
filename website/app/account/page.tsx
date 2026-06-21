@@ -4,17 +4,20 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import PortfolioScoreWidget from "@/components/PortfolioScoreWidget";
 
+const LIVE_FEATURES = [
+  {
+    emoji: "📋",
+    title: "My Transactions",
+    desc: "Log your spends to power the Missed Savings analysis.",
+    href: "/account/transactions",
+  },
+];
+
 const COMING_SOON = [
   {
     emoji: "💸",
     title: "Missed Savings Report",
     desc: "Find out exactly how much you left on the table last month by using the wrong card.",
-    premium: true,
-  },
-  {
-    emoji: "📋",
-    title: "Manual Transactions",
-    desc: "Log your spends to power the Missed Savings analysis without uploading statements.",
     premium: true,
   },
   {
@@ -108,6 +111,29 @@ export default function AccountPage() {
           </Link>
         </div>
       )}
+
+      {/* ── Live account features ── */}
+      <div>
+        <h2 className="mb-4 text-lg font-black">Account features</h2>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {LIVE_FEATURES.map((f) => (
+            <a
+              key={f.title}
+              href={f.href}
+              className="flex gap-3 rounded-xl border border-border bg-surface2 p-4 transition-colors hover:border-accent"
+            >
+              <span className="mt-0.5 text-2xl leading-none">{f.emoji}</span>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 text-sm font-bold">
+                  {f.title}
+                  <span className="rounded-full bg-green/15 px-2 py-0.5 text-[10px] font-bold text-green">Live</span>
+                </div>
+                <p className="mt-1 text-xs leading-relaxed text-muted">{f.desc}</p>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
 
       {/* ── Coming soon features ── */}
       <div>

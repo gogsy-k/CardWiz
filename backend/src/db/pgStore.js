@@ -158,6 +158,25 @@ async function init(databaseUrl) {
   await pool.query(`
     CREATE INDEX IF NOT EXISTS reviews_card_idx ON reviews (card_id, created_at DESC);
   `);
+
+  // Manual transactions — spend log for Missed Savings engine.
+  // source = 'manual' | 'pdf'. card_id = catalog card id (e.g. 'hdfc-millennia').
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS transactions (
+      id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      user_id    UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      card_id    TEXT,
+      date       DATE NOT NULL,
+      merchant   TEXT,
+      amount     NUMERIC(12,2) NOT NULL,
+      category   TEXT NOT NULL,
+      source     TEXT NOT NULL DEFAULT 'manual',
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS txn_user_date_idx ON transactions (user_id, date DESC);
+  `);
 }
 
 // DB row -> humara user shape (camelCase, consistent JSON store ke saath).
@@ -522,6 +541,50 @@ async function removeReview(cardId, userId) {
   return res.rowCount > 0;
 }
 
+// ---- Transactions ----
+function rowToTxn(r) {
+  return {
+    id: r.id, userId: r.user_id, cardId: r.card_id || null,
+    date: r.date instanceof Date ? r.date.toISOString().slice(0, 10) : String(r.date).slice(0, 10),
+    merchant: r.merchant || '', amount: Number(r.amount),
+    category: r.category, source: r.source || 'manual', createdAt: r.created_at,
+  };
+}
+
+async function createTransaction({ userId, cardId, date, merchant, amount, category, source }) {
+  const res = await pool.query(
+    `INSERT INTO transactions (user_id, card_id, date, merchant, amount, category, source)
+     VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
+    [userId, cardId || null, date, merchant || null, amount, category, source || 'manual']
+  );
+  return rowToTxn(res.rows[0]);
+}
+
+async function listTransactions(userId, { from, to } = {}) {
+  const params = [userId];
+  let where = 'WHERE user_id = $1';
+  if (from) { params.push(from); where += ` AND date >= $${params.length}`; }
+  if (to)   { params.push(to);   where += ` AND date <= $${params.length}`; }
+  const res = await pool.query(
+    `SELECT * FROM transactions ${where} ORDER BY date DESC, created_at DESC`,
+    params
+  );
+  return res.rows.map(rowToTxn);
+}
+
+async function countTransactions(userId) {
+  const res = await pool.query('SELECT COUNT(*) FROM transactions WHERE user_id=$1', [userId]);
+  return Number(res.rows[0].count);
+}
+
+async function deleteTransaction(id, userId) {
+  const res = await pool.query(
+    'DELETE FROM transactions WHERE id=$1 AND user_id=$2 RETURNING id',
+    [id, userId]
+  );
+  return res.rowCount > 0;
+}
+
 module.exports = {
   kind: 'postgres', init, upsertByGoogleId, findById, updatePlan, listCards, replaceCards,
   createPayment, findPendingPayments, markPaymentPaid,
@@ -530,4 +593,5 @@ module.exports = {
   listPublishedPosts, listAllPosts, getPostBySlug, getPostById, createPost, updatePost, deletePost,
   listAdmins, hasAdmin, addAdmin, removeAdmin,
   listReviewsForCard, upsertReview, removeReview,
+  createTransaction, listTransactions, countTransactions, deleteTransaction,
 };

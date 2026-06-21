@@ -31,6 +31,7 @@ function load() {
   if (!Array.isArray(cache.posts)) cache.posts = [];
   if (!Array.isArray(cache.admins)) cache.admins = [];
   if (!Array.isArray(cache.reviews)) cache.reviews = [];
+  if (!Array.isArray(cache.transactions)) cache.transactions = [];
   return cache;
 }
 
@@ -317,6 +318,45 @@ async function removeReview(cardId, userId) {
   return true;
 }
 
+// ---- Transactions ----
+async function createTransaction({ userId, cardId, date, merchant, amount, category, source }) {
+  load();
+  const txn = {
+    id: crypto.randomUUID(), userId, cardId: cardId || null,
+    date, merchant: merchant || '', amount: Number(amount),
+    category, source: source || 'manual', createdAt: new Date().toISOString(),
+  };
+  cache.transactions.push(txn);
+  persist();
+  return txn;
+}
+
+async function listTransactions(userId, { from, to } = {}) {
+  load();
+  return cache.transactions
+    .filter((t) => {
+      if (t.userId !== userId) return false;
+      if (from && t.date < from) return false;
+      if (to   && t.date > to)   return false;
+      return true;
+    })
+    .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+}
+
+async function countTransactions(userId) {
+  load();
+  return cache.transactions.filter((t) => t.userId === userId).length;
+}
+
+async function deleteTransaction(id, userId) {
+  load();
+  const idx = cache.transactions.findIndex((t) => t.id === id && t.userId === userId);
+  if (idx < 0) return false;
+  cache.transactions.splice(idx, 1);
+  persist();
+  return true;
+}
+
 module.exports = {
   kind: 'json', init, upsertByGoogleId, findById, updatePlan, listCards, replaceCards,
   createPayment, findPendingPayments, markPaymentPaid,
@@ -325,4 +365,5 @@ module.exports = {
   listPublishedPosts, listAllPosts, getPostBySlug, getPostById, createPost, updatePost, deletePost,
   listAdmins, hasAdmin, addAdmin, removeAdmin,
   listReviewsForCard, upsertReview, removeReview,
+  createTransaction, listTransactions, countTransactions, deleteTransaction,
 };
