@@ -282,12 +282,19 @@ export default function TransactionsPage() {
           </p>
         </div>
         {canAdd && !showForm && (
-          <button
-            onClick={() => setShowForm(true)}
-            className="shrink-0 rounded-xl bg-accent px-4 py-2 text-sm font-bold text-bg"
-          >
-            + Add
-          </button>
+          <div className="flex gap-2">
+            {isPremium && (
+              <Link href="/account/upload" className="shrink-0 rounded-xl border border-border px-4 py-2 text-sm font-bold hover:border-accent">
+                📄 Upload PDF
+              </Link>
+            )}
+            <button
+              onClick={() => setShowForm(true)}
+              className="shrink-0 rounded-xl bg-accent px-4 py-2 text-sm font-bold text-bg"
+            >
+              + Add
+            </button>
+          </div>
         )}
       </div>
 

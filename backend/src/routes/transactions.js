@@ -66,6 +66,41 @@ router.post('/', requireAuth, async (req, res) => {
   }
 });
 
+// ── POST /transactions/bulk  (PDF import — premium only) ──
+router.post('/bulk', requireAuth, async (req, res) => {
+  if (req.user.plan !== 'premium') {
+    return res.status(403).json({ error: 'premium_required' });
+  }
+  const { transactions, cardId } = req.body || {};
+  if (!Array.isArray(transactions) || transactions.length === 0) {
+    return res.status(400).json({ error: 'transactions array required' });
+  }
+  if (transactions.length > 500) {
+    return res.status(400).json({ error: 'max 500 per batch' });
+  }
+  try {
+    const created = [];
+    for (const txn of transactions) {
+      const { date, merchant, amount, category, source } = txn;
+      if (!date || !amount || !category) continue;
+      const t = await db.transactions.create({
+        userId: req.user.id,
+        cardId: txn.cardId || cardId || null,
+        date: String(date).slice(0, 10),
+        merchant: merchant ? String(merchant).slice(0, 200) : null,
+        amount: Number(amount),
+        category: String(category),
+        source: source || 'pdf',
+      });
+      created.push(t);
+    }
+    res.json({ created: created.length, transactions: created });
+  } catch (err) {
+    console.error('[txn/bulk]', err.message);
+    res.status(502).json({ error: 'Bulk create fail' });
+  }
+});
+
 // ── DELETE /transactions/:id ──
 router.delete('/:id', requireAuth, async (req, res) => {
   try {

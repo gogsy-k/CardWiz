@@ -59,6 +59,7 @@ export const PLANS: Plan[] = [
       "Fee Waiver & Welcome Bonus Trackers",
       "Card Benefits Dashboard (lounge, movies, fuel)",
       "Manual Transactions + Missed Savings Report (per-category breakdown)",
+      "PDF Statement Upload (HDFC, SBI, ICICI, Axis…)",
       "Monthly CardWiz Report Email (opt-in)",
     ],
   },

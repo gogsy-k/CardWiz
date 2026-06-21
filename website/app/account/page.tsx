@@ -17,15 +17,15 @@ const LIVE_FEATURES = [
     desc: "See how much you left on the table — and which card you should have used.",
     href: "/account/savings",
   },
+  {
+    emoji: "📄",
+    title: "Upload Statement",
+    desc: "Import transactions from a PDF bank statement automatically. Premium only.",
+    href: "/account/upload",
+  },
 ];
 
 const COMING_SOON = [
-  {
-    emoji: "📄",
-    title: "Statement Upload",
-    desc: "Upload a PDF bank statement — we extract spend data automatically (raw PDF never stored).",
-    premium: true,
-  },
   {
     emoji: "⭐",
     title: "Card Reviews",
