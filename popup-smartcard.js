@@ -468,6 +468,93 @@ function renderSync() {
   if (b) b.addEventListener('click', toggleSync);
 }
 
+// -------- Offer Watchlist --------
+const WATCHLIST_BACKEND = 'https://cardwiz-backend.onrender.com';
+
+async function watchlistAuthFetch(path, opts = {}) {
+  const auth = await getStoredAuth();
+  if (!auth) return null;
+  return fetch(`${WATCHLIST_BACKEND}${path}`, {
+    ...opts,
+    headers: { Authorization: `Bearer ${auth.token}`, 'Content-Type': 'application/json', ...(opts.headers || {}) },
+  });
+}
+
+async function renderWatchlist() {
+  const card = $('watchlistCard');
+  if (!card) return;
+
+  if (!currentUser) { card.hidden = true; return; }
+  card.hidden = false;
+
+  // Load keywords
+  let keywords = [];
+  try {
+    const res = await watchlistAuthFetch('/watchlist');
+    if (res && res.ok) ({ keywords } = await res.json());
+  } catch (_) {}
+
+  renderWatchlistChips(keywords);
+
+  // Wire add button (once)
+  const addBtn = $('watchlistAddBtn');
+  const input  = $('watchlistInput');
+  if (addBtn && !addBtn.dataset.wired) {
+    addBtn.dataset.wired = '1';
+    addBtn.addEventListener('click', () => doAddWatchword());
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') doAddWatchword(); });
+  }
+}
+
+function renderWatchlistChips(keywords) {
+  const chips = $('watchlistChips');
+  if (!chips) return;
+  if (!keywords.length) {
+    chips.innerHTML = `<span style="font-size:10px;color:#6c7086;">${CardWizI18n.t('watchlist_empty')}</span>`;
+    return;
+  }
+  chips.innerHTML = keywords.map((kw) =>
+    `<span style="display:inline-flex;align-items:center;gap:4px;background:#313244;border:1px solid #45475a;border-radius:20px;padding:3px 8px;font-size:10px;color:#cdd6f4;">
+      ${escapeHtml(kw)}
+      <button data-kw="${escapeHtml(kw)}" style="background:none;border:none;color:#f38ba8;cursor:pointer;font-size:11px;padding:0;line-height:1;" class="wl-remove">×</button>
+    </span>`
+  ).join('');
+  chips.querySelectorAll('.wl-remove').forEach((btn) => {
+    btn.addEventListener('click', () => doRemoveWatchword(btn.dataset.kw));
+  });
+}
+
+async function doAddWatchword() {
+  const input = $('watchlistInput');
+  const msg   = $('watchlistMsg');
+  const kw    = (input ? input.value : '').trim().toLowerCase();
+  if (!kw || kw.length < 2) return;
+  try {
+    const res = await watchlistAuthFetch('/watchlist', { method: 'POST', body: JSON.stringify({ keyword: kw }) });
+    if (!res) return;
+    if (!res.ok) {
+      const d = await res.json().catch(() => ({}));
+      if (msg) msg.textContent = d.error || 'Error';
+      return;
+    }
+    const { keywords } = await res.json();
+    if (input) input.value = '';
+    if (msg) msg.textContent = '';
+    renderWatchlistChips(keywords);
+  } catch (_) {
+    if (msg) msg.textContent = 'Network error';
+  }
+}
+
+async function doRemoveWatchword(kw) {
+  try {
+    const res = await watchlistAuthFetch(`/watchlist/${encodeURIComponent(kw)}`, { method: 'DELETE' });
+    if (!res || !res.ok) return;
+    const { keywords } = await res.json();
+    renderWatchlistChips(keywords);
+  } catch (_) {}
+}
+
 // Cards-tab privacy line — sync state ke hisaab se honest message.
 function updateCardsPrivacy() {
   const el = $('cardsPrivacy');
@@ -508,6 +595,9 @@ function renderMore() {
     btn.textContent = isPremium ? CardWizI18n.t('prem_dev_off') : CardWizI18n.t('prem_dev_on');
     if (devNote) devNote.textContent = CardWizI18n.t('prem_note_out');
   }
+
+  // Offer Watchlist — signed-in users only
+  renderWatchlist();
 
   // Analytics (premium-gated)
   renderAnalytics();

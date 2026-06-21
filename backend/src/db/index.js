@@ -90,4 +90,18 @@ const offers = {
   countByUser:  (...a) => driver.countOffersByUser(...a),
 };
 
-module.exports = { init, users, cards, payments, subscriptions, catalog, posts, admins, reviews, transactions, offers, get kind() { return driver && driver.kind; } };
+const watchlist = {
+  add:     (...a) => driver.addWatchword(...a),
+  remove:  (...a) => driver.removeWatchword(...a),
+  list:    (...a) => driver.listWatchwords(...a),
+  count:   (...a) => driver.countWatchwords(...a),
+  listAll: (...a) => driver.listAllWatchwords(...a),
+};
+
+const notifications = {
+  create:    (...a) => driver.createNotification(...a),
+  list:      (...a) => driver.listNotifications(...a),
+  markRead:  (...a) => driver.markAllNotificationsRead(...a),
+};
+
+module.exports = { init, users, cards, payments, subscriptions, catalog, posts, admins, reviews, transactions, offers, watchlist, notifications, get kind() { return driver && driver.kind; } };

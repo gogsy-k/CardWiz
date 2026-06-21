@@ -32,7 +32,9 @@ function load() {
   if (!Array.isArray(cache.admins)) cache.admins = [];
   if (!Array.isArray(cache.reviews)) cache.reviews = [];
   if (!Array.isArray(cache.transactions)) cache.transactions = [];
-  if (!Array.isArray(cache.offers))       cache.offers = [];
+  if (!Array.isArray(cache.offers))         cache.offers = [];
+  if (!Array.isArray(cache.watchlist))      cache.watchlist = [];
+  if (!Array.isArray(cache.notifications))  cache.notifications = [];
   return cache;
 }
 
@@ -417,6 +419,72 @@ async function countOffersByUser(userId, sinceMs) {
   return cache.offers.filter((o) => o.submittedBy === userId && o.createdAt > since).length;
 }
 
+// ---- Watchlist ----
+async function addWatchword(userId, keyword) {
+  load();
+  const kw = keyword.toLowerCase();
+  if (!cache.watchlist.find((e) => e.userId === userId && e.keyword === kw)) {
+    cache.watchlist.push({ userId, keyword: kw, createdAt: new Date().toISOString() });
+    persist();
+  }
+}
+
+async function removeWatchword(userId, keyword) {
+  load();
+  const kw = keyword.toLowerCase();
+  cache.watchlist = cache.watchlist.filter((e) => !(e.userId === userId && e.keyword === kw));
+  persist();
+}
+
+async function listWatchwords(userId) {
+  load();
+  return cache.watchlist.filter((e) => e.userId === userId).map((e) => e.keyword);
+}
+
+async function countWatchwords(userId) {
+  load();
+  return cache.watchlist.filter((e) => e.userId === userId).length;
+}
+
+async function listAllWatchwords() {
+  load();
+  return cache.watchlist.map((e) => ({ userId: e.userId, keyword: e.keyword }));
+}
+
+// ---- Notifications ----
+async function createNotification(userId, message, link) {
+  load();
+  const notif = {
+    id: crypto.randomUUID(),
+    userId, message, link: link || null,
+    read: false,
+    createdAt: new Date().toISOString(),
+  };
+  cache.notifications.push(notif);
+  persist();
+  return notif;
+}
+
+async function listNotifications(userId, limit = 20) {
+  load();
+  return cache.notifications
+    .filter((n) => n.userId === userId)
+    .sort((a, b) => {
+      if (a.read !== b.read) return a.read ? 1 : -1;
+      return a.createdAt < b.createdAt ? 1 : -1;
+    })
+    .slice(0, limit);
+}
+
+async function markAllNotificationsRead(userId) {
+  load();
+  let changed = false;
+  for (const n of cache.notifications) {
+    if (n.userId === userId && !n.read) { n.read = true; changed = true; }
+  }
+  if (changed) persist();
+}
+
 module.exports = {
   kind: 'json', init, upsertByGoogleId, findById, updatePlan, updateEmailPrefs, listPremiumEmailUsers, listCards, replaceCards,
   createPayment, findPendingPayments, markPaymentPaid,
@@ -427,4 +495,6 @@ module.exports = {
   listReviewsForCard, upsertReview, removeReview,
   createTransaction, listTransactions, countTransactions, deleteTransaction,
   createOffer, listOffers, updateOfferStatus, countOffersByUser,
+  addWatchword, removeWatchword, listWatchwords, countWatchwords, listAllWatchwords,
+  createNotification, listNotifications, markAllNotificationsRead,
 };

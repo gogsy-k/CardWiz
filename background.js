@@ -11,6 +11,8 @@ importScripts('reminders.js', 'i18n.js');
 const R = globalThis.CardWizReminders;
 
 const ALARM = 'scs-daily-bill-check';
+const BACKEND = 'https://cardwiz-backend.onrender.com';
+const AUTH_KEY = 'scsAuth';
 
 function ensureAlarm() {
   chrome.alarms.create(ALARM, { periodInMinutes: 720 }); // har 12 ghante
@@ -34,7 +36,7 @@ chrome.storage.onChanged.addListener((changes, area) => {
   if (area === 'local' && changes.cwLang) applyExtTitle();
 });
 chrome.alarms.onAlarm.addListener((a) => {
-  if (a.name === ALARM) checkBills();
+  if (a.name === ALARM) { checkBills(); checkOfferNotifications(); }
 });
 
 // Notification click -> popup ka Bills view... popup programmatically nahi khulta,
@@ -77,6 +79,39 @@ async function checkBills() {
   }
 
   if (changed) await chrome.storage.local.set({ notifiedOn });
+}
+
+async function checkOfferNotifications() {
+  try {
+    const store = await chrome.storage.local.get([AUTH_KEY]);
+    const auth = store[AUTH_KEY];
+    if (!auth || !auth.token) return; // not signed in
+
+    const res = await fetch(`${BACKEND}/watchlist/notifications`, {
+      headers: { Authorization: `Bearer ${auth.token}` },
+    });
+    if (!res.ok) return;
+
+    const { notifications } = await res.json();
+    const unread = (notifications || []).filter((n) => !n.read);
+
+    for (const n of unread) {
+      chrome.notifications.create(`offer-${n.id}`, {
+        type: 'basic',
+        iconUrl: 'icon128.png',
+        title: '🏷️ CardWiz — New Offer',
+        message: n.message,
+        priority: 1,
+      });
+    }
+
+    if (unread.length > 0) {
+      fetch(`${BACKEND}/watchlist/notifications/read`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${auth.token}` },
+      }).catch(() => {});
+    }
+  } catch (_) { /* ignore network errors */ }
 }
 
 function todayString(d) {

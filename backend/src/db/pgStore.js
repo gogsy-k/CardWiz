@@ -200,6 +200,30 @@ async function init(databaseUrl) {
     CREATE INDEX IF NOT EXISTS offers_bank_idx    ON offers (bank, status);
     CREATE INDEX IF NOT EXISTS offers_card_idx    ON offers (card_id, status);
   `);
+
+  // Offer watchlist — keywords a user wants to be notified about.
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS watchlist (
+      user_id    UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      keyword    TEXT NOT NULL,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+      PRIMARY KEY (user_id, keyword)
+    );
+    CREATE INDEX IF NOT EXISTS watchlist_user_idx ON watchlist (user_id);
+  `);
+
+  // In-app notifications — created when a watched keyword matches a published offer post.
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS notifications (
+      id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      user_id    UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      message    TEXT NOT NULL,
+      link       TEXT,
+      read       BOOLEAN NOT NULL DEFAULT false,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+    CREATE INDEX IF NOT EXISTS notifs_user_idx ON notifications (user_id, read, created_at DESC);
+  `);
 }
 
 // DB row -> humara user shape (camelCase, consistent JSON store ke saath).
@@ -681,6 +705,58 @@ async function countOffersByUser(userId, sinceMs) {
   return Number(res.rows[0].count);
 }
 
+// ---- Watchlist ----
+async function addWatchword(userId, keyword) {
+  await pool.query(
+    'INSERT INTO watchlist (user_id, keyword) VALUES ($1,$2) ON CONFLICT DO NOTHING',
+    [userId, keyword.toLowerCase()]
+  );
+}
+
+async function removeWatchword(userId, keyword) {
+  await pool.query('DELETE FROM watchlist WHERE user_id=$1 AND keyword=$2', [userId, keyword.toLowerCase()]);
+}
+
+async function listWatchwords(userId) {
+  const res = await pool.query('SELECT keyword FROM watchlist WHERE user_id=$1 ORDER BY created_at', [userId]);
+  return res.rows.map((r) => r.keyword);
+}
+
+async function countWatchwords(userId) {
+  const res = await pool.query('SELECT COUNT(*) FROM watchlist WHERE user_id=$1', [userId]);
+  return Number(res.rows[0].count);
+}
+
+async function listAllWatchwords() {
+  const res = await pool.query('SELECT user_id AS "userId", keyword FROM watchlist');
+  return res.rows;
+}
+
+// ---- Notifications ----
+function rowToNotif(r) {
+  return { id: r.id, userId: r.user_id, message: r.message, link: r.link || null, read: !!r.read, createdAt: r.created_at };
+}
+
+async function createNotification(userId, message, link) {
+  const res = await pool.query(
+    'INSERT INTO notifications (user_id, message, link) VALUES ($1,$2,$3) RETURNING *',
+    [userId, message, link || null]
+  );
+  return rowToNotif(res.rows[0]);
+}
+
+async function listNotifications(userId, limit = 20) {
+  const res = await pool.query(
+    'SELECT * FROM notifications WHERE user_id=$1 ORDER BY read ASC, created_at DESC LIMIT $2',
+    [userId, limit]
+  );
+  return res.rows.map(rowToNotif);
+}
+
+async function markAllNotificationsRead(userId) {
+  await pool.query('UPDATE notifications SET read=true WHERE user_id=$1 AND read=false', [userId]);
+}
+
 module.exports = {
   kind: 'postgres', init, upsertByGoogleId, findById, updatePlan, updateEmailPrefs, listPremiumEmailUsers, listCards, replaceCards,
   createPayment, findPendingPayments, markPaymentPaid,
@@ -691,4 +767,6 @@ module.exports = {
   listReviewsForCard, upsertReview, removeReview,
   createTransaction, listTransactions, countTransactions, deleteTransaction,
   createOffer, listOffers, updateOfferStatus, countOffersByUser,
+  addWatchword, removeWatchword, listWatchwords, countWatchwords, listAllWatchwords,
+  createNotification, listNotifications, markAllNotificationsRead,
 };

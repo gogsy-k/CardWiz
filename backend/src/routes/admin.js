@@ -7,6 +7,7 @@
 'use strict';
 
 const express = require('express');
+const { fireWatchlistNotifications } = require('../lib/notify-watchlist');
 const db = require('../db');
 const { config } = require('../config');
 const { requireAdmin, requireSuperAdmin } = require('../middleware/auth');
@@ -70,6 +71,9 @@ router.post('/posts', requireAdmin, async (req, res) => {
     authorId: req.user.id,
     authorName: req.user.name || '',
   });
+  if (data.status === 'published' && data.category === 'offer') {
+    fireWatchlistNotifications(post).catch(console.error);
+  }
   res.json({ post });
 });
 
@@ -78,8 +82,13 @@ router.put('/posts/:id', requireAdmin, async (req, res) => {
   if (!existing) return res.status(404).json({ error: 'Not found' });
   const data = cleanPostInput(req.body || {});
   if (!data.title || !data.content) return res.status(400).json({ error: 'title and content required' });
+  const wasPublished = existing.status === 'published';
   // slug stays stable after creation (preserve URLs)
   const post = await db.posts.update(req.params.id, data);
+  // Fire watchlist notifications when first publishing an offer post.
+  if (!wasPublished && data.status === 'published' && data.category === 'offer') {
+    fireWatchlistNotifications(post).catch(console.error);
+  }
   res.json({ post });
 });
 

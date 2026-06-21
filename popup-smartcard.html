@@ -701,6 +701,19 @@
       <div class="hint" id="premiumDevNote">Dev toggle — abhi koi real payment nahi.</div>
     </div>
 
+    <!-- Offer Watchlist -->
+    <div class="more-card" id="watchlistCard" hidden>
+      <div class="more-title" data-i18n="more_watchlist">🔔 Offer Watchlist</div>
+      <div class="more-sub" data-i18n="watchlist_sub">Keywords jo match kare to notify karein (e.g. "amazon", "hdfc")</div>
+      <div id="watchlistChips" style="display:flex;flex-wrap:wrap;gap:5px;margin:8px 0;"></div>
+      <div style="display:flex;gap:6px;margin-top:4px;">
+        <input id="watchlistInput" type="text" placeholder="keyword..." maxlength="50"
+          style="flex:1;background:#1e1e2e;border:1px solid #45475a;border-radius:8px;color:#cdd6f4;font-size:11px;padding:5px 8px;outline:none;" />
+        <button id="watchlistAddBtn" class="primary" style="padding:5px 10px;font-size:11px;" data-i18n="watchlist_add">Add</button>
+      </div>
+      <div id="watchlistMsg" style="font-size:9px;color:#6c7086;margin-top:4px;"></div>
+    </div>
+
     <div class="more-card">
       <div class="more-title" data-i18n="more_analytics">📊 Spending Analytics</div>
       <div id="analyticsBox"></div>
