@@ -88,6 +88,21 @@ async function updatePlan(id, plan) {
   return u;
 }
 
+async function updateEmailPrefs(id, enabled) {
+  load();
+  const u = cache.users.find((x) => x.id === id);
+  if (!u) return null;
+  u.emailReports = !!enabled;
+  u.updatedAt = new Date().toISOString();
+  persist();
+  return u;
+}
+
+async function listPremiumEmailUsers() {
+  load();
+  return cache.users.filter((u) => u.plan === 'premium' && u.emailReports);
+}
+
 // ---- Cards (synced wallet) ----
 async function listCards(userId) {
   load();
@@ -358,7 +373,7 @@ async function deleteTransaction(id, userId) {
 }
 
 module.exports = {
-  kind: 'json', init, upsertByGoogleId, findById, updatePlan, listCards, replaceCards,
+  kind: 'json', init, upsertByGoogleId, findById, updatePlan, updateEmailPrefs, listPremiumEmailUsers, listCards, replaceCards,
   createPayment, findPendingPayments, markPaymentPaid,
   createSubscription, findPendingSubscriptions, markSubscriptionActive,
   listCatalog, countCatalog, upsertCard, deleteNotInCatalog,

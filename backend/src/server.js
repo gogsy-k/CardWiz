@@ -21,6 +21,8 @@ const reviewsRoutes      = require('./routes/reviews');
 const transactionsRoutes = require('./routes/transactions');
 const reportsRoutes      = require('./routes/reports');
 const statementsRoutes   = require('./routes/statements');
+const accountRoutes      = require('./routes/account');
+const { startMonthlyJob } = require('./lib/monthly-job');
 const { autoSeedIfEmpty } = require('./routes/catalog');
 
 const app = express();
@@ -62,6 +64,7 @@ app.use('/reviews', reviewsRoutes);
 app.use('/transactions', transactionsRoutes);
 app.use('/reports', reportsRoutes);
 app.use('/statements', statementsRoutes);
+app.use('/account', accountRoutes);
 
 // 404 fallback
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));
@@ -78,6 +81,7 @@ async function start() {
 
   await db.init();
   await autoSeedIfEmpty(); // Supabase empty ho to cards.json se seed karo
+  startMonthlyJob();
 
   app.listen(config.port, () => {
     console.log(`\n✅ CardWiz backend chal raha hai: http://localhost:${config.port}`);

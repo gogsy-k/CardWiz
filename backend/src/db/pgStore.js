@@ -27,9 +27,11 @@ async function init(databaseUrl) {
       name        TEXT,
       picture     TEXT,
       plan        TEXT NOT NULL DEFAULT 'free',
+      email_reports BOOLEAN NOT NULL DEFAULT false,
       created_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
       updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
     );
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS email_reports BOOLEAN NOT NULL DEFAULT false;
   `);
 
   // Cards table — synced wallet entries. NOTE: sirf last4, NEVER full PAN/CVV.
@@ -189,6 +191,7 @@ function rowToUser(r) {
     name: r.name,
     picture: r.picture,
     plan: r.plan,
+    emailReports: !!r.email_reports,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
   };
@@ -220,6 +223,21 @@ async function updatePlan(id, plan) {
     [id, plan]
   );
   return rowToUser(res.rows[0]);
+}
+
+async function updateEmailPrefs(id, enabled) {
+  const res = await pool.query(
+    'UPDATE users SET email_reports = $2, updated_at = now() WHERE id = $1 RETURNING *',
+    [id, !!enabled]
+  );
+  return rowToUser(res.rows[0]);
+}
+
+async function listPremiumEmailUsers() {
+  const res = await pool.query(
+    "SELECT * FROM users WHERE plan = 'premium' AND email_reports = true"
+  );
+  return res.rows.map(rowToUser);
 }
 
 // ---- Cards (synced wallet) ----
@@ -586,7 +604,7 @@ async function deleteTransaction(id, userId) {
 }
 
 module.exports = {
-  kind: 'postgres', init, upsertByGoogleId, findById, updatePlan, listCards, replaceCards,
+  kind: 'postgres', init, upsertByGoogleId, findById, updatePlan, updateEmailPrefs, listPremiumEmailUsers, listCards, replaceCards,
   createPayment, findPendingPayments, markPaymentPaid,
   createSubscription, findPendingSubscriptions, markSubscriptionActive,
   listCatalog, countCatalog, upsertCard, deleteNotInCatalog,

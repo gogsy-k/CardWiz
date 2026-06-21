@@ -13,6 +13,7 @@ export type AuthUser = {
   name: string;
   picture: string;
   plan: "free" | "premium";
+  emailReports?: boolean;
   isAdmin?: boolean;
 };
 

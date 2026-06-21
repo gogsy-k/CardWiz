@@ -1,8 +1,10 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import PortfolioScoreWidget from "@/components/PortfolioScoreWidget";
+import { getEmailPrefs, updateEmailPrefs } from "@/lib/account-api";
 
 const LIVE_FEATURES = [
   {
@@ -31,14 +33,80 @@ const COMING_SOON = [
     title: "Card Reviews",
     desc: "Rate and review cards you actually own. Your reviews help other CardWiz users pick better.",
   },
-  {
-    emoji: "📧",
-    title: "Monthly Report Email",
-    desc: "Opt-in monthly email: total saved, best card, worst card, and missed savings last month.",
-    premium: true,
-  },
 ];
 
+// ── Email Prefs Toggle ───────────────────────────────────────────────────────
+function EmailPrefsToggle({ isPremium }: { isPremium: boolean }) {
+  const [enabled, setEnabled] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    if (!isPremium) return;
+    getEmailPrefs()
+      .then((d) => { setEnabled(d.emailReports); setLoaded(true); })
+      .catch(() => setLoaded(true));
+  }, [isPremium]);
+
+  async function toggle() {
+    if (!isPremium || saving) return;
+    setSaving(true);
+    const next = !enabled;
+    try {
+      await updateEmailPrefs(next);
+      setEnabled(next);
+    } catch { /* ignore */ } finally {
+      setSaving(false);
+    }
+  }
+
+  if (!isPremium) {
+    return (
+      <div className="rounded-xl border border-border bg-surface2 p-4 flex items-center gap-4 opacity-60">
+        <span className="text-2xl">📧</span>
+        <div className="flex-1 min-w-0">
+          <div className="text-sm font-bold flex items-center gap-2">
+            Monthly Report Email
+            <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold text-accent">Premium</span>
+          </div>
+          <p className="text-xs text-muted mt-0.5">Opt-in monthly email with your savings summary.</p>
+        </div>
+        <Link href="/pricing" className="shrink-0 rounded-lg bg-accent px-3 py-1.5 text-xs font-bold text-bg">
+          Upgrade →
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-xl border border-border bg-surface2 p-4 flex items-center gap-4">
+      <span className="text-2xl">📧</span>
+      <div className="flex-1 min-w-0">
+        <div className="text-sm font-bold">Monthly Report Email</div>
+        <p className="text-xs text-muted mt-0.5 leading-relaxed">
+          Receive a monthly email with total spend, rewards earned, and missed savings summary.
+          Sent on the 1st of every month.
+        </p>
+      </div>
+      <button
+        onClick={toggle}
+        disabled={saving || !loaded}
+        aria-label={enabled ? "Disable monthly email" : "Enable monthly email"}
+        className={`shrink-0 relative h-6 w-11 rounded-full transition-colors focus:outline-none ${
+          enabled ? "bg-accent" : "bg-border"
+        } disabled:opacity-50`}
+      >
+        <span
+          className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${
+            enabled ? "translate-x-5" : "translate-x-0"
+          }`}
+        />
+      </button>
+    </div>
+  );
+}
+
+// ── Main Page ────────────────────────────────────────────────────────────────
 export default function AccountPage() {
   const { user } = useAuth();
   if (!user) return null; // layout handles the auth guard
@@ -135,6 +203,9 @@ export default function AccountPage() {
         </div>
       </div>
 
+      {/* ── Email report prefs ── */}
+      <EmailPrefsToggle isPremium={isPremium} />
+
       {/* ── Coming soon features ── */}
       <div>
         <h2 className="mb-1 text-lg font-black">Coming soon</h2>
@@ -149,15 +220,9 @@ export default function AccountPage() {
               <div className="min-w-0">
                 <div className="flex items-center gap-2 text-sm font-bold">
                   {f.title}
-                  {f.premium ? (
-                    <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold text-accent">
-                      Premium
-                    </span>
-                  ) : (
-                    <span className="rounded-full border border-border px-2 py-0.5 text-[10px] font-bold text-muted">
-                      Soon
-                    </span>
-                  )}
+                  <span className="rounded-full border border-border px-2 py-0.5 text-[10px] font-bold text-muted">
+                    Soon
+                  </span>
                 </div>
                 <p className="mt-1 text-xs leading-relaxed text-muted">{f.desc}</p>
               </div>

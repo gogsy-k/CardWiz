@@ -22,9 +22,11 @@ async function init() {
 
 // Common interface — dono drivers same shape dete hain.
 const users = {
-  upsertByGoogleId: (...a) => driver.upsertByGoogleId(...a),
-  findById: (...a) => driver.findById(...a),
-  updatePlan: (...a) => driver.updatePlan(...a),
+  upsertByGoogleId:     (...a) => driver.upsertByGoogleId(...a),
+  findById:             (...a) => driver.findById(...a),
+  updatePlan:           (...a) => driver.updatePlan(...a),
+  updateEmailPrefs:     (...a) => driver.updateEmailPrefs(...a),
+  listPremiumEmailUsers:(...a) => driver.listPremiumEmailUsers(...a),
 };
 
 const cards = {
