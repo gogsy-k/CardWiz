@@ -201,9 +201,10 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
     auth_blurb:
       "Sign in to sync your plan across devices. We only take your name & email — never card number or CVV.",
 
-    // News
+    // News + Account
     nav_news: "News",
     nav_admin: "Admin",
+    nav_account: "My Account",
     news_title: "News & Updates",
     news_sub: "Credit card and personal finance news, tips and updates.",
     news_empty: "No articles yet — check back soon.",
@@ -406,9 +407,10 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
     auth_blurb:
       "Sign in karke apna plan har device pe sync karo. Hum sirf naam & email lete hain — card number ya CVV kabhi nahi.",
 
-    // News
+    // News + Account
     nav_news: "News",
     nav_admin: "Admin",
+    nav_account: "Mera Account",
     news_title: "News & Updates",
     news_sub: "Credit card aur personal finance ki news, tips aur updates.",
     news_empty: "Abhi koi article nahi — jaldi wapas aao.",
@@ -611,9 +613,10 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
     auth_blurb:
       "Sign in करके अपना plan हर device पर sync करें। हम सिर्फ़ नाम & email लेते हैं — card number या CVV कभी नहीं।",
 
-    // News
+    // News + Account
     nav_news: "समाचार",
     nav_admin: "Admin",
+    nav_account: "मेरा Account",
     news_title: "News & Updates",
     news_sub: "Credit card और personal finance की news, tips और updates।",
     news_empty: "अभी कोई article नहीं — जल्दी वापस आएं।",

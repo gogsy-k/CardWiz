@@ -41,6 +41,11 @@ export default function Navbar() {
               {t(l.key)}
             </Link>
           ))}
+          {user && (
+            <Link href="/account" className="text-sm font-medium text-accent transition-colors hover:text-accent/80">
+              {t("nav_account")}
+            </Link>
+          )}
           {user?.isAdmin && (
             <Link href="/admin" className="text-sm font-bold text-pink transition-colors hover:text-pink/80">
               {t("nav_admin")}
@@ -81,6 +86,15 @@ export default function Navbar() {
               {t(l.key)}
             </Link>
           ))}
+          {user && (
+            <Link
+              href="/account"
+              onClick={() => setOpen(false)}
+              className="rounded-lg px-2 py-2 text-sm font-medium text-accent hover:bg-surface"
+            >
+              {t("nav_account")}
+            </Link>
+          )}
           {user?.isAdmin && (
             <Link
               href="/admin"
