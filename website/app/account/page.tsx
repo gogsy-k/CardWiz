@@ -11,15 +11,15 @@ const LIVE_FEATURES = [
     desc: "Log your spends to power the Missed Savings analysis.",
     href: "/account/transactions",
   },
+  {
+    emoji: "💸",
+    title: "Missed Savings",
+    desc: "See how much you left on the table — and which card you should have used.",
+    href: "/account/savings",
+  },
 ];
 
 const COMING_SOON = [
-  {
-    emoji: "💸",
-    title: "Missed Savings Report",
-    desc: "Find out exactly how much you left on the table last month by using the wrong card.",
-    premium: true,
-  },
   {
     emoji: "📄",
     title: "Statement Upload",

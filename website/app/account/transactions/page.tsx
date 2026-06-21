@@ -347,22 +347,21 @@ export default function TransactionsPage() {
         </div>
       )}
 
-      {/* Missed Savings teaser (always visible) */}
+      {/* Missed Savings link */}
       <div className="rounded-2xl border border-border bg-surface2 p-5 flex items-center gap-4">
         <span className="text-3xl shrink-0">💸</span>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <div className="text-sm font-bold">Missed Savings Report</div>
           <p className="text-xs text-muted mt-0.5 leading-relaxed">
-            {isPremium
-              ? "Coming soon — once Missed Savings is live, your transactions will power the full report."
-              : "Log transactions to see exactly how much you left on the table by using the wrong card."}
+            See exactly how much you left on the table — and which card to use instead.
           </p>
         </div>
-        {!isPremium && (
-          <Link href="/pricing" className="shrink-0 rounded-lg border border-accent text-accent px-3 py-1.5 text-xs font-bold hover:bg-accent/10">
-            Upgrade
-          </Link>
-        )}
+        <Link
+          href="/account/savings"
+          className="shrink-0 rounded-lg bg-accent px-3 py-1.5 text-xs font-bold text-bg"
+        >
+          View →
+        </Link>
       </div>
 
     </div>
