@@ -32,6 +32,7 @@ function load() {
   if (!Array.isArray(cache.admins)) cache.admins = [];
   if (!Array.isArray(cache.reviews)) cache.reviews = [];
   if (!Array.isArray(cache.transactions)) cache.transactions = [];
+  if (!Array.isArray(cache.offers))       cache.offers = [];
   return cache;
 }
 
@@ -372,6 +373,50 @@ async function deleteTransaction(id, userId) {
   return true;
 }
 
+// ---- Offers ----
+async function createOffer({ merchant, bank, cardId, title, discountText, validUntil, submittedBy, submittedByEmail }) {
+  load();
+  const offer = {
+    id: crypto.randomUUID(),
+    merchant, bank: bank || null, cardId: cardId || null,
+    title, discountText, validUntil: validUntil || null,
+    submittedBy: submittedBy || null, submittedByEmail: submittedByEmail || null,
+    status: 'pending',
+    createdAt: new Date().toISOString(),
+  };
+  cache.offers.push(offer);
+  persist();
+  return offer;
+}
+
+async function listOffers({ status = 'approved', bank, cardId, limit = 50 } = {}) {
+  load();
+  return cache.offers
+    .filter((o) => {
+      if (o.status !== status) return false;
+      if (bank   && o.bank   !== bank)   return false;
+      if (cardId && o.cardId !== cardId) return false;
+      return true;
+    })
+    .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
+    .slice(0, limit);
+}
+
+async function updateOfferStatus(id, status) {
+  load();
+  const offer = cache.offers.find((o) => o.id === id);
+  if (!offer) return null;
+  offer.status = status;
+  persist();
+  return offer;
+}
+
+async function countOffersByUser(userId, sinceMs) {
+  load();
+  const since = new Date(sinceMs).toISOString();
+  return cache.offers.filter((o) => o.submittedBy === userId && o.createdAt > since).length;
+}
+
 module.exports = {
   kind: 'json', init, upsertByGoogleId, findById, updatePlan, updateEmailPrefs, listPremiumEmailUsers, listCards, replaceCards,
   createPayment, findPendingPayments, markPaymentPaid,
@@ -381,4 +426,5 @@ module.exports = {
   listAdmins, hasAdmin, addAdmin, removeAdmin,
   listReviewsForCard, upsertReview, removeReview,
   createTransaction, listTransactions, countTransactions, deleteTransaction,
+  createOffer, listOffers, updateOfferStatus, countOffersByUser,
 };

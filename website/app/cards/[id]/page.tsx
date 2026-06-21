@@ -10,6 +10,7 @@ import {
   prettyCategory,
 } from "@/lib/cards";
 import CardReviews from "@/components/CardReviews";
+import CardOffers from "@/components/CardOffers";
 
 const CHROME_STORE_URL = "https://chrome.google.com/webstore";
 
@@ -168,6 +169,11 @@ export default async function CardDetail(props: PageProps<"/cards/[id]">) {
           </div>
         </>
       )}
+
+      {/* Bank Offers */}
+      <div className="mt-12">
+        <CardOffers cardId={id} bank={card.bank} />
+      </div>
 
       {/* Reviews */}
       <div className="mt-12">

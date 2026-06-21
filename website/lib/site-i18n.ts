@@ -203,6 +203,7 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
 
     // News + Account
     nav_news: "News",
+    nav_offers: "Offers",
     nav_admin: "Admin",
     nav_account: "My Account",
     news_title: "News & Updates",
@@ -409,6 +410,7 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
 
     // News + Account
     nav_news: "News",
+    nav_offers: "Offers",
     nav_admin: "Admin",
     nav_account: "Mera Account",
     news_title: "News & Updates",
@@ -615,6 +617,7 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
 
     // News + Account
     nav_news: "समाचार",
+    nav_offers: "Offers",
     nav_admin: "Admin",
     nav_account: "मेरा Account",
     news_title: "News & Updates",

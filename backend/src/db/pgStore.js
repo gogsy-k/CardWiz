@@ -179,6 +179,27 @@ async function init(databaseUrl) {
   await pool.query(`
     CREATE INDEX IF NOT EXISTS txn_user_date_idx ON transactions (user_id, date DESC);
   `);
+
+  // User-submitted bank offers — moderated by admin before going live.
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS offers (
+      id               UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      merchant         TEXT NOT NULL,
+      bank             TEXT,
+      card_id          TEXT,
+      title            TEXT NOT NULL,
+      discount_text    TEXT NOT NULL,
+      valid_until      DATE,
+      submitted_by     UUID REFERENCES users(id) ON DELETE SET NULL,
+      submitted_by_email TEXT,
+      status           TEXT NOT NULL DEFAULT 'pending',
+      created_at       TIMESTAMPTZ NOT NULL DEFAULT now(),
+      updated_at       TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+    CREATE INDEX IF NOT EXISTS offers_status_idx  ON offers (status, created_at DESC);
+    CREATE INDEX IF NOT EXISTS offers_bank_idx    ON offers (bank, status);
+    CREATE INDEX IF NOT EXISTS offers_card_idx    ON offers (card_id, status);
+  `);
 }
 
 // DB row -> humara user shape (camelCase, consistent JSON store ke saath).
@@ -603,6 +624,63 @@ async function deleteTransaction(id, userId) {
   return res.rowCount > 0;
 }
 
+// ---- Offers ----
+function rowToOffer(r) {
+  if (!r) return null;
+  return {
+    id: r.id,
+    merchant: r.merchant,
+    bank: r.bank || null,
+    cardId: r.card_id || null,
+    title: r.title,
+    discountText: r.discount_text,
+    validUntil: r.valid_until ? r.valid_until.toISOString().slice(0, 10) : null,
+    submittedBy: r.submitted_by || null,
+    submittedByEmail: r.submitted_by_email || null,
+    status: r.status,
+    createdAt: r.created_at,
+  };
+}
+
+async function createOffer({ merchant, bank, cardId, title, discountText, validUntil, submittedBy, submittedByEmail }) {
+  const res = await pool.query(
+    `INSERT INTO offers (merchant, bank, card_id, title, discount_text, valid_until, submitted_by, submitted_by_email)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING *`,
+    [merchant, bank || null, cardId || null, title, discountText, validUntil || null, submittedBy || null, submittedByEmail || null]
+  );
+  return rowToOffer(res.rows[0]);
+}
+
+async function listOffers({ status = 'approved', bank, cardId, limit = 50 } = {}) {
+  const conds = ['status = $1'];
+  const vals  = [status];
+  if (bank)   { vals.push(bank);   conds.push(`bank = $${vals.length}`); }
+  if (cardId) { vals.push(cardId); conds.push(`card_id = $${vals.length}`); }
+  vals.push(limit);
+  const res = await pool.query(
+    `SELECT * FROM offers WHERE ${conds.join(' AND ')} ORDER BY created_at DESC LIMIT $${vals.length}`,
+    vals
+  );
+  return res.rows.map(rowToOffer);
+}
+
+async function updateOfferStatus(id, status) {
+  const res = await pool.query(
+    'UPDATE offers SET status=$2, updated_at=now() WHERE id=$1 RETURNING *',
+    [id, status]
+  );
+  return rowToOffer(res.rows[0]);
+}
+
+async function countOffersByUser(userId, sinceMs) {
+  const since = new Date(sinceMs).toISOString();
+  const res = await pool.query(
+    'SELECT COUNT(*) FROM offers WHERE submitted_by=$1 AND created_at > $2',
+    [userId, since]
+  );
+  return Number(res.rows[0].count);
+}
+
 module.exports = {
   kind: 'postgres', init, upsertByGoogleId, findById, updatePlan, updateEmailPrefs, listPremiumEmailUsers, listCards, replaceCards,
   createPayment, findPendingPayments, markPaymentPaid,
@@ -612,4 +690,5 @@ module.exports = {
   listAdmins, hasAdmin, addAdmin, removeAdmin,
   listReviewsForCard, upsertReview, removeReview,
   createTransaction, listTransactions, countTransactions, deleteTransaction,
+  createOffer, listOffers, updateOfferStatus, countOffersByUser,
 };

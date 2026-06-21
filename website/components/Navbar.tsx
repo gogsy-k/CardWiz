@@ -18,6 +18,7 @@ export default function Navbar() {
     { href: "/", key: "nav_home" },
     { href: "/cards", key: "nav_cards" },
     { href: "/find-my-card", key: "nav_findcard" },
+    { href: "/offers", key: "nav_offers" },
     { href: "/news", key: "nav_news" },
     { href: "/pricing", key: "nav_pricing" },
     { href: "/contact", key: "nav_contact" },

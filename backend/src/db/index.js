@@ -83,4 +83,11 @@ const transactions = {
   remove: (...a) => driver.deleteTransaction(...a),
 };
 
-module.exports = { init, users, cards, payments, subscriptions, catalog, posts, admins, reviews, transactions, get kind() { return driver && driver.kind; } };
+const offers = {
+  create:       (...a) => driver.createOffer(...a),
+  list:         (...a) => driver.listOffers(...a),
+  updateStatus: (...a) => driver.updateOfferStatus(...a),
+  countByUser:  (...a) => driver.countOffersByUser(...a),
+};
+
+module.exports = { init, users, cards, payments, subscriptions, catalog, posts, admins, reviews, transactions, offers, get kind() { return driver && driver.kind; } };
