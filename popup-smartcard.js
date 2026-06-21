@@ -610,42 +610,6 @@ function bankAccentColor(bank) {
   return '#cba6f7';
 }
 
-function bankCardGradient(bank) {
-  const b = (bank || '').toLowerCase();
-  if (b.includes('hdfc'))     return 'linear-gradient(145deg, #0d1f5c, #1a3380)';
-  if (b.includes('sbi'))      return 'linear-gradient(145deg, #0a1e6e, #0d2a96)';
-  if (b.includes('axis'))     return 'linear-gradient(145deg, #2c0060, #440090)';
-  if (b.includes('icici'))    return 'linear-gradient(145deg, #7a0000, #a01020)';
-  if (b.includes('kotak'))    return 'linear-gradient(145deg, #3a1800, #5a2800)';
-  if (b.includes('amex') || b.includes('american express')) return 'linear-gradient(145deg, #004020, #006030)';
-  if (b.includes('indusind')) return 'linear-gradient(145deg, #180040, #280060)';
-  if (b.includes('idfc'))     return 'linear-gradient(145deg, #00263a, #003a56)';
-  if (b.includes('yes'))      return 'linear-gradient(145deg, #001a60, #002880)';
-  if (b.includes('au ') || b === 'au') return 'linear-gradient(145deg, #002240, #003660)';
-  if (b.includes('hsbc'))     return 'linear-gradient(145deg, #5c0000, #7a0808)';
-  if (b.includes('standard chartered')) return 'linear-gradient(145deg, #00300e, #004816)';
-  if (b.includes('rbl'))      return 'linear-gradient(145deg, #400800, #600e00)';
-  return 'linear-gradient(145deg, #1a1040, #26185e)';
-}
-
-function bankEmoji(bank) {
-  const b = (bank || '').toLowerCase();
-  if (b.includes('hdfc'))     return '🔷';
-  if (b.includes('sbi'))      return '🏛️';
-  if (b.includes('axis'))     return '💜';
-  if (b.includes('icici'))    return '🔴';
-  if (b.includes('kotak'))    return '🌟';
-  if (b.includes('amex') || b.includes('american express')) return '🎩';
-  if (b.includes('indusind')) return '💎';
-  if (b.includes('idfc'))     return '🌊';
-  if (b.includes('yes'))      return '✨';
-  if (b.includes('au ') || b === 'au') return '🌅';
-  if (b.includes('hsbc'))     return '🦁';
-  if (b.includes('standard chartered')) return '🌿';
-  if (b.includes('rbl'))      return '🔶';
-  return '💳';
-}
-
 function hasAnyTrackerData(cat) {
   if (!cat) return false;
   if (cat.feeWaiverSpend > 0 && cat.annualFee > 0) return true;
@@ -868,47 +832,35 @@ function openCardDetailModal(mc, cat) {
   overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.hidden = true; }, { once: false });
 }
 
-// Wallet-card row — credit-card face design with bank gradients + emojis.
+// Wallet-card row — redesigned to match bestcard visual quality.
 function makeCardRow(mc, cat) {
   const row = document.createElement('div');
   row.className = 'mycard';
-  row.style.background = bankCardGradient(cat.bank);
+  const accent = bankAccentColor(cat.bank);
+  row.style.borderLeftColor = accent;
 
-  // ── Card face (body) ──
-  const body = document.createElement('div');
-  body.className = 'mycard-body';
+  // ── Top section: icon circle + card info ──
+  const top = document.createElement('div');
+  top.className = 'mycard-top';
 
-  // Header row: bank emoji + CREDIT/DEBIT badge
-  const header = document.createElement('div');
-  header.className = 'mycard-header';
-  const emojiEl = document.createElement('span');
-  emojiEl.className = 'mycard-emoji';
-  emojiEl.textContent = bankEmoji(cat.bank);
-  const badge = document.createElement('span');
-  badge.className = 'mycard-badge';
-  badge.textContent = (cat.type === 'debit' ? 'DEBIT' : 'CREDIT') + ' CARD';
-  header.appendChild(emojiEl);
-  header.appendChild(badge);
-  body.appendChild(header);
+  const iconCircle = document.createElement('div');
+  iconCircle.className = 'mycard-icon-circle';
+  iconCircle.style.background = `linear-gradient(145deg, ${accent}cc, ${accent}88)`;
+  iconCircle.textContent = (cat.bank || '?')[0].toUpperCase();
 
-  // Card name (big, white)
+  const info = document.createElement('div');
+  info.className = 'mycard-info';
+
   const nameEl = document.createElement('div');
   nameEl.className = 'mycard-name';
   nameEl.textContent = mc.nickname || cat.name;
-  body.appendChild(nameEl);
 
-  // Meta: full card name (if nicknamed) + bank + annual fee
-  const feeStr = cat.annualFee > 0 ? `₹${fmtINR(cat.annualFee)}/yr` : 'Lifetime Free';
-  const metaEl = document.createElement('div');
-  metaEl.className = 'mycard-meta';
-  metaEl.textContent = (mc.nickname ? cat.name + '  ·  ' : '') + cat.bank + '  ·  ' + feeStr;
-  body.appendChild(metaEl);
+  const bankEl = document.createElement('div');
+  bankEl.className = 'mycard-bank';
+  bankEl.textContent = (mc.nickname ? cat.name : cat.bank) + (mc.last4 ? ` · •••• ${mc.last4}` : '');
 
-  // Card number row
-  const numEl = document.createElement('div');
-  numEl.className = 'mycard-number';
-  numEl.textContent = `•••• •••• •••• ${mc.last4 || '••••'}`;
-  body.appendChild(numEl);
+  info.appendChild(nameEl);
+  info.appendChild(bankEl);
 
   // Due date pill
   if (mc.dueDay) {
@@ -916,51 +868,53 @@ function makeCardRow(mc, cat) {
     duePill.className = 'mycard-due';
     if (window.CardWizReminders) {
       const st = window.CardWizReminders.dueStatus(mc.dueDay, mc.reminderDaysBefore, new Date());
-      if (st.days <= 0)                                     { duePill.className += ' urgent'; duePill.textContent = '🔔 Due today!'; }
-      else if (st.days <= (mc.reminderDaysBefore || 3))     { duePill.className += ' soon';   duePill.textContent = `⏰ Due in ${st.days} day${st.days > 1 ? 's' : ''}`; }
-      else                                                  { duePill.className += ' ok';     duePill.textContent = `📅 Due ${mc.dueDay}th`; }
+      if (st.days <= 0)     { duePill.className += ' urgent'; duePill.textContent = '🔔 Due today!'; }
+      else if (st.days <= (mc.reminderDaysBefore || 3)) { duePill.className += ' soon'; duePill.textContent = `🔔 Due in ${st.days} day${st.days > 1 ? 's' : ''}`; }
+      else                  { duePill.className += ' ok';     duePill.textContent = `🔔 Due ${mc.dueDay}th`; }
     } else {
       duePill.className += ' ok';
-      duePill.textContent = `📅 Due ${mc.dueDay}th`;
+      duePill.textContent = `🔔 Due ${mc.dueDay}th`;
     }
-    body.appendChild(duePill);
+    info.appendChild(duePill);
   }
 
-  row.appendChild(body);
+  top.appendChild(iconCircle);
+  top.appendChild(info);
+  row.appendChild(top);
 
-  // ── Footer: action buttons ──
-  const footer = document.createElement('div');
-  footer.className = 'mycard-footer';
+  // ── Action buttons ──
+  const actions = document.createElement('div');
+  actions.className = 'mycard-actions';
 
   if (hasAnyTrackerData(cat)) {
     const detBtn = document.createElement('button');
     detBtn.className = 'mc-btn-det';
-    detBtn.textContent = '📊 Details';
+    detBtn.textContent = CardWizI18n.t('tr_details');
     detBtn.addEventListener('click', () => openCardDetailModal(mc, cat));
-    footer.appendChild(detBtn);
+    actions.appendChild(detBtn);
   }
 
   if (mc.dueDay) {
     const payBtn = document.createElement('button');
     payBtn.className = 'mc-btn-pay';
-    payBtn.textContent = '💸 Pay Now';
+    payBtn.textContent = CardWizI18n.t('act_pay');
     payBtn.addEventListener('click', () => payNow(cat.bank));
-    footer.appendChild(payBtn);
+    actions.appendChild(payBtn);
   }
 
   const editBtn = document.createElement('button');
   editBtn.className = 'mc-btn-edit';
-  editBtn.textContent = '✏️ Edit';
+  editBtn.textContent = CardWizI18n.t('act_edit');
   editBtn.addEventListener('click', () => openForm(mc.id));
 
   const delBtn = document.createElement('button');
   delBtn.className = 'mc-btn-del';
-  delBtn.textContent = '🗑️ Del';
+  delBtn.textContent = CardWizI18n.t('act_delete');
   delBtn.addEventListener('click', () => deleteCard(mc.id));
 
-  footer.appendChild(editBtn);
-  footer.appendChild(delBtn);
-  row.appendChild(footer);
+  actions.appendChild(editBtn);
+  actions.appendChild(delBtn);
+  row.appendChild(actions);
 
   return row;
 }
