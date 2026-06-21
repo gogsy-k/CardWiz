@@ -610,6 +610,42 @@ function bankAccentColor(bank) {
   return '#cba6f7';
 }
 
+function bankCardGradient(bank) {
+  const b = (bank || '').toLowerCase();
+  if (b.includes('hdfc'))     return 'linear-gradient(145deg, #0d1f5c, #1a3380)';
+  if (b.includes('sbi'))      return 'linear-gradient(145deg, #0a1e6e, #0d2a96)';
+  if (b.includes('axis'))     return 'linear-gradient(145deg, #2c0060, #440090)';
+  if (b.includes('icici'))    return 'linear-gradient(145deg, #7a0000, #a01020)';
+  if (b.includes('kotak'))    return 'linear-gradient(145deg, #3a1800, #5a2800)';
+  if (b.includes('amex') || b.includes('american express')) return 'linear-gradient(145deg, #004020, #006030)';
+  if (b.includes('indusind')) return 'linear-gradient(145deg, #180040, #280060)';
+  if (b.includes('idfc'))     return 'linear-gradient(145deg, #00263a, #003a56)';
+  if (b.includes('yes'))      return 'linear-gradient(145deg, #001a60, #002880)';
+  if (b.includes('au ') || b === 'au') return 'linear-gradient(145deg, #002240, #003660)';
+  if (b.includes('hsbc'))     return 'linear-gradient(145deg, #5c0000, #7a0808)';
+  if (b.includes('standard chartered')) return 'linear-gradient(145deg, #00300e, #004816)';
+  if (b.includes('rbl'))      return 'linear-gradient(145deg, #400800, #600e00)';
+  return 'linear-gradient(145deg, #1a1040, #26185e)';
+}
+
+function bankEmoji(bank) {
+  const b = (bank || '').toLowerCase();
+  if (b.includes('hdfc'))     return '🔷';
+  if (b.includes('sbi'))      return '🏛️';
+  if (b.includes('axis'))     return '💜';
+  if (b.includes('icici'))    return '🔴';
+  if (b.includes('kotak'))    return '🌟';
+  if (b.includes('amex') || b.includes('american express')) return '🎩';
+  if (b.includes('indusind')) return '💎';
+  if (b.includes('idfc'))     return '🌊';
+  if (b.includes('yes'))      return '✨';
+  if (b.includes('au ') || b === 'au') return '🌅';
+  if (b.includes('hsbc'))     return '🦁';
+  if (b.includes('standard chartered')) return '🌿';
+  if (b.includes('rbl'))      return '🔶';
+  return '💳';
+}
+
 function hasAnyTrackerData(cat) {
   if (!cat) return false;
   if (cat.feeWaiverSpend > 0 && cat.annualFee > 0) return true;
@@ -640,13 +676,14 @@ function makeCardDetail(mc, cat) {
     const block = document.createElement('div');
     block.className = 'tracker-block';
     const remaining = Math.max(0, target - effective);
-    const doneMsg = pct >= 100 ? '✅ Fee waiver achieved!' : `₹${fmtINR(remaining)} more to go`;
+    const pctClass = pct >= 100 ? 'tracker-pct full' : pct === 0 ? 'tracker-pct zero' : 'tracker-pct';
+    const remainMsg = pct >= 100 ? '✅ Fee waiver achieved!' : `₹${fmtINR(remaining)} more to spend`;
     block.innerHTML =
-      `<div class="tracker-label">${escapeHtml(CardWizI18n.t('tr_fee_waiver'))}</div>` +
-      `<div class="tracker-subtext">Spend ₹${fmtINR(target)} this year → ₹${fmtINR(cat.annualFee)} annual fee waived</div>` +
-      `<div class="tracker-bar-row"><div class="tracker-bar"><div class="${fillClass}" style="width:${pct}%"></div></div><span class="tracker-pct">${pct}%</span></div>` +
-      `<div class="tracker-tracked">${doneMsg}</div>` +
-      `<div class="tracker-tracked" style="margin-top:2px">Tracked via CardWiz: ₹${fmtINR(tracked)} · estimate only</div>`;
+      `<div class="tracker-label">🏷️ Fee Waiver Tracker</div>` +
+      `<div class="tracker-subtext">Spend <strong>₹${fmtINR(target)}</strong> this year → <strong>₹${fmtINR(cat.annualFee)}</strong> annual fee waived</div>` +
+      `<div class="tracker-bar-row"><div class="tracker-bar"><div class="${fillClass}" style="width:${pct}%"></div></div><span class="${pctClass}">${pct}%</span></div>` +
+      `<div class="tracker-remaining">${remainMsg}</div>` +
+      `<div class="tracker-tracked">📍 Tracked via CardWiz: ₹${fmtINR(tracked)} (estimate only)</div>`;
 
     const manualRow = document.createElement('div');
     manualRow.className = 'tracker-manual-row';
@@ -692,13 +729,15 @@ function makeCardDetail(mc, cat) {
     else if (daysLeft !== null) statusHtml = `<div class="tracker-days">${escapeHtml(CardWizI18n.t('tr_days_left').replace('{d}', daysLeft))}</div>`;
 
     const wbRemaining = Math.max(0, target - effective);
+    const wbPctClass = pct >= 100 ? 'tracker-pct full' : pct === 0 ? 'tracker-pct zero' : 'tracker-pct';
     block.innerHTML =
-      `<div class="tracker-label">${escapeHtml(CardWizI18n.t('tr_welcome'))}</div>` +
-      `<div class="tracker-subtext" style="font-weight:700;color:#cdd6f4">${escapeHtml(wb.rewardText)}</div>` +
-      `<div class="tracker-subtext">Worth ₹${fmtINR(wb.estimatedValue)} · Spend ₹${fmtINR(target)} in ${periodDays} days</div>` +
+      `<div class="tracker-label">🎁 Welcome Bonus Tracker</div>` +
+      `<div class="tracker-subtext" style="font-weight:800;color:#cdd6f4;font-size:12px">${escapeHtml(wb.rewardText)}</div>` +
+      `<div class="tracker-subtext">Worth <strong>₹${fmtINR(wb.estimatedValue)}</strong> · Spend <strong>₹${fmtINR(target)}</strong> in ${periodDays} days</div>` +
       statusHtml +
-      `<div class="tracker-bar-row"><div class="tracker-bar"><div class="tracker-fill" style="width:${pct}%"></div></div><span class="tracker-pct">${pct}%</span></div>` +
-      (achieved ? '' : `<div class="tracker-tracked">₹${fmtINR(wbRemaining)} more to go · Tracked: ₹${fmtINR(tracked)}</div>`);
+      `<div class="tracker-bar-row"><div class="tracker-bar"><div class="tracker-fill" style="width:${pct}%"></div></div><span class="${wbPctClass}">${pct}%</span></div>` +
+      (achieved ? '' : `<div class="tracker-remaining">₹${fmtINR(wbRemaining)} more to spend</div>`) +
+      `<div class="tracker-tracked">📍 Tracked via CardWiz: ₹${fmtINR(tracked)} (estimate only)</div>`;
 
     const manualRow = document.createElement('div');
     manualRow.className = 'tracker-manual-row';
@@ -730,7 +769,7 @@ function makeCardDetail(mc, cat) {
       block.className = 'tracker-block';
       const lbl = document.createElement('div');
       lbl.className = 'tracker-label';
-      lbl.textContent = CardWizI18n.t('tr_benefits');
+      lbl.textContent = '✨ Card Benefits';
       block.appendChild(lbl);
 
       if (hasLounge) {
@@ -804,29 +843,42 @@ function openCardDetailModal(mc, cat) {
   if (!overlay || !content) return;
   content.innerHTML = '';
 
-  // Header
+  // ── Colored card-face header strip ──
   const hd = document.createElement('div');
-  hd.className = 'cd-hd';
-  const titleWrap = document.createElement('div');
+  hd.className = 'cd-card-hd';
+  hd.style.background = bankCardGradient(cat.bank);
+
+  const emojiEl = document.createElement('span');
+  emojiEl.className = 'cd-emoji';
+  emojiEl.textContent = bankEmoji(cat.bank);
+
+  const info = document.createElement('div');
+  info.className = 'cd-card-info';
   const title = document.createElement('div');
   title.className = 'cd-title';
   title.textContent = mc.nickname || cat.name;
   const sub = document.createElement('div');
   sub.className = 'cd-sub';
-  sub.textContent = cat.name + (mc.last4 ? ` · •••• ${mc.last4}` : '') + (cat.annualFee > 0 ? ` · ₹${fmtINR(cat.annualFee)} annual fee` : ' · Lifetime free');
-  titleWrap.appendChild(title);
-  titleWrap.appendChild(sub);
+  const feeLabel = cat.annualFee > 0 ? `₹${fmtINR(cat.annualFee)}/yr fee` : 'Lifetime Free';
+  sub.textContent = cat.bank + (mc.last4 ? ` · •••• ${mc.last4}` : '') + ` · ${feeLabel}`;
+  info.appendChild(title);
+  info.appendChild(sub);
+
   const closeBtn = document.createElement('button');
   closeBtn.className = 'cd-close';
   closeBtn.textContent = '✕';
   closeBtn.addEventListener('click', () => { overlay.hidden = true; });
-  hd.appendChild(titleWrap);
+
+  hd.appendChild(emojiEl);
+  hd.appendChild(info);
   hd.appendChild(closeBtn);
   content.appendChild(hd);
 
-  const detail = makeCardDetail(mc, cat);
-  detail.style.marginTop = '0';
-  content.appendChild(detail);
+  // ── Tracker sections in a padded body ──
+  const body = document.createElement('div');
+  body.className = 'cd-body';
+  body.appendChild(makeCardDetail(mc, cat));
+  content.appendChild(body);
 
   overlay.hidden = false;
   overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.hidden = true; }, { once: false });
