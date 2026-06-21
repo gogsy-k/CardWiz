@@ -22,6 +22,7 @@ const transactionsRoutes = require('./routes/transactions');
 const reportsRoutes      = require('./routes/reports');
 const statementsRoutes   = require('./routes/statements');
 const accountRoutes      = require('./routes/account');
+const aiRoutes           = require('./routes/ai');
 const { startMonthlyJob } = require('./lib/monthly-job');
 const { autoSeedIfEmpty } = require('./routes/catalog');
 
@@ -65,6 +66,7 @@ app.use('/transactions', transactionsRoutes);
 app.use('/reports', reportsRoutes);
 app.use('/statements', statementsRoutes);
 app.use('/account', accountRoutes);
+app.use('/ai', aiRoutes);
 
 // 404 fallback
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));

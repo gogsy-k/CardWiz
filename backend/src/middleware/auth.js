@@ -49,4 +49,21 @@ async function requireSuperAdmin(req, res, next) {
   next();
 }
 
-module.exports = { requireAuth, requireAdmin, requireSuperAdmin };
+// Optional: sets req.user if valid token, otherwise req.user = null. Never rejects.
+async function optionalAuth(req, res, next) {
+  const header = req.headers.authorization || '';
+  const token = header.startsWith('Bearer ') ? header.slice(7) : null;
+  req.user = null;
+  if (token) {
+    try {
+      const payload = verifySession(token);
+      if (payload && payload.uid) {
+        const user = await db.users.findById(payload.uid);
+        if (user) req.user = user;
+      }
+    } catch { /* invalid token — stay null */ }
+  }
+  next();
+}
+
+module.exports = { requireAuth, requireAdmin, requireSuperAdmin, optionalAuth };

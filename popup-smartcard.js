@@ -105,6 +105,12 @@ async function init() {
   const cibilBtn = $('cibilBtn');
   if (cibilBtn) cibilBtn.addEventListener('click', openCibil);
 
+  // AI chat → open /ai on cardwiz.in
+  const aiChatBtn = $('aiChatBtn');
+  if (aiChatBtn) aiChatBtn.addEventListener('click', () => {
+    window.open('https://cardwiz.in/ai', '_blank', 'noopener');
+  });
+
   // Quiz teaser → open /find-my-card on cardwiz.in
   const quizTeaserBtn = $('quizTeaserBtn');
   if (quizTeaserBtn) quizTeaserBtn.addEventListener('click', () => {
