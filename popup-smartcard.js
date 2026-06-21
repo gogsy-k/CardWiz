@@ -80,7 +80,7 @@ async function init() {
   if (currentUser && !isPremium) await autoVerifyPayment(); // Phase 11: pending payment auto-detect
   renderMyCards();
   renderBestCards(); // Tab 1: curated "best cards in market"
-  // renderFeatured(); // Sponsored card — TEMPORARILY DISABLED (TODO: re-enable elsewhere)
+  renderFeatured(); // Sponsored card — free users only
 
   // View switching
   document.querySelectorAll('nav button').forEach((btn) => {
@@ -159,7 +159,7 @@ function switchView(view) {
   $('view-more').hidden = view !== 'more';
   if (view === 'best') renderBestCards();
   if (view === 'more') renderMore();
-  // if (view === 'suggest') renderFeatured(); // Sponsored — TEMPORARILY DISABLED
+  if (view === 'suggest') renderFeatured(); // Sponsored — free users only
 }
 
 function buildCategoryDropdown() {

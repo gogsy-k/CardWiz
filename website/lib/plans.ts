@@ -40,6 +40,8 @@ export const PLANS: Plan[] = [
       "3 cards tak wallet",
       "Bill due-date reminders",
       "Bank offer detection",
+      "AI Card Assistant (5 queries/day)",
+      "Community bank offers — browse & submit",
     ],
   },
   {
@@ -61,18 +63,22 @@ export const PLANS: Plan[] = [
       "Manual Transactions + Missed Savings Report (per-category breakdown)",
       "PDF Statement Upload (HDFC, SBI, ICICI, Axis…)",
       "Monthly CardWiz Report Email (opt-in)",
+      "AI Card Assistant — unlimited queries",
+      "Offer Watchlist — notify when your keywords match a new bank offer",
     ],
   },
   {
     id: "pro",
     name: "Pro",
-    tagline: "Maximum bachat, sab features.",
+    tagline: "Maximum bachat, power users ke liye.",
     monthly: 99,
     yearly: 799,
     cta: "notify",
     pros: [
       "Sab kuch Premium wala, plus —",
-      "(Pro features baad mein likhenge)",
+      "Priority support",
+      "Early access to new features",
+      "Export transactions (CSV)",
     ],
   },
 ];
