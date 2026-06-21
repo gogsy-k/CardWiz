@@ -1326,7 +1326,7 @@ function renderResults(ranked) {
         left.appendChild(applyBtn);
       }
 
-      // "Why this card" — show savings gap vs next best
+      // "Why this card" — savings gap vs next best
       if (ranked.length > 1) {
         const diff = r.savings - ranked[1].savings;
         if (diff > 0) {
@@ -1334,6 +1334,17 @@ function renderResults(ranked) {
           whyEl.className = 'why-cmp';
           whyEl.textContent = CardWizI18n.t('why_extra').replace('{d}', diff);
           left.appendChild(whyEl);
+        }
+      }
+      // Comparison row — other top cards' savings in a compact line
+      if (ranked.length > 1 && r.savings > 0) {
+        const others = ranked.slice(1, 3).filter((x) => x.savings > 0);
+        if (others.length) {
+          const parts = others.map((x) => `${x.name.split(' ').slice(0, 2).join(' ')} ₹${x.savings}`);
+          const othEl = document.createElement('div');
+          othEl.className = 'why-others';
+          othEl.textContent = CardWizI18n.t('why_vs_others').replace('{others}', parts.join(' · '));
+          left.appendChild(othEl);
         }
       }
     }
