@@ -72,7 +72,7 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
     // Home — privacy
     home_priv_h: "🔒 Privacy-first, always",
     home_priv_p:
-      "Your complete data stays only on your device. We never ask for or store your full card number, CVV, or bank login. This is our core principle.",
+      "By default your data stays only on your device. Cloud Sync (optional, only if you sign in) syncs limited card details — type, nickname, last-4, due date. We never ask for or store your full card number, CVV, or bank login. This is our core principle.",
     priv_0: "❌ No card number",
     priv_1: "❌ No CVV ever",
     priv_2: "❌ No bank login",
@@ -89,7 +89,7 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
     // Pricing — header
     pricing_badge: "💎 Simple, India-first pricing",
     pricing_h1_a: "Choose the right",
-    pricing_h1_b: "plan for you",
+    pricing_h1_b: "for you",
     pricing_h1_accent: "plan",
     pricing_sub:
       "Core features always free. For more cards, analytics and advanced tools, Premium or Pro.",
@@ -280,7 +280,7 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
     // Home — privacy
     home_priv_h: "🔒 Privacy-first, hamesha",
     home_priv_p:
-      "Aapka poora data sirf aapke device pe rehta hai. Hum kabhi bhi aapka full card number, CVV, ya bank login nahi maangte aur nahi store karte. Ye humara core principle hai.",
+      "By default aapka data sirf aapke device pe rehta hai. Cloud Sync (optional, sirf sign-in karne par) limited card details sync karta hai — type, nickname, last-4, due date. Hum kabhi bhi aapka full card number, CVV, ya bank login nahi maangte aur nahi store karte. Ye humara core principle hai.",
     priv_0: "❌ No card number",
     priv_1: "❌ No CVV ever",
     priv_2: "❌ No bank login",
@@ -297,7 +297,7 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
     // Pricing — header
     pricing_badge: "💎 Simple, India-first pricing",
     pricing_h1_a: "Apne liye sahi",
-    pricing_h1_b: "plan chuno",
+    pricing_h1_b: "chuno",
     pricing_h1_accent: "plan",
     pricing_sub:
       "Core features hamesha free. Zyada cards, analytics aur advanced tools ke liye Premium ya Pro.",
@@ -488,7 +488,7 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
     // Home — privacy
     home_priv_h: "🔒 Privacy-first, हमेशा",
     home_priv_p:
-      "आपका पूरा डेटा सिर्फ़ आपके device पर रहता है। हम कभी भी आपका full card number, CVV, या bank login नहीं माँगते और नहीं store करते। यह हमारा core principle है।",
+      "By default आपका डेटा सिर्फ़ आपके device पर रहता है। Cloud Sync (optional, सिर्फ़ sign-in करने पर) limited card details sync करता है — type, nickname, last-4, due date। हम कभी भी आपका full card number, CVV, या bank login नहीं माँगते और नहीं store करते। यह हमारा core principle है।",
     priv_0: "❌ कार्ड नंबर नहीं",
     priv_1: "❌ CVV कभी नहीं",
     priv_2: "❌ Bank login नहीं",
@@ -505,7 +505,7 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
     // Pricing — header
     pricing_badge: "💎 सरल, India-first pricing",
     pricing_h1_a: "अपने लिए सही",
-    pricing_h1_b: "plan चुनें",
+    pricing_h1_b: "चुनें",
     pricing_h1_accent: "plan",
     pricing_sub:
       "Core features हमेशा free। ज़्यादा cards, analytics और advanced tools के लिए Premium या Pro।",
