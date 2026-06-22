@@ -24,7 +24,7 @@ export default async function CardsPage() {
 
       <div className="mt-8">
         {cards.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-border py-16 text-center text-muted">
+          <div className="rounded-2xl border border-dashed border-border py-16 text-center text-subtle">
             Cards abhi load nahi ho paaye — backend thodi der mein wake hoga (free tier).
             <br />
             Page refresh karke dekho.
@@ -37,7 +37,7 @@ export default async function CardsPage() {
       {/* Best card by category — SEO hub + internal links */}
       <section className="mt-14 border-t border-border pt-10">
         <h2 className="text-xl font-extrabold">Best card by category</h2>
-        <p className="mt-1.5 text-sm text-muted">
+        <p className="mt-1.5 text-sm text-subtle">
           Apne kharch ke hisaab se sabse zyada rewards dene wale cards dekho.
         </p>
         <div className="mt-5 flex flex-wrap gap-2">
@@ -56,7 +56,7 @@ export default async function CardsPage() {
       {/* Popular comparisons — SEO hub + internal links */}
       <section className="mt-12">
         <h2 className="text-xl font-extrabold">Popular comparisons</h2>
-        <p className="mt-1.5 text-sm text-muted">Do cards ka side-by-side — kaunsa aapke liye behtar.</p>
+        <p className="mt-1.5 text-sm text-subtle">Do cards ka side-by-side — kaunsa aapke liye behtar.</p>
         <div className="mt-5 flex flex-wrap gap-2">
           {(() => {
             const byId = new Map(cards.map((c) => [c.id, c.name]));

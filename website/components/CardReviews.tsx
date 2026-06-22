@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { getReviews, postReview, deleteReview, type Review, type ReviewsResponse } from "@/lib/reviews-api";
 import Link from "next/link";
+import Skeleton from "@/components/Skeleton";
 
 function StarPicker({
   value,
@@ -235,7 +236,15 @@ export default function CardReviews({ cardId }: { cardId: string }) {
 
       {/* Reviews list */}
       {loading ? (
-        <div className="py-6 text-center text-sm text-muted animate-pulse">Loading reviews…</div>
+        <div className="space-y-3">
+          {[0, 1].map((i) => (
+            <div key={i} className="rounded-xl border border-border bg-surface2 p-4">
+              <Skeleton className="h-3 w-24" />
+              <Skeleton className="mt-2 h-3 w-full" />
+              <Skeleton className="mt-1.5 h-3 w-2/3" />
+            </div>
+          ))}
+        </div>
       ) : data && data.count > 0 ? (
         <div className="space-y-3">
           {data.reviews

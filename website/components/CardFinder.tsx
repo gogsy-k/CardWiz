@@ -25,6 +25,18 @@ export default function CardFinder({ cards }: { cards: Card[] }) {
     return [...set].sort();
   }, [cards]);
 
+  const filtersActive =
+    query.trim() !== "" || variant !== "all" || type !== "all" || bank !== "all" || category !== "all";
+
+  function clearFilters() {
+    setQuery("");
+    setVariant("all");
+    setType("all");
+    setBank("all");
+    setCategory("all");
+    setSort("reward");
+  }
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     let out = cards.filter((c) => {
@@ -116,8 +128,21 @@ export default function CardFinder({ cards }: { cards: Card[] }) {
 
       {/* Grid */}
       {filtered.length === 0 ? (
-        <div className="mt-10 rounded-2xl border border-dashed border-border py-16 text-center text-muted">
-          Koi card nahi mila. Filters badal ke dekho.
+        <div className="mt-10 flex flex-col items-center rounded-2xl border border-dashed border-border py-16 text-center">
+          <div className="text-4xl">🔍</div>
+          <p className="mt-3 text-sm text-subtle">
+            {filtersActive
+              ? "In filters se koi card nahi mila."
+              : "Koi card nahi mila."}
+          </p>
+          {filtersActive && (
+            <button
+              onClick={clearFilters}
+              className="mt-4 rounded-xl bg-accent px-5 py-2 text-sm font-bold text-onaccent transition-colors hover:bg-blue"
+            >
+              Clear filters
+            </button>
+          )}
         </div>
       ) : (
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

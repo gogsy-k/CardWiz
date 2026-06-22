@@ -217,7 +217,7 @@ export default async function ComparePage(props: { params: Promise<{ pair: strin
           {faqs.map((f) => (
             <div key={f.q} className="rounded-2xl border border-border bg-surface2 p-5">
               <h3 className="font-bold">{f.q}</h3>
-              <p className="mt-1.5 text-sm leading-relaxed text-muted">{f.a}</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-subtle">{f.a}</p>
             </div>
           ))}
         </div>

@@ -3,12 +3,15 @@
 import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { track } from "@vercel/analytics";
 import { useLang } from "@/contexts/LangContext";
 import { useAuth } from "@/contexts/AuthContext";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import AuthButton from "@/components/AuthButton";
-import { INSTALL_HREF, INSTALL_CTA_KEY } from "@/lib/constants";
+import { EXTENSION_PUBLISHED, CHROME_STORE_URL, INSTALL_CTA_KEY } from "@/lib/constants";
+
+// Secondary CTA: when unpublished, link to the hero notify form (one primary lives there);
+// when published, link straight to the store.
+const NAV_CTA_HREF = EXTENSION_PUBLISHED ? CHROME_STORE_URL : "/#notify";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -65,15 +68,12 @@ export default function Navbar() {
           )}
           <LanguageSwitcher compact />
           <AuthButton />
-          <a
-            href={INSTALL_HREF}
-            target="_blank"
-            rel="noopener"
-            onClick={() => track("install_cta", { location: "navbar" })}
-            className="rounded-lg bg-accent px-4 py-2 text-sm font-bold text-onaccent transition-colors hover:bg-blue"
+          <Link
+            href={NAV_CTA_HREF}
+            className="rounded-lg border border-border px-4 py-2 text-sm font-bold text-accent transition-colors hover:border-accent"
           >
             {t(INSTALL_CTA_KEY)}
-          </a>
+          </Link>
         </div>
 
         {/* Mobile toggle */}
@@ -124,14 +124,13 @@ export default function Navbar() {
             <LanguageSwitcher />
             <AuthButton />
           </div>
-          <a
-            href={INSTALL_HREF}
-            target="_blank"
-            rel="noopener"
-            className="mt-1 rounded-lg bg-accent px-4 py-2 text-center text-sm font-bold text-onaccent"
+          <Link
+            href={NAV_CTA_HREF}
+            onClick={() => setOpen(false)}
+            className="mt-1 rounded-lg border border-border px-4 py-2 text-center text-sm font-bold text-accent"
           >
             {t(INSTALL_CTA_KEY)}
-          </a>
+          </Link>
         </div>
       )}
     </header>

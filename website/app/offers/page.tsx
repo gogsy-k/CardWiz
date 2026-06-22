@@ -86,7 +86,7 @@ function SubmitForm({ onSubmitted }: { onSubmitted: (o: Offer) => void }) {
       <div className="rounded-xl border border-green-400/30 bg-green-400/5 p-5 text-center">
         <div className="text-2xl mb-2">✅</div>
         <div className="font-bold text-sm">Offer submit ho gaya!</div>
-        <p className="text-xs text-muted mt-1">Admin review ke baad live hoga (usually 24h).</p>
+        <p className="text-xs text-subtle mt-1">Admin review ke baad live hoga (usually 24h).</p>
         <button onClick={() => { setDone(false); setForm({ merchant: "", bank: "", title: "", discountText: "", validUntil: "" }); }}
           className="mt-3 text-xs text-accent hover:underline">
           Submit another →
@@ -98,7 +98,7 @@ function SubmitForm({ onSubmitted }: { onSubmitted: (o: Offer) => void }) {
   return (
     <form onSubmit={handleSubmit} className="rounded-xl border border-border bg-surface2 p-5 space-y-3">
       <div className="text-sm font-black">Submit a Bank Offer</div>
-      <p className="text-xs text-muted">Koi achha bank offer pata hai? Share karo — review ke baad live karenge.</p>
+      <p className="text-xs text-subtle">Koi achha bank offer pata hai? Share karo — review ke baad live karenge.</p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
@@ -164,7 +164,7 @@ export default function OffersPage() {
 
       <div>
         <h1 className="text-2xl font-black">Bank Offers</h1>
-        <p className="text-sm text-muted mt-0.5">Community-submitted credit card offers — verified by CardWiz.</p>
+        <p className="text-sm text-subtle mt-0.5">Community-submitted credit card offers — verified by CardWiz.</p>
       </div>
 
       {/* Bank filter */}
@@ -185,7 +185,7 @@ export default function OffersPage() {
       {loading ? (
         <div className="text-sm text-muted animate-pulse py-8 text-center">Loading…</div>
       ) : offers.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-border p-10 text-center text-muted">
+        <div className="rounded-2xl border border-dashed border-border p-10 text-center text-subtle">
           <div className="text-3xl mb-3">🏷️</div>
           <div className="text-sm">{bank ? `${bank} ke liye koi offer nahi abhi.` : "Koi offer nahi abhi — pehla submit karo!"}</div>
         </div>
@@ -202,7 +202,7 @@ export default function OffersPage() {
         ) : (
           <div className="rounded-xl border border-border bg-surface2 p-5 text-center">
             <div className="font-bold text-sm mb-1">Offer share karna hai?</div>
-            <p className="text-xs text-muted mb-4">Koi achha bank offer pata hai? Sign in karke submit karo.</p>
+            <p className="text-xs text-subtle mb-4">Koi achha bank offer pata hai? Sign in karke submit karo.</p>
             <Link href="/sign-in" className="inline-block rounded-xl bg-accent px-5 py-2.5 text-sm font-bold text-onaccent">
               Sign in to submit →
             </Link>

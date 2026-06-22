@@ -138,7 +138,7 @@ export default async function BestCardForCategory(props: {
         >
           <div className="text-2xl">🤖</div>
           <div className="mt-2 font-bold">Confused? AI se poocho</div>
-          <p className="mt-1 text-xs text-muted">
+          <p className="mt-1 text-xs text-subtle">
             Apni exact spending batao, AI {cat.label} ke liye perfect card suggest karega.
           </p>
         </Link>
@@ -148,7 +148,7 @@ export default async function BestCardForCategory(props: {
         >
           <div className="text-2xl">🎯</div>
           <div className="mt-2 font-bold">Best Card Finder</div>
-          <p className="mt-1 text-xs text-muted">8 sawaal mein apna perfect card dhundo.</p>
+          <p className="mt-1 text-xs text-subtle">8 sawaal mein apna perfect card dhundo.</p>
         </Link>
       </div>
 
@@ -159,7 +159,7 @@ export default async function BestCardForCategory(props: {
           {faqs.map((f) => (
             <div key={f.q} className="rounded-2xl border border-border bg-surface2 p-5">
               <h3 className="font-bold">{f.q}</h3>
-              <p className="mt-1.5 text-sm leading-relaxed text-muted">{f.a}</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-subtle">{f.a}</p>
             </div>
           ))}
         </div>

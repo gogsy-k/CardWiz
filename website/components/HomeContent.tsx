@@ -5,8 +5,7 @@ import { useLang } from "@/contexts/LangContext";
 import QuizTeaser from "@/components/QuizTeaser";
 import PostCard from "@/components/PostCard";
 import type { Post } from "@/lib/posts";
-import { track } from "@vercel/analytics";
-import { INSTALL_HREF, INSTALL_CTA_KEY } from "@/lib/constants";
+import NotifyCTA from "@/components/NotifyCTA";
 
 const FEAT_ICONS = ["🛒", "💳", "🏦", "🔔", "🔒", "⭐"];
 
@@ -68,16 +67,8 @@ export default function HomeContent({
           <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-subtle sm:text-lg">
             {t("home_sub")}
           </p>
-          <div className="mt-9 flex flex-wrap justify-center gap-3">
-            <a
-              href={INSTALL_HREF}
-              target="_blank"
-              rel="noopener"
-              onClick={() => track("install_cta", { location: "home_hero" })}
-              className="rounded-xl bg-accent px-6 py-3.5 text-sm font-bold text-onaccent transition-colors hover:bg-blue"
-            >
-              {t(INSTALL_CTA_KEY)}
-            </a>
+          <div id="notify" className="mt-9 flex flex-wrap items-start justify-center gap-3">
+            <NotifyCTA variant="primary" />
             <Link
               href="/cards"
               className="rounded-xl border border-border px-6 py-3.5 text-sm font-bold text-accent transition-colors hover:border-accent"
@@ -142,18 +133,18 @@ export default function HomeContent({
 
       {/* EXPLORE — live entry points (har card clickable) */}
       <section className="mx-auto max-w-5xl px-5 py-20">
-        <h2 className="text-center text-3xl font-extrabold">{t("explore_h")}</h2>
-        <p className="mt-2 text-center text-muted">{t("explore_sub")}</p>
+        <h2 className="text-center text-2xl sm:text-3xl font-extrabold">{t("explore_h")}</h2>
+        <p className="mt-2 text-center text-subtle">{t("explore_sub")}</p>
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {explore.map((x) => (
             <Link
               key={x.href + x.tk}
               href={x.href}
-              className="group flex flex-col rounded-2xl border border-border bg-surface2 p-6 transition-colors hover:border-accent"
+              className="group flex flex-col rounded-2xl border border-accent/40 bg-surface2 p-6 transition hover:-translate-y-0.5 hover:border-accent"
             >
               <div className="text-3xl">{x.icon}</div>
               <h3 className="mt-3 font-bold">{t(`xp_${x.tk}_t`)}</h3>
-              <p className="mt-1.5 flex-1 text-sm leading-relaxed text-muted">{t(`xp_${x.tk}_d`)}</p>
+              <p className="mt-1.5 flex-1 text-sm leading-relaxed text-subtle">{t(`xp_${x.tk}_d`)}</p>
               <span className="mt-4 text-sm font-bold text-accent transition-transform group-hover:translate-x-0.5">
                 {t("xp_open")}
               </span>
@@ -164,8 +155,8 @@ export default function HomeContent({
 
       {/* WHY CardWiz — value prop (descriptive) */}
       <section className="mx-auto max-w-5xl px-5 pb-4">
-        <h2 className="text-center text-3xl font-extrabold">{t("home_feat_h")}</h2>
-        <p className="mt-2 text-center text-muted">{t("home_feat_sub")}</p>
+        <h2 className="text-center text-2xl sm:text-3xl font-extrabold">{t("home_feat_h")}</h2>
+        <p className="mt-2 text-center text-subtle">{t("home_feat_sub")}</p>
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((f) => (
             <div
@@ -174,7 +165,7 @@ export default function HomeContent({
             >
               <div className="text-3xl">{f.icon}</div>
               <h3 className="mt-3 font-bold">{f.title}</h3>
-              <p className="mt-1.5 text-sm leading-relaxed text-muted">{f.desc}</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-subtle">{f.desc}</p>
             </div>
           ))}
         </div>
@@ -188,8 +179,8 @@ export default function HomeContent({
         <section className="mx-auto max-w-5xl px-5 py-16">
           <div className="flex items-end justify-between">
             <div>
-              <h2 className="text-3xl font-extrabold">{t("home_news_h")}</h2>
-              <p className="mt-2 text-muted">{t("home_news_sub")}</p>
+              <h2 className="text-2xl sm:text-3xl font-extrabold">{t("home_news_h")}</h2>
+              <p className="mt-2 text-subtle">{t("home_news_sub")}</p>
             </div>
             <Link href="/news" className="shrink-0 text-sm font-semibold text-accent hover:underline">
               {t("home_news_all")} →
@@ -205,8 +196,8 @@ export default function HomeContent({
 
       {/* HOW */}
       <section id="how" className="mx-auto max-w-5xl px-5 pb-20">
-        <h2 className="text-center text-3xl font-extrabold">{t("home_how_h")}</h2>
-        <p className="mt-2 text-center text-muted">{t("home_how_sub")}</p>
+        <h2 className="text-center text-2xl sm:text-3xl font-extrabold">{t("home_how_h")}</h2>
+        <p className="mt-2 text-center text-subtle">{t("home_how_sub")}</p>
         <div className="mt-12 grid gap-6 sm:grid-cols-3">
           {steps.map((s) => (
             <div key={s.n} className="text-center">
@@ -214,7 +205,7 @@ export default function HomeContent({
                 {s.n}
               </div>
               <h3 className="mt-4 font-bold">{s.title}</h3>
-              <p className="mt-1.5 text-sm text-muted">{s.desc}</p>
+              <p className="mt-1.5 text-sm text-subtle">{s.desc}</p>
             </div>
           ))}
         </div>
@@ -242,20 +233,15 @@ export default function HomeContent({
 
       {/* FINAL CTA */}
       <section className="mx-auto max-w-3xl px-5 pb-24 text-center">
-        <h2 className="text-3xl font-extrabold">
+        <h2 className="text-2xl sm:text-3xl font-extrabold">
           {t("home_cta_h")}
         </h2>
         <p className="mt-3 text-subtle">
           {t("home_cta_sub", { credit, total })}
         </p>
-        <a
-          href={INSTALL_HREF}
-          target="_blank"
-          rel="noopener"
-          className="mt-7 inline-block rounded-xl bg-accent px-7 py-4 text-sm font-bold text-onaccent transition-colors hover:bg-blue"
-        >
-          {t(INSTALL_CTA_KEY)}
-        </a>
+        <div className="mt-7 flex justify-center">
+          <NotifyCTA variant="primary" />
+        </div>
       </section>
     </>
   );

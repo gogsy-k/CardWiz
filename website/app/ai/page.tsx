@@ -72,6 +72,8 @@ export default function AiPage() {
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [slowHint, setSlowHint] = useState(false);
+  const [lastQuery, setLastQuery] = useState("");
   const [remaining, setRemaining] = useState<number | null>(null);
   const [rateLimited, setRateLimited] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -86,9 +88,12 @@ export default function AiPage() {
     if (!q || loading) return;
     setInput("");
     setRateLimited(false);
+    setLastQuery(q);
     setMessages((prev) => [...prev, { role: "user", text: q }]);
     setLoading(true);
     track("ai_query");
+    // Render free instance cold-starts (~50s on first hit) — reassure after 3s.
+    const slowTimer = setTimeout(() => setSlowHint(true), 3000);
     try {
       const res = await sendChatMessage(q);
       setRemaining(res.remaining);
@@ -112,6 +117,8 @@ export default function AiPage() {
         ]);
       }
     } finally {
+      clearTimeout(slowTimer);
+      setSlowHint(false);
       setLoading(false);
       setTimeout(() => inputRef.current?.focus(), 50);
     }
@@ -133,7 +140,7 @@ export default function AiPage() {
             🤖 CardWiz AI
             <span className="text-xs font-bold rounded-full bg-accent/15 text-accent px-2 py-0.5">Beta</span>
           </h1>
-          <p className="text-sm text-muted mt-0.5">Credit card ke baare mein kuch bhi pucho</p>
+          <p className="text-sm text-subtle mt-0.5">Credit card ke baare mein kuch bhi pucho</p>
         </div>
         {!isPremium && remaining !== null && (
           <div className="text-xs text-muted text-right">
@@ -160,7 +167,7 @@ export default function AiPage() {
           {!user && (
             <div className="rounded-xl border border-accent/30 bg-accent/5 p-4 text-center text-sm mt-4">
               <div className="font-bold mb-1">Sign in for more queries</div>
-              <p className="text-xs text-muted mb-3">Guests: 3/day · Free: 5/day · Premium: unlimited</p>
+              <p className="text-xs text-subtle mb-3">Guests: 3/day · Free: 5/day · Premium: unlimited</p>
               <Link href="/sign-in" className="inline-block rounded-lg bg-accent px-4 py-2 text-xs font-bold text-onaccent">
                 Sign in →
               </Link>
@@ -182,7 +189,21 @@ export default function AiPage() {
                   <span className="h-2 w-2 rounded-full bg-accent animate-bounce" style={{ animationDelay: "150ms" }} />
                   <span className="h-2 w-2 rounded-full bg-accent animate-bounce" style={{ animationDelay: "300ms" }} />
                 </div>
+                {slowHint && (
+                  <p className="mt-2 text-xs text-subtle">Pehli request thodi slow ho sakti hai — server wake ho raha hai…</p>
+                )}
               </div>
+            </div>
+          )}
+          {/* Retry the last query after an error (not on rate-limit) */}
+          {!loading && !rateLimited && lastQuery && messages[messages.length - 1]?.error && (
+            <div className="flex justify-center">
+              <button
+                onClick={() => send(lastQuery)}
+                className="rounded-lg border border-border px-4 py-1.5 text-xs font-bold text-accent transition-colors hover:border-accent"
+              >
+                ↻ Retry
+              </button>
             </div>
           )}
           <div ref={bottomRef} />
@@ -193,7 +214,7 @@ export default function AiPage() {
       {rateLimited && !isPremium && (
         <div className="rounded-xl border border-accent/30 bg-accent/5 p-4 text-center">
           <div className="font-bold mb-1">💎 Unlimited AI queries chahiye?</div>
-          <p className="text-xs text-muted mb-3">Premium pe upgrade karo — unlimited queries + full Missed Savings Report</p>
+          <p className="text-xs text-subtle mb-3">Premium pe upgrade karo — unlimited queries + full Missed Savings Report</p>
           <Link href="/pricing" className="inline-block rounded-lg bg-accent px-5 py-2 text-xs font-bold text-onaccent">
             Upgrade to Premium →
           </Link>
@@ -225,10 +246,10 @@ export default function AiPage() {
             </svg>
           </button>
         </div>
-        <p className="text-center text-[10px] text-muted mt-1.5">
+        <p className="text-center text-[10px] text-subtle mt-1.5">
           Powered by Claude · Verify important details before applying
         </p>
-        <p className="text-center text-[10px] text-muted mt-0.5">
+        <p className="text-center text-[10px] text-subtle mt-0.5">
           🔒 Yeh feature server + AI provider use karta hai (baaki CardWiz local hai). Card number/CVV type na karein.{" "}
           <a href="/privacy" className="underline hover:text-subtle">Privacy</a>
         </p>

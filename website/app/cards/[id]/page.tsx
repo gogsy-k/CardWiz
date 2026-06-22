@@ -11,7 +11,7 @@ import {
 } from "@/lib/cards";
 import CardReviews from "@/components/CardReviews";
 import CardOffers from "@/components/CardOffers";
-import { INSTALL_HREF, EXTENSION_PUBLISHED } from "@/lib/constants";
+import NotifyCTA from "@/components/NotifyCTA";
 
 export async function generateStaticParams() {
   const cards = await getCards();
@@ -140,14 +140,9 @@ export default async function CardDetail(props: PageProps<"/cards/[id]">) {
           Ye card aapke paas hai? CardWiz checkout pe automatically batayega ki kab is card se
           sabse zyada bachat hogi.
         </p>
-        <a
-          href={INSTALL_HREF}
-          target="_blank"
-          rel="noopener"
-          className="mt-4 inline-block rounded-xl bg-accent px-6 py-3 text-sm font-bold text-onaccent transition-colors hover:bg-blue"
-        >
-          {EXTENSION_PUBLISHED ? "⚡ CardWiz free mein add karo" : "🔔 Launch pe notify karo"}
-        </a>
+        <div className="mt-4 flex justify-center">
+          <NotifyCTA variant="primary" />
+        </div>
       </div>
 
       {/* Related */}

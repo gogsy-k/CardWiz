@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { PLANS, priceFor, yearlySaving, type BillingPeriod } from "@/lib/plans";
 import { useLang } from "@/contexts/LangContext";
-import { INSTALL_HREF, INSTALL_CTA_KEY, NOTIFY_EMAIL } from "@/lib/constants";
+import { NOTIFY_EMAIL } from "@/lib/constants";
+import NotifyCTA from "@/components/NotifyCTA";
 
 export default function PricingPlans() {
   const [period, setPeriod] = useState<BillingPeriod>("monthly");
@@ -75,14 +76,9 @@ export default function PricingPlans() {
 
               {/* CTA */}
               {plan.cta === "install" ? (
-                <a
-                  href={INSTALL_HREF}
-                  target="_blank"
-                  rel="noopener"
-                  className="mt-6 rounded-xl bg-accent px-5 py-3 text-center text-sm font-bold text-onaccent transition-colors hover:bg-blue"
-                >
-                  {t(INSTALL_CTA_KEY)}
-                </a>
+                <div className="mt-6">
+                  <NotifyCTA variant="primary" className="w-full" />
+                </div>
               ) : (
                 <a
                   href={`mailto:${NOTIFY_EMAIL}?subject=${encodeURIComponent(
