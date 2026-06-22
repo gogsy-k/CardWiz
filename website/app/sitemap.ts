@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { getCards } from "@/lib/cards";
 import { getPosts } from "@/lib/posts";
 import { BEST_CARD_CATEGORIES } from "@/lib/best-cards";
+import { COMPARE_PAIRS, pairToSlug } from "@/lib/compare";
 
 const BASE = "https://cardwiz.in";
 
@@ -23,6 +24,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: now,
     changeFrequency: "weekly" as const,
     priority: 0.8,
+  }));
+
+  const compareRoutes = COMPARE_PAIRS.map(([a, b]) => ({
+    url: `${BASE}/compare/${pairToSlug(a, b)}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
   }));
 
   // Card + post pages — backend slow/down ho to gracefully skip.
@@ -47,5 +55,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }));
   } catch { /* skip */ }
 
-  return [...staticRoutes, ...bestCardRoutes, ...cardRoutes, ...postRoutes];
+  return [...staticRoutes, ...bestCardRoutes, ...compareRoutes, ...cardRoutes, ...postRoutes];
 }

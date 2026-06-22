@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getCards } from "@/lib/cards";
 import CardFinder from "@/components/CardFinder";
 import { BEST_CARD_CATEGORIES } from "@/lib/best-cards";
+import { COMPARE_PAIRS, pairToSlug } from "@/lib/compare";
 
 export const metadata: Metadata = {
   title: "Find the best card — 195+ Indian credit & debit cards",
@@ -49,6 +50,30 @@ export default async function CardsPage() {
               Best for {c.label}
             </Link>
           ))}
+        </div>
+      </section>
+
+      {/* Popular comparisons — SEO hub + internal links */}
+      <section className="mt-12">
+        <h2 className="text-xl font-extrabold">Popular comparisons</h2>
+        <p className="mt-1.5 text-sm text-muted">Do cards ka side-by-side — kaunsa aapke liye behtar.</p>
+        <div className="mt-5 flex flex-wrap gap-2">
+          {(() => {
+            const byId = new Map(cards.map((c) => [c.id, c.name]));
+            return COMPARE_PAIRS.map(([a, b]) => {
+              const na = byId.get(a), nb = byId.get(b);
+              if (!na || !nb) return null;
+              return (
+                <Link
+                  key={`${a}-${b}`}
+                  href={`/compare/${pairToSlug(a, b)}`}
+                  className="rounded-full border border-border bg-surface2 px-4 py-2 text-sm text-subtle transition-colors hover:border-accent hover:text-fg"
+                >
+                  {na} vs {nb}
+                </Link>
+              );
+            });
+          })()}
         </div>
       </section>
     </div>
