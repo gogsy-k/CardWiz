@@ -194,4 +194,57 @@ async function sendOfferAlert({ to, name, post, keyword }) {
   });
 }
 
-module.exports = { sendMonthlyReport, sendOfferAlert };
+function buildLaunchConfirmHtml({ email }) {
+  const unsub = `https://cardwiz.in/unsubscribe?email=${encodeURIComponent(email)}`;
+  return `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f0f0f4;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,sans-serif">
+  <div style="max-width:600px;margin:0 auto;padding:24px 16px">
+
+    <div style="background:#0C1018;border-radius:16px 16px 0 0;padding:28px 24px;text-align:center">
+      <div style="font-size:32px">💳</div>
+      <div style="color:#818CF8;font-size:22px;font-weight:900;margin-top:6px;letter-spacing:-0.5px">CardWiz</div>
+      <div style="color:#B7C0D4;font-size:13px;margin-top:4px">You're on the launch list</div>
+    </div>
+
+    <div style="background:#ffffff;padding:28px 24px;border-radius:0 0 16px 16px">
+      <p style="color:#0C1018;font-size:16px;margin:0 0 10px 0">Thanks for signing up! 🎉</p>
+      <p style="color:#64748B;font-size:14px;line-height:1.6;margin:0 0 16px 0">
+        CardWiz Chrome extension launch hote hi hum aapko sabse pehle email karenge. Tab tak
+        aap <a href="https://cardwiz.in" style="color:#6366F1;text-decoration:underline">cardwiz.in</a>
+        pe 195+ cards compare kar sakte ho, AI assistant try kar sakte ho, aur bank offers dekh sakte ho.
+      </p>
+      <p style="color:#64748B;font-size:13px;line-height:1.6;margin:0">
+        Hum sirf launch update ke liye email karenge — <strong>kabhi spam nahi</strong>.
+      </p>
+
+      <hr style="border:none;border-top:1px solid #eee;margin:20px 0">
+      <p style="font-size:11px;color:#aaa;text-align:center;line-height:1.7;margin:0">
+        Aapko ye isliye mila kyunki aapne cardwiz.in pe launch updates ke liye sign up kiya.<br>
+        <a href="${unsub}" style="color:#aaa;text-decoration:underline">Unsubscribe</a>
+        &nbsp;·&nbsp;
+        <a href="https://cardwiz.in" style="color:#aaa;text-decoration:underline">CardWiz</a>
+      </p>
+    </div>
+
+  </div>
+</body>
+</html>`;
+}
+
+async function sendLaunchConfirm({ to }) {
+  const client = getResend();
+  if (!client) {
+    console.log(`[email] RESEND_API_KEY missing — skipping launch confirm to ${to}`);
+    return { skipped: true };
+  }
+  return client.emails.send({
+    from: 'CardWiz <reports@cardwiz.in>',
+    to,
+    subject: '💳 You’re on the CardWiz launch list',
+    html: buildLaunchConfirmHtml({ email: to }),
+  });
+}
+
+module.exports = { sendMonthlyReport, sendOfferAlert, sendLaunchConfirm };

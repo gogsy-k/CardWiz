@@ -224,6 +224,14 @@ async function init(databaseUrl) {
     );
     CREATE INDEX IF NOT EXISTS notifs_user_idx ON notifications (user_id, read, created_at DESC);
   `);
+
+  // Launch waitlist — emails captured by the "notify me at launch" CTA (extension not live yet).
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS launch_subscribers (
+      email      TEXT PRIMARY KEY,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+  `);
 }
 
 // DB row -> humara user shape (camelCase, consistent JSON store ke saath).
@@ -757,6 +765,20 @@ async function markAllNotificationsRead(userId) {
   await pool.query('UPDATE notifications SET read=true WHERE user_id=$1 AND read=false', [userId]);
 }
 
+// ---- Launch waitlist ----
+async function addLaunchSubscriber(email) {
+  const res = await pool.query(
+    'INSERT INTO launch_subscribers (email) VALUES ($1) ON CONFLICT (email) DO NOTHING RETURNING email',
+    [email.toLowerCase()]
+  );
+  return res.rowCount > 0; // true = newly added, false = already subscribed
+}
+
+async function countLaunchSubscribers() {
+  const res = await pool.query('SELECT COUNT(*) FROM launch_subscribers');
+  return Number(res.rows[0].count);
+}
+
 module.exports = {
   kind: 'postgres', init, upsertByGoogleId, findById, updatePlan, updateEmailPrefs, listPremiumEmailUsers, listCards, replaceCards,
   createPayment, findPendingPayments, markPaymentPaid,
@@ -769,4 +791,5 @@ module.exports = {
   createOffer, listOffers, updateOfferStatus, countOffersByUser,
   addWatchword, removeWatchword, listWatchwords, countWatchwords, listAllWatchwords,
   createNotification, listNotifications, markAllNotificationsRead,
+  addLaunchSubscriber, countLaunchSubscribers,
 };

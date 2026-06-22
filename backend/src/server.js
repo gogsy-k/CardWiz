@@ -25,6 +25,7 @@ const accountRoutes      = require('./routes/account');
 const aiRoutes           = require('./routes/ai');
 const offersRoutes       = require('./routes/offers');
 const watchlistRoutes    = require('./routes/watchlist');
+const subscribeRoutes    = require('./routes/subscribe');
 const { startMonthlyJob } = require('./lib/monthly-job');
 const { autoSeedIfEmpty } = require('./routes/catalog');
 
@@ -76,6 +77,7 @@ app.use('/account', accountRoutes);
 app.use('/ai', aiRoutes);
 app.use('/offers', offersRoutes);
 app.use('/watchlist', watchlistRoutes);
+app.use('/subscribe', subscribeRoutes);
 
 // 404 fallback
 app.use((req, res) => res.status(404).json({ error: 'Not found' }));

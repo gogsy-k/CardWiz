@@ -104,4 +104,9 @@ const notifications = {
   markRead:  (...a) => driver.markAllNotificationsRead(...a),
 };
 
-module.exports = { init, users, cards, payments, subscriptions, catalog, posts, admins, reviews, transactions, offers, watchlist, notifications, get kind() { return driver && driver.kind; } };
+const launch = {
+  subscribe: (...a) => driver.addLaunchSubscriber(...a),
+  count:     (...a) => driver.countLaunchSubscribers(...a),
+};
+
+module.exports = { init, users, cards, payments, subscriptions, catalog, posts, admins, reviews, transactions, offers, watchlist, notifications, launch, get kind() { return driver && driver.kind; } };

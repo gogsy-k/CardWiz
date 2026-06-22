@@ -32,9 +32,10 @@ function load() {
   if (!Array.isArray(cache.admins)) cache.admins = [];
   if (!Array.isArray(cache.reviews)) cache.reviews = [];
   if (!Array.isArray(cache.transactions)) cache.transactions = [];
-  if (!Array.isArray(cache.offers))         cache.offers = [];
-  if (!Array.isArray(cache.watchlist))      cache.watchlist = [];
-  if (!Array.isArray(cache.notifications))  cache.notifications = [];
+  if (!Array.isArray(cache.offers))            cache.offers = [];
+  if (!Array.isArray(cache.watchlist))         cache.watchlist = [];
+  if (!Array.isArray(cache.notifications))     cache.notifications = [];
+  if (!Array.isArray(cache.launchSubscribers)) cache.launchSubscribers = [];
   return cache;
 }
 
@@ -485,6 +486,21 @@ async function markAllNotificationsRead(userId) {
   if (changed) persist();
 }
 
+// ---- Launch waitlist ----
+async function addLaunchSubscriber(email) {
+  load();
+  const e = email.toLowerCase();
+  if (cache.launchSubscribers.find((s) => s.email === e)) return false; // already subscribed
+  cache.launchSubscribers.push({ email: e, createdAt: new Date().toISOString() });
+  persist();
+  return true;
+}
+
+async function countLaunchSubscribers() {
+  load();
+  return cache.launchSubscribers.length;
+}
+
 module.exports = {
   kind: 'json', init, upsertByGoogleId, findById, updatePlan, updateEmailPrefs, listPremiumEmailUsers, listCards, replaceCards,
   createPayment, findPendingPayments, markPaymentPaid,
@@ -497,4 +513,5 @@ module.exports = {
   createOffer, listOffers, updateOfferStatus, countOffersByUser,
   addWatchword, removeWatchword, listWatchwords, countWatchwords, listAllWatchwords,
   createNotification, listNotifications, markAllNotificationsRead,
+  addLaunchSubscriber, countLaunchSubscribers,
 };
