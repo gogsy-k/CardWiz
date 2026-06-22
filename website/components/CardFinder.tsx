@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { motion } from "motion/react";
 import { Card, cardCategories, topRate, prettyCategory } from "@/lib/cards";
 import { useLang } from "@/contexts/LangContext";
 import CardItem from "./CardItem";
@@ -78,13 +79,22 @@ export default function CardFinder({ cards }: { cards: Card[] }) {
           <button
             key={v}
             onClick={() => setVariant(v)}
-            className={`rounded-lg px-4 py-1.5 text-sm font-semibold transition-colors ${
+            className={`relative rounded-lg border px-4 py-1.5 text-sm font-semibold transition-colors ${
               variant === v
-                ? "bg-accent text-onaccent"
-                : "border border-border bg-surface text-subtle hover:text-fg"
+                ? "border-transparent text-onaccent"
+                : "border-border bg-surface text-subtle hover:text-fg"
             }`}
           >
-            {t(v === "all" ? "cf_all_cards" : v === "credit" ? "cf_credit" : "cf_debit")}
+            {variant === v && (
+              <motion.span
+                layoutId="variant-pill"
+                className="absolute inset-0 rounded-lg bg-accent"
+                transition={{ type: "spring", stiffness: 380, damping: 32 }}
+              />
+            )}
+            <span className="relative z-10">
+              {t(v === "all" ? "cf_all_cards" : v === "credit" ? "cf_credit" : "cf_debit")}
+            </span>
           </button>
         ))}
       </div>

@@ -12,6 +12,8 @@ import {
 import CardReviews from "@/components/CardReviews";
 import CardOffers from "@/components/CardOffers";
 import NotifyCTA from "@/components/NotifyCTA";
+import CardDetailHeader from "@/components/CardDetailHeader";
+import Reveal from "@/components/motion/Reveal";
 
 export async function generateStaticParams() {
   const cards = await getCards();
@@ -38,11 +40,11 @@ export default async function CardDetail(props: PageProps<"/cards/[id]">) {
     .filter((c) => c.bank === card.bank && c.id !== card.id)
     .slice(0, 3);
 
-  const stats: [string, string][] = [
-    [`${topRate(card)}%`, "Top reward rate"],
-    [formatFee(card), "Annual fee"],
-    [TYPE_LABEL[card.type], "Reward type"],
-    [card.network, "Network"],
+  const stats = [
+    { value: `${topRate(card)}%`, label: "Top reward rate", countTo: topRate(card), suffix: "%" },
+    { value: formatFee(card), label: "Annual fee" },
+    { value: TYPE_LABEL[card.type], label: "Reward type" },
+    { value: card.network, label: "Network" },
   ];
 
   return (
@@ -52,67 +54,50 @@ export default async function CardDetail(props: PageProps<"/cards/[id]">) {
       </Link>
 
       {/* Header */}
-      <div className="mt-4 rounded-2xl border border-border bg-surface2 p-7">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="rounded-md bg-accent px-2.5 py-1 text-[11px] font-bold uppercase text-onaccent">
-            {card.cardType}
-          </span>
-          <span className="text-xs font-semibold uppercase tracking-wide text-muted">
-            {card.bank} · {card.network}
-          </span>
-        </div>
-        <h1 className="mt-3 text-3xl font-black sm:text-4xl">{card.name}</h1>
-
-        <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
-          {stats.map(([v, l]) => (
-            <div key={l} className="rounded-xl border border-border bg-surface p-3">
-              <div className="text-lg font-extrabold text-green">{v}</div>
-              <div className="mt-0.5 text-[11px] text-muted">{l}</div>
-            </div>
-          ))}
-        </div>
-
-        {card.feeWaiverSpend > 0 && (
-          <p className="mt-4 text-sm text-subtle">
-            💡 Annual fee waiver: ₹{card.feeWaiverSpend.toLocaleString("en-IN")}/year spend karne
-            pe fee maaf.
-          </p>
-        )}
-      </div>
+      <CardDetailHeader
+        cardType={card.cardType}
+        bank={card.bank}
+        network={card.network}
+        name={card.name}
+        stats={stats}
+        feeWaiverSpend={card.feeWaiverSpend}
+      />
 
       {/* Reward rules */}
       <h2 className="mt-10 text-xl font-extrabold">Reward rates</h2>
       <div className="mt-4 space-y-3">
         {card.rules.map((rule, i) => (
-          <div key={i} className="rounded-xl border border-border bg-surface2 p-4">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex flex-wrap gap-1.5">
-                {rule.categories.map((c) => (
-                  <span
-                    key={c}
-                    className="rounded-full border border-border bg-surface px-2.5 py-0.5 text-[11px] text-subtle"
-                  >
-                    {prettyCategory(c)}
-                  </span>
-                ))}
+          <Reveal key={i} delay={i * 0.04}>
+            <div className="rounded-xl border border-border bg-surface2 p-4">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex flex-wrap gap-1.5">
+                  {rule.categories.map((c) => (
+                    <span
+                      key={c}
+                      className="rounded-full border border-border bg-surface px-2.5 py-0.5 text-[11px] text-subtle"
+                    >
+                      {prettyCategory(c)}
+                    </span>
+                  ))}
+                </div>
+                <span className="shrink-0 text-lg font-black text-green tabular-nums">
+                  {rule.effectiveRate}%
+                </span>
               </div>
-              <span className="shrink-0 text-lg font-black text-green">
-                {rule.effectiveRate}%
-              </span>
+              <p className="mt-2 text-sm text-muted">{rule.rawRate}</p>
+              {rule.monthlyCapValue && (
+                <p className="mt-1 text-xs text-yellow">
+                  Monthly cap: ₹{rule.monthlyCapValue.toLocaleString("en-IN")} reward
+                </p>
+              )}
             </div>
-            <p className="mt-2 text-sm text-muted">{rule.rawRate}</p>
-            {rule.monthlyCapValue && (
-              <p className="mt-1 text-xs text-yellow">
-                Monthly cap: ₹{rule.monthlyCapValue.toLocaleString("en-IN")} reward
-              </p>
-            )}
-          </div>
+          </Reveal>
         ))}
         {/* Base rate */}
         <div className="rounded-xl border border-dashed border-border p-4">
           <div className="flex items-center justify-between">
             <span className="text-sm text-subtle">Baaki sabhi spends (base rate)</span>
-            <span className="text-lg font-black text-subtle">{card.baseRate}%</span>
+            <span className="text-lg font-black text-subtle tabular-nums">{card.baseRate}%</span>
           </div>
         </div>
       </div>

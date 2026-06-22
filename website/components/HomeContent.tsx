@@ -1,15 +1,24 @@
 "use client";
 
 import Link from "next/link";
+import { motion, useReducedMotion } from "motion/react";
 import { useLang } from "@/contexts/LangContext";
 import QuizTeaser from "@/components/QuizTeaser";
 import PostCard from "@/components/PostCard";
+import Reveal from "@/components/motion/Reveal";
+import CountUp from "@/components/motion/CountUp";
 import { pickPostsForLang, type Post } from "@/lib/posts";
 import type { Card } from "@/lib/cards";
 import NotifyCTA from "@/components/NotifyCTA";
 import SavingsCalculator from "@/components/SavingsCalculator";
 
 const FEAT_ICONS = ["🛒", "💳", "🏦", "🔔", "🔒", "⭐"];
+
+const heroContainer = { hidden: {}, show: { transition: { staggerChildren: 0.07, delayChildren: 0.04 } } };
+const heroItem = {
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] as const } },
+};
 
 export default function HomeContent({
   total,
@@ -25,6 +34,7 @@ export default function HomeContent({
   calcCards?: Card[];
 }) {
   const { t, lang } = useLang();
+  const reduce = useReducedMotion();
   // One card per article in the selected language (dedupes translations).
   const newsPosts = pickPostsForLang(posts, lang).slice(0, 3);
 
@@ -63,18 +73,23 @@ export default function HomeContent({
       {/* HERO */}
       <section className="relative overflow-hidden">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-[radial-gradient(ellipse_60%_60%_at_50%_0%,rgba(99,102,241,0.18),transparent_70%)]" />
-        <div className="mx-auto max-w-4xl px-5 pb-16 pt-20 text-center sm:pt-28">
-          <span className="inline-block rounded-full border border-border bg-surface px-4 py-1.5 text-xs font-semibold text-green">
+        <motion.div
+          className="mx-auto max-w-4xl px-5 pb-16 pt-20 text-center sm:pt-28"
+          variants={heroContainer}
+          initial={reduce ? "show" : "hidden"}
+          animate="show"
+        >
+          <motion.span variants={heroItem} className="inline-block rounded-full border border-border bg-surface px-4 py-1.5 text-xs font-semibold text-green">
             {t("home_badge")}
-          </span>
-          <h1 className="mt-6 text-4xl font-black leading-tight sm:text-5xl">
+          </motion.span>
+          <motion.h1 variants={heroItem} className="mt-6 text-4xl font-black leading-tight sm:text-5xl">
             {t("home_h1")}
-          </h1>
-          <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-subtle sm:text-lg">
+          </motion.h1>
+          <motion.p variants={heroItem} className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-subtle sm:text-lg">
             {t("home_sub")}
-          </p>
+          </motion.p>
           {/* Primary = live value (Browse); notify is secondary. #notify wrapper kept for the anchor. */}
-          <div id="notify" className="mt-9 flex flex-wrap items-start justify-center gap-3">
+          <motion.div variants={heroItem} id="notify" className="mt-9 flex flex-wrap items-start justify-center gap-3">
             <Link
               href="/cards"
               className="rounded-xl bg-accent px-6 py-3.5 text-sm font-bold text-onaccent transition-colors hover:bg-blue"
@@ -82,28 +97,28 @@ export default function HomeContent({
               {t("home_browse", { n: total })}
             </Link>
             <NotifyCTA variant="secondary" />
-          </div>
+          </motion.div>
 
           {/* Interactive Savings Calculator — live proof, not a static mockup */}
           {calcCards.length > 0 && (
-            <div className="mt-14">
+            <motion.div variants={heroItem} className="mt-14">
               <SavingsCalculator cards={calcCards} />
-            </div>
+            </motion.div>
           )}
-        </div>
+        </motion.div>
       </section>
 
       {/* STATS */}
       <section className="border-y border-border bg-surface2">
         <div className="mx-auto grid max-w-4xl grid-cols-3 gap-4 px-5 py-8 text-center">
           {[
-            [total + "+", t("stat_cards")],
-            [banks + "+", t("stat_banks")],
-            ["16", t("stat_sites")],
-          ].map(([num, label]) => (
-            <div key={label}>
-              <div className="text-3xl font-black text-accent">{num}</div>
-              <div className="mt-1 text-xs text-muted">{label}</div>
+            { to: total, suffix: "+", label: t("stat_cards") },
+            { to: banks, suffix: "+", label: t("stat_banks") },
+            { to: 16, suffix: "", label: t("stat_sites") },
+          ].map((s) => (
+            <div key={s.label}>
+              <CountUp to={s.to} suffix={s.suffix} className="text-3xl font-black text-accent" />
+              <div className="mt-1 text-xs text-muted">{s.label}</div>
             </div>
           ))}
         </div>
@@ -114,19 +129,20 @@ export default function HomeContent({
         <h2 className="text-center text-2xl sm:text-3xl font-extrabold">{t("explore_h")}</h2>
         <p className="mt-2 text-center text-subtle">{t("explore_sub")}</p>
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {explore.map((x) => (
-            <Link
-              key={x.href + x.tk}
-              href={x.href}
-              className="group flex flex-col rounded-2xl border border-accent/40 bg-surface2 p-6 transition hover:-translate-y-0.5 hover:border-accent"
-            >
-              <div className="text-3xl">{x.icon}</div>
-              <h3 className="mt-3 font-bold">{t(`xp_${x.tk}_t`)}</h3>
-              <p className="mt-1.5 flex-1 text-sm leading-relaxed text-subtle">{t(`xp_${x.tk}_d`)}</p>
-              <span className="mt-4 text-sm font-bold text-accent transition-transform group-hover:translate-x-0.5">
-                {t("xp_open")}
-              </span>
-            </Link>
+          {explore.map((x, i) => (
+            <Reveal key={x.href + x.tk} delay={i * 0.05} className="h-full">
+              <Link
+                href={x.href}
+                className="group flex h-full flex-col rounded-2xl border border-accent/40 bg-surface2 p-6 transition hover:-translate-y-0.5 hover:border-accent"
+              >
+                <div className="text-3xl">{x.icon}</div>
+                <h3 className="mt-3 font-bold">{t(`xp_${x.tk}_t`)}</h3>
+                <p className="mt-1.5 flex-1 text-sm leading-relaxed text-subtle">{t(`xp_${x.tk}_d`)}</p>
+                <span className="mt-4 text-sm font-bold text-accent transition-transform group-hover:translate-x-0.5">
+                  {t("xp_open")}
+                </span>
+              </Link>
+            </Reveal>
           ))}
         </div>
       </section>
@@ -136,15 +152,14 @@ export default function HomeContent({
         <h2 className="text-center text-2xl sm:text-3xl font-extrabold">{t("home_feat_h")}</h2>
         <p className="mt-2 text-center text-subtle">{t("home_feat_sub")}</p>
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {features.map((f) => (
-            <div
-              key={f.title}
-              className="rounded-2xl border border-border bg-surface2 p-6 transition-colors hover:border-border/80"
-            >
-              <div className="text-3xl">{f.icon}</div>
-              <h3 className="mt-3 font-bold">{f.title}</h3>
-              <p className="mt-1.5 text-sm leading-relaxed text-subtle">{f.desc}</p>
-            </div>
+          {features.map((f, i) => (
+            <Reveal key={f.title} delay={i * 0.05} className="h-full">
+              <div className="h-full rounded-2xl border border-border bg-surface2 p-6 transition-colors hover:border-border/80">
+                <div className="text-3xl">{f.icon}</div>
+                <h3 className="mt-3 font-bold">{f.title}</h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-subtle">{f.desc}</p>
+              </div>
+            </Reveal>
           ))}
         </div>
       </section>
@@ -165,8 +180,10 @@ export default function HomeContent({
             </Link>
           </div>
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {newsPosts.map((p) => (
-              <PostCard key={p.id} post={p} />
+            {newsPosts.map((p, i) => (
+              <Reveal key={p.id} delay={i * 0.05} className="h-full">
+                <PostCard post={p} />
+              </Reveal>
             ))}
           </div>
         </section>
@@ -177,14 +194,16 @@ export default function HomeContent({
         <h2 className="text-center text-2xl sm:text-3xl font-extrabold">{t("home_how_h")}</h2>
         <p className="mt-2 text-center text-subtle">{t("home_how_sub")}</p>
         <div className="mt-12 grid gap-6 sm:grid-cols-3">
-          {steps.map((s) => (
-            <div key={s.n} className="text-center">
-              <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full border-2 border-accent bg-surface text-lg font-extrabold text-accent">
-                {s.n}
+          {steps.map((s, i) => (
+            <Reveal key={s.n} delay={i * 0.06}>
+              <div className="text-center">
+                <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full border-2 border-accent bg-surface text-lg font-extrabold text-accent">
+                  {s.n}
+                </div>
+                <h3 className="mt-4 font-bold">{s.title}</h3>
+                <p className="mt-1.5 text-sm text-subtle">{s.desc}</p>
               </div>
-              <h3 className="mt-4 font-bold">{s.title}</h3>
-              <p className="mt-1.5 text-sm text-subtle">{s.desc}</p>
-            </div>
+            </Reveal>
           ))}
         </div>
       </section>

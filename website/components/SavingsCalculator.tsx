@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { AnimatePresence, motion } from "motion/react";
 import { track } from "@vercel/analytics";
 import { type Card, TYPE_LABEL } from "@/lib/cards";
 import { rateForCategory } from "@/lib/best-cards";
+import AnimatedNumber from "@/components/motion/AnimatedNumber";
 
 const PLATFORMS: { category: string; label: string; icon: string }[] = [
   { category: "amazon", label: "Amazon", icon: "🛒" },
@@ -88,29 +90,38 @@ export default function SavingsCalculator({ cards }: { cards: Card[] }) {
         />
       </div>
 
-      {/* Ranked results */}
+      {/* Ranked results — reorder smoothly as category/amount changes */}
       <div className="mt-4 space-y-1.5">
-        {ranked.map((r, i) => (
-          <div
-            key={r.card.id}
-            className={`flex items-center justify-between rounded-lg border px-3 py-2 ${
-              i === 0 ? "border-green bg-green/10" : "border-border bg-surface"
-            }`}
-          >
-            <div className="min-w-0">
-              <div className="truncate text-xs font-semibold">
-                {i === 0 ? "⭐ " : ""}
-                {r.card.name}
+        <AnimatePresence initial={false}>
+          {ranked.map((r, i) => (
+            <motion.div
+              key={r.card.id}
+              layout
+              initial={{ opacity: 0, scale: 0.97 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.97 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              className={`flex items-center justify-between rounded-lg border px-3 py-2 ${
+                i === 0 ? "border-green bg-green/10" : "border-border bg-surface"
+              }`}
+            >
+              <div className="min-w-0">
+                <div className="truncate text-xs font-semibold">
+                  {i === 0 ? "⭐ " : ""}
+                  {r.card.name}
+                </div>
+                <div className="text-[10px] text-muted">
+                  {r.rate}% · {TYPE_LABEL[r.card.type]}
+                </div>
               </div>
-              <div className="text-[10px] text-muted">
-                {r.rate}% · {TYPE_LABEL[r.card.type]}
-              </div>
-            </div>
-            <div className={`shrink-0 text-sm font-extrabold tabular-nums ${i === 0 ? "text-green" : "text-subtle"}`}>
-              {fmt(r.reward)}
-            </div>
-          </div>
-        ))}
+              <AnimatedNumber
+                value={r.reward}
+                format={fmt}
+                className={`shrink-0 text-sm font-extrabold ${i === 0 ? "text-green" : "text-subtle"}`}
+              />
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
 
       {top && delta > 0 && (

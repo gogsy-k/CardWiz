@@ -1,10 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import { motion } from "motion/react";
 import { PLANS, priceFor, yearlySaving, type BillingPeriod } from "@/lib/plans";
 import { useLang } from "@/contexts/LangContext";
 import { NOTIFY_EMAIL } from "@/lib/constants";
 import NotifyCTA from "@/components/NotifyCTA";
+import Reveal from "@/components/motion/Reveal";
+import AnimatedNumber from "@/components/motion/AnimatedNumber";
+
+const fmtPrice = (n: number) => "₹" + Math.round(n).toLocaleString("en-IN");
 
 // Feature × plan matrix for the expandable comparison (mirrors plan pros).
 // Value: true = included, false = not, string = qualifier.
@@ -38,54 +43,69 @@ export default function PricingPlans() {
 
   return (
     <div>
-      {/* Billing period toggle */}
+      {/* Billing period toggle — sliding pill follows the active option */}
       <div className="mx-auto mb-10 flex w-fit items-center gap-1 rounded-full border border-border bg-surface2 p-1">
         {(["monthly", "yearly"] as BillingPeriod[]).map((p) => (
           <button
             key={p}
             onClick={() => setPeriod(p)}
-            className={`rounded-full px-5 py-2 text-sm font-bold transition-colors ${
-              period === p ? "bg-accent text-onaccent" : "text-subtle hover:text-fg"
+            className={`relative rounded-full px-5 py-2 text-sm font-bold transition-colors ${
+              period === p ? "text-onaccent" : "text-subtle hover:text-fg"
             }`}
           >
-            {p === "monthly" ? t("toggle_monthly") : t("toggle_yearly")}
-            {p === "yearly" && (
-              <span className="ml-1.5 text-xs font-semibold text-green">
-                {t("toggle_save", { n: maxSaving })}
-              </span>
+            {period === p && (
+              <motion.span
+                layoutId="pricing-pill"
+                className="absolute inset-0 rounded-full bg-accent"
+                transition={{ type: "spring", stiffness: 380, damping: 32 }}
+              />
             )}
+            <span className="relative z-10">
+              {p === "monthly" ? t("toggle_monthly") : t("toggle_yearly")}
+              {p === "yearly" && (
+                <span className="ml-1.5 text-xs font-semibold text-green">
+                  {t("toggle_save", { n: maxSaving })}
+                </span>
+              )}
+            </span>
           </button>
         ))}
       </div>
 
       {/* Plan cards */}
       <div className="grid gap-6 lg:grid-cols-3">
-        {PLANS.map((plan) => {
+        {PLANS.map((plan, i) => {
           const price = priceFor(plan, period);
           const saving = yearlySaving(plan);
           const isFree = plan.monthly === 0;
 
           return (
+            <Reveal key={plan.id} delay={i * 0.08} className="h-full">
             <div
-              key={plan.id}
-              className={`relative flex flex-col rounded-2xl border p-7 ${
+              className={`relative flex h-full flex-col rounded-2xl border p-7 ${
                 plan.highlighted
                   ? "border-accent bg-surface2 shadow-2xl lg:-mt-3 lg:mb-3"
                   : "border-border bg-surface2"
               }`}
             >
               {plan.badge && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-3 py-1 text-xs font-bold text-onaccent">
+                <motion.span
+                  initial={{ opacity: 0, scale: 0.7 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.2 + i * 0.08, type: "spring", stiffness: 400, damping: 20 }}
+                  className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-3 py-1 text-xs font-bold text-onaccent"
+                >
                   {plan.badge}
-                </span>
+                </motion.span>
               )}
 
               <h3 className="text-lg font-extrabold text-accent">{plan.name}</h3>
               <p className="mt-1 text-sm text-muted">{t(`plan_tag_${plan.id}`)}</p>
 
-              {/* Price (animates on Monthly↔Yearly toggle) */}
+              {/* Price (rolls on Monthly↔Yearly toggle) */}
               <div className="mt-5 flex items-end gap-1">
-                <span key={`${plan.id}-${period}`} className="price-pop text-4xl font-black tabular-nums">₹{price}</span>
+                <AnimatedNumber value={price} format={fmtPrice} className="text-4xl font-black" />
                 {!isFree && (
                   <span className="mb-1 text-sm text-muted">
                     /{period === "yearly" ? "year" : "month"}
@@ -135,6 +155,7 @@ export default function PricingPlans() {
                 ))}
               </ul>
             </div>
+            </Reveal>
           );
         })}
       </div>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { track } from "@vercel/analytics";
 import { sendChatMessage, type TopCard } from "@/lib/ai-api";
 import { useAuth } from "@/contexts/AuthContext";
+import Reveal from "@/components/motion/Reveal";
 
 const SUGGESTIONS = [
   "Swiggy pe ₹500 ka order — kaunsa card use karoon?",
@@ -154,15 +155,16 @@ export default function AiPage() {
       {messages.length === 0 && (
         <div className="space-y-2">
           <div className="text-xs text-muted font-bold uppercase tracking-wide">Try these</div>
-          {SUGGESTIONS.map((s) => (
-            <button
-              key={s}
-              onClick={() => send(s)}
-              disabled={loading}
-              className="w-full text-left rounded-xl border border-border bg-surface2 px-4 py-3 text-sm hover:border-accent transition-colors disabled:opacity-50"
-            >
-              {s}
-            </button>
+          {SUGGESTIONS.map((s, i) => (
+            <Reveal key={s} delay={i * 0.06}>
+              <button
+                onClick={() => send(s)}
+                disabled={loading}
+                className="w-full text-left rounded-xl border border-border bg-surface2 px-4 py-3 text-sm hover:border-accent transition-colors disabled:opacity-50"
+              >
+                {s}
+              </button>
+            </Reveal>
           ))}
           {!user && (
             <div className="rounded-xl border border-accent/30 bg-accent/5 p-4 text-center text-sm mt-4">
