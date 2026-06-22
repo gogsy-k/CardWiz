@@ -15,22 +15,26 @@ type LangCtx = {
   lang: LangCode;
   setLang: (l: LangCode) => void;
   t: (key: string, vars?: Record<string, string | number>) => string;
+  ready: boolean; // true once the saved language has hydrated from localStorage
 };
 
 const LangContext = createContext<LangCtx>({
   lang: "hinglish",
   setLang: () => {},
   t: (key) => key,
+  ready: false,
 });
 
 export function LangProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<LangCode>("hinglish");
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem(LS_KEY) as LangCode | null;
     if (saved === "en" || saved === "hinglish" || saved === "hi") {
       setLangState(saved);
     }
+    setReady(true);
   }, []);
 
   function setLang(l: LangCode) {
@@ -42,7 +46,7 @@ export function LangProvider({ children }: { children: ReactNode }) {
     rawT(lang, key, vars);
 
   return (
-    <LangContext.Provider value={{ lang, setLang, t }}>
+    <LangContext.Provider value={{ lang, setLang, t, ready }}>
       {children}
     </LangContext.Provider>
   );

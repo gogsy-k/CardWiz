@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getPost, getPosts, formatDate, HREFLANG, LANG_LABEL } from "@/lib/posts";
 import PostBody from "@/components/PostBody";
+import ArticleLangBar from "@/components/ArticleLangBar";
 
 export const revalidate = 300;
 
@@ -54,22 +55,8 @@ export default async function NewsDetail({ params }: Params) {
         {formatDate(post.publishedAt)} · {LANG_LABEL[post.lang]}
       </div>
 
-      {/* Read in other languages */}
-      {translations.length > 0 && (
-        <div className="mt-4 flex flex-wrap items-center gap-2 rounded-xl border border-border bg-surface2 px-4 py-2.5 text-sm">
-          <span className="text-muted">Read in:</span>
-          {translations.map((t) => (
-            <Link
-              key={t.slug}
-              href={`/news/${t.slug}`}
-              hrefLang={HREFLANG[t.lang]}
-              className="font-bold text-accent hover:underline"
-            >
-              {LANG_LABEL[t.lang]}
-            </Link>
-          ))}
-        </div>
-      )}
+      {/* Auto-syncs article language with the navbar + manual "Read in" links */}
+      <ArticleLangBar currentLang={post.lang} currentSlug={post.slug} translations={translations} />
 
       {post.coverImage && (
         // eslint-disable-next-line @next/next/no-img-element
