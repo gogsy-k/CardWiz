@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { getMissedSavings, type SavingsReport, type CategoryMiss } from "@/lib/savings-api";
 import { CATEGORY_LABEL } from "@/lib/cards";
+import ScorecardShare from "@/components/ScorecardShare";
 
 // ── Date helpers ─────────────────────────────────────────────────────────────
 
@@ -191,6 +192,17 @@ export default function SavingsPage() {
       {/* Report */}
       {!loading && !error && report && !report.empty && (
         <>
+          {/* Shareable scorecard — premium perk (free users get the upgrade gate below) */}
+          {isPremium && (
+            <ScorecardShare
+              earned={report.actualRewards}
+              missed={report.missed}
+              eff={report.efficiency}
+              period={PERIODS[periodIdx].label}
+              name={user.name?.split(" ")[0]}
+            />
+          )}
+
           {/* Stat cards */}
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <StatCard label="Total Spend"      value={fmtINR(report.totalSpend)}      />
