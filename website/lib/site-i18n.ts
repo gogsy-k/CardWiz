@@ -10,11 +10,12 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
   en: {
     // Navbar
     nav_home: "Home",
-    nav_cards: "Find Cards",
+    nav_cards: "Cards",
     nav_pricing: "Pricing",
     nav_how: "How it works",
     nav_contact: "Contact",
-    nav_findcard: "Find My Card",
+    nav_findcard: "Best Card Finder",
+    nav_ai: "AI",
     nav_add: "Add to Chrome",
 
     // Footer
@@ -217,11 +218,12 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
   hinglish: {
     // Navbar
     nav_home: "Home",
-    nav_cards: "Cards Dhundho",
+    nav_cards: "Cards",
     nav_pricing: "Pricing",
     nav_how: "Kaise kaam karta hai",
     nav_contact: "Contact",
-    nav_findcard: "Card Dhundho",
+    nav_findcard: "Best Card Khojo",
+    nav_ai: "AI",
     nav_add: "Chrome mein add karo",
 
     // Footer
@@ -424,11 +426,12 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
   hi: {
     // Navbar
     nav_home: "होम",
-    nav_cards: "कार्ड खोजें",
+    nav_cards: "Cards",
     nav_pricing: "मूल्य",
     nav_how: "कैसे काम करता है",
     nav_contact: "संपर्क",
-    nav_findcard: "मेरा कार्ड खोजें",
+    nav_findcard: "Best Card खोजो",
+    nav_ai: "AI",
     nav_add: "Chrome में जोड़ें",
 
     // Footer

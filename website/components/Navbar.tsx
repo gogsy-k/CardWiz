@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { useLang } from "@/contexts/LangContext";
 import { useAuth } from "@/contexts/AuthContext";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -12,16 +13,21 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const { t } = useLang();
   const { user } = useAuth();
+  const pathname = usePathname();
 
   const links = [
     { href: "/", key: "nav_home" },
     { href: "/cards", key: "nav_cards" },
     { href: "/find-my-card", key: "nav_findcard" },
+    { href: "/ai", key: "nav_ai" },
     { href: "/offers", key: "nav_offers" },
     { href: "/news", key: "nav_news" },
     { href: "/pricing", key: "nav_pricing" },
-    { href: "/contact", key: "nav_contact" },
   ];
+
+  // Active link: "/" exact, baaki nested routes ke liye prefix match.
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/");
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur-md">
@@ -31,12 +37,17 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop links */}
-        <div className="hidden items-center gap-6 md:flex">
+        <div className="hidden items-center gap-5 md:flex">
           {links.map((l) => (
             <Link
               key={l.href}
               href={l.href}
-              className="text-sm font-medium text-subtle transition-colors hover:text-fg"
+              aria-current={isActive(l.href) ? "page" : undefined}
+              className={`text-sm transition-colors ${
+                isActive(l.href)
+                  ? "font-bold text-accent"
+                  : "font-medium text-subtle hover:text-fg"
+              }`}
             >
               {t(l.key)}
             </Link>
@@ -81,7 +92,10 @@ export default function Navbar() {
               key={l.href}
               href={l.href}
               onClick={() => setOpen(false)}
-              className="rounded-lg px-2 py-2 text-sm font-medium text-subtle hover:bg-surface hover:text-fg"
+              aria-current={isActive(l.href) ? "page" : undefined}
+              className={`rounded-lg px-2 py-2 text-sm hover:bg-surface ${
+                isActive(l.href) ? "font-bold text-accent" : "font-medium text-subtle hover:text-fg"
+              }`}
             >
               {t(l.key)}
             </Link>
