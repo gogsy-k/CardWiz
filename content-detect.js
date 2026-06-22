@@ -351,44 +351,44 @@ function renderWidget(site, amount, ranked, usingWallet, otherOffers, myCards) {
       :host { all: initial; }
       .box {
         font-family: 'Segoe UI', system-ui, sans-serif;
-        width: 280px; background: #1e1e2e; color: #cdd6f4;
-        border: 1px solid #45475a; border-radius: 14px; padding: 14px;
+        width: 280px; background: #0C1018; color: #E8ECF4;
+        border: 1px solid #2A3450; border-radius: 14px; padding: 14px;
         box-shadow: 0 8px 30px rgba(0,0,0,.45);
       }
       .hd { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
-      .title { font-size:13px; font-weight:700; color:#cba6f7; }
-      .x { cursor:pointer; color:#6c7086; font-size:14px; line-height:1; background:none; border:none; padding:2px 4px; }
-      .x:hover { color:#f38ba8; }
-      .headline { font-size:11px; color:#a6adc8; margin-bottom:8px; }
+      .title { font-size:13px; font-weight:700; color:#6366F1; }
+      .x { cursor:pointer; color:#8A93AC; font-size:14px; line-height:1; background:none; border:none; padding:2px 4px; }
+      .x:hover { color:#FB7185; }
+      .headline { font-size:11px; color:#B7C0D4; margin-bottom:8px; }
       .row { display:flex; justify-content:space-between; align-items:center;
-             background:#313244; border:1px solid #45475a; border-radius:8px;
+             background:#222C42; border:1px solid #2A3450; border-radius:8px;
              padding:8px 10px; margin-bottom:6px; gap:8px; }
-      .row.best { border-color:#a6e3a1; background:#2a3a2e; }
-      .row.exhausted { border-color:#f38ba8; opacity:.85; }
+      .row.best { border-color:#34D399; background:#123528; }
+      .row.exhausted { border-color:#FB7185; opacity:.85; }
       .cleft { display:flex; flex-direction:column; min-width:0; }
       .cname { font-size:11px; font-weight:600; }
-      .csub { font-size:9px; color:#6c7086; margin-top:2px; }
+      .csub { font-size:9px; color:#8A93AC; margin-top:2px; }
       .csave { display:flex; flex-direction:column; align-items:flex-end; gap:5px; white-space:nowrap; flex-shrink:0; }
       .csave .rewardrow { display:flex; align-items:center; gap:6px; }
-      .csave .reward { font-size:14px; font-weight:800; color:#a6e3a1; line-height:1; }
-      .csave .offer { font-size:11px; font-weight:800; color:#1e1e2e; background:#89b4fa;
+      .csave .reward { font-size:14px; font-weight:800; color:#34D399; line-height:1; }
+      .csave .offer { font-size:11px; font-weight:800; color:#0C1018; background:#818CF8;
                       padding:2px 7px; border-radius:5px; line-height:1.3; }
-      .csave .capnote { font-size:8px; background:#f9e2af; color:#1e1e2e; padding:2px 7px; border-radius:4px; font-weight:700; line-height:1.3; }
-      .csave .capnote.khatam { background:#f38ba8; }
+      .csave .capnote { font-size:8px; background:#FBBF24; color:#0C1018; padding:2px 7px; border-radius:4px; font-weight:700; line-height:1.3; }
+      .csave .capnote.khatam { background:#FB7185; }
       .csave .pill { font-size:8px; padding:2px 7px; border-radius:4px; font-weight:700; letter-spacing:.2px; line-height:1.3; }
-      .tag-cash { background:#a6e3a1; color:#1e1e2e; }
-      .tag-pts  { background:#89b4fa; color:#1e1e2e; }
-      .tag-miles { background:#f9e2af; color:#1e1e2e; }
-      .whydiff { font-size:8px; font-weight:700; color:#a6e3a1; margin-top:2px; display:block; }
-      .offers { font-size:9px; color:#89b4fa; margin-top:2px; line-height:1.4; }
+      .tag-cash { background:#34D399; color:#0C1018; }
+      .tag-pts  { background:#818CF8; color:#0C1018; }
+      .tag-miles { background:#FBBF24; color:#0C1018; }
+      .whydiff { font-size:8px; font-weight:700; color:#34D399; margin-top:2px; display:block; }
+      .offers { font-size:9px; color:#818CF8; margin-top:2px; line-height:1.4; }
       .buy {
-        width:100%; margin-top:8px; background:#f9e2af; color:#1e1e2e; border:none;
+        width:100%; margin-top:8px; background:#FBBF24; color:#0C1018; border:none;
         border-radius:8px; padding:8px; font-size:11px; font-weight:700; cursor:pointer;
       }
-      .buy:hover { background:#f5d68a; }
-      .disc { font-size:8px; color:#6c7086; margin-top:3px; line-height:1.4; }
-      .ft { font-size:9px; color:#6c7086; margin-top:6px; line-height:1.4; }
-      .ft b { color:#a6adc8; }
+      .buy:hover { background:#FCD34D; }
+      .disc { font-size:8px; color:#8A93AC; margin-top:3px; line-height:1.4; }
+      .ft { font-size:9px; color:#8A93AC; margin-top:6px; line-height:1.4; }
+      .ft b { color:#B7C0D4; }
     </style>
     <div class="box">
       <div class="hd">
