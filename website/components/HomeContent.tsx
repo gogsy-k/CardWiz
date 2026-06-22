@@ -28,6 +28,16 @@ export default function HomeContent({
     desc: t(`feat_${i}_desc`),
   }));
 
+  // Live entry points — har card ek real page pe le jaata hai (no dead text).
+  const explore = [
+    { icon: "🤖", href: "/ai",           tk: "ai" },
+    { icon: "🏷️", href: "/offers",       tk: "offers" },
+    { icon: "🎯", href: "/find-my-card", tk: "find" },
+    { icon: "💳", href: "/cards",        tk: "cards" },
+    { icon: "📊", href: "/account",      tk: "acct" },
+    { icon: "📰", href: "/news",         tk: "news" },
+  ];
+
   const steps = [
     { n: 1, title: t("step_1_title"), desc: t("step_1_desc") },
     { n: 2, title: t("step_2_title"), desc: t("step_2_desc") },
@@ -128,8 +138,30 @@ export default function HomeContent({
         </div>
       </section>
 
-      {/* FEATURES */}
+      {/* EXPLORE — live entry points (har card clickable) */}
       <section className="mx-auto max-w-5xl px-5 py-20">
+        <h2 className="text-center text-3xl font-extrabold">{t("explore_h")}</h2>
+        <p className="mt-2 text-center text-muted">{t("explore_sub")}</p>
+        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {explore.map((x) => (
+            <Link
+              key={x.href + x.tk}
+              href={x.href}
+              className="group flex flex-col rounded-2xl border border-border bg-surface2 p-6 transition-colors hover:border-accent"
+            >
+              <div className="text-3xl">{x.icon}</div>
+              <h3 className="mt-3 font-bold">{t(`xp_${x.tk}_t`)}</h3>
+              <p className="mt-1.5 flex-1 text-sm leading-relaxed text-muted">{t(`xp_${x.tk}_d`)}</p>
+              <span className="mt-4 text-sm font-bold text-accent transition-transform group-hover:translate-x-0.5">
+                {t("xp_open")}
+              </span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* WHY CardWiz — value prop (descriptive) */}
+      <section className="mx-auto max-w-5xl px-5 pb-4">
         <h2 className="text-center text-3xl font-extrabold">{t("home_feat_h")}</h2>
         <p className="mt-2 text-center text-muted">{t("home_feat_sub")}</p>
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

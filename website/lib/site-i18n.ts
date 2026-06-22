@@ -37,6 +37,23 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
     stat_banks: "Banks",
     stat_sites: "Shopping Sites",
 
+    // Home — explore (live entry points)
+    explore_h: "Explore CardWiz",
+    explore_sub: "Every tool, one click away.",
+    xp_open: "Open →",
+    xp_ai_t: "🤖 AI Card Assistant",
+    xp_ai_d: "Kya kharidna hai? AI batayega kaunsa card best hai.",
+    xp_offers_t: "Bank Offers",
+    xp_offers_d: "Live, community-verified credit card offers.",
+    xp_find_t: "Best Card Finder",
+    xp_find_d: "8 quick questions → your perfect card.",
+    xp_cards_t: "Browse Cards",
+    xp_cards_d: "Compare 195+ Indian cards by reward rate.",
+    xp_acct_t: "My Account",
+    xp_acct_d: "Savings report, transactions & cloud sync.",
+    xp_news_t: "News & Guides",
+    xp_news_d: "Latest card news, tips and best-card guides.",
+
     // Home — features
     home_feat_h: "What do you get?",
     home_feat_sub: "One extension, many benefits",
@@ -245,6 +262,23 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
     stat_banks: "Banks",
     stat_sites: "Shopping Sites",
 
+    // Home — explore (live entry points)
+    explore_h: "CardWiz Explore karo",
+    explore_sub: "Har tool ek click door.",
+    xp_open: "Kholo →",
+    xp_ai_t: "🤖 AI Card Assistant",
+    xp_ai_d: "Kya kharidna hai? AI batayega kaunsa card best hai.",
+    xp_offers_t: "Bank Offers",
+    xp_offers_d: "Live, community-verified credit card offers.",
+    xp_find_t: "Best Card Finder",
+    xp_find_d: "8 sawaal → aapka perfect card.",
+    xp_cards_t: "Cards Dekho",
+    xp_cards_d: "195+ Indian cards reward-rate se compare karo.",
+    xp_acct_t: "Mera Account",
+    xp_acct_d: "Savings report, transactions & cloud sync.",
+    xp_news_t: "News & Guides",
+    xp_news_d: "Latest card news, tips aur best-card guides.",
+
     // Home — features
     home_feat_h: "Kya kya milta hai?",
     home_feat_sub: "Ek extension, bahut fayde",
@@ -452,6 +486,23 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
     stat_cards: "Cards",
     stat_banks: "Banks",
     stat_sites: "Shopping Sites",
+
+    // Home — explore (live entry points)
+    explore_h: "CardWiz देखें",
+    explore_sub: "हर tool एक click दूर।",
+    xp_open: "खोलें →",
+    xp_ai_t: "🤖 AI Card Assistant",
+    xp_ai_d: "क्या खरीदना है? AI बताएगा कौनसा card best है।",
+    xp_offers_t: "Bank Offers",
+    xp_offers_d: "Live, community-verified credit card offers.",
+    xp_find_t: "Best Card Finder",
+    xp_find_d: "8 सवाल → आपका perfect card.",
+    xp_cards_t: "Cards देखें",
+    xp_cards_d: "195+ Indian cards reward-rate से compare करें।",
+    xp_acct_t: "मेरा Account",
+    xp_acct_d: "Savings report, transactions & cloud sync.",
+    xp_news_t: "News & Guides",
+    xp_news_d: "Latest card news, tips और best-card guides.",
 
     // Home — features
     home_feat_h: "क्या-क्या मिलता है?",
