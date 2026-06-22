@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useLang } from "@/contexts/LangContext";
 import QuizTeaser from "@/components/QuizTeaser";
 import PostCard from "@/components/PostCard";
-import type { Post } from "@/lib/posts";
+import { pickPostsForLang, type Post } from "@/lib/posts";
 import type { Card } from "@/lib/cards";
 import NotifyCTA from "@/components/NotifyCTA";
 import SavingsCalculator from "@/components/SavingsCalculator";
@@ -24,7 +24,9 @@ export default function HomeContent({
   posts?: Post[];
   calcCards?: Card[];
 }) {
-  const { t } = useLang();
+  const { t, lang } = useLang();
+  // One card per article in the selected language (dedupes translations).
+  const newsPosts = pickPostsForLang(posts, lang).slice(0, 3);
 
   const features = FEAT_ICONS.map((icon, i) => ({
     icon,
@@ -150,7 +152,7 @@ export default function HomeContent({
       <QuizTeaser />
 
       {/* LATEST NEWS */}
-      {posts.length > 0 && (
+      {newsPosts.length > 0 && (
         <section className="mx-auto max-w-5xl px-5 py-16">
           <div className="flex items-end justify-between">
             <div>
@@ -162,7 +164,7 @@ export default function HomeContent({
             </Link>
           </div>
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {posts.map((p) => (
+            {newsPosts.map((p) => (
               <PostCard key={p.id} post={p} />
             ))}
           </div>

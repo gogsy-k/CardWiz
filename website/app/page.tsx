@@ -35,7 +35,7 @@ export default async function Home() {
       total={total}
       credit={credit}
       banks={banks}
-      posts={posts.slice(0, 3)}
+      posts={posts.slice(0, 15)}
       calcCards={calcCards}
     />
   );

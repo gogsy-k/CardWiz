@@ -66,6 +66,35 @@ export async function getPost(
   }
 }
 
+/**
+ * One card per article in the news list: group translations together, then pick
+ * the version matching the current UI language (fallback if that language is
+ * missing). Standalone posts (no translationGroup) are their own group.
+ */
+export function pickPostsForLang(posts: Post[], lang: PostLang): Post[] {
+  const FALLBACK: PostLang[] = ["hinglish", "en", "hi"];
+  const groups = new Map<string, Post[]>();
+  for (const p of posts) {
+    const key = p.translationGroup || `__${p.id}`;
+    const arr = groups.get(key);
+    if (arr) arr.push(p);
+    else groups.set(key, [p]);
+  }
+  const out: Post[] = [];
+  for (const variants of groups.values()) {
+    let chosen = variants.find((v) => v.lang === lang);
+    if (!chosen) {
+      for (const l of FALLBACK) {
+        chosen = variants.find((v) => v.lang === l);
+        if (chosen) break;
+      }
+    }
+    out.push(chosen ?? variants[0]);
+  }
+  out.sort((a, b) => ((a.publishedAt || "") < (b.publishedAt || "") ? 1 : -1));
+  return out;
+}
+
 // Display helpers
 export function formatDate(iso: string | null): string {
   if (!iso) return "";
