@@ -246,10 +246,10 @@ export default function AiPage() {
             </svg>
           </button>
         </div>
-        <p className="text-center text-[10px] text-subtle mt-1.5">
+        <p className="text-center text-xs text-subtle mt-1.5">
           Powered by Claude · Verify important details before applying
         </p>
-        <p className="text-center text-[10px] text-subtle mt-0.5">
+        <p className="text-center text-xs text-subtle mt-0.5">
           🔒 Yeh feature server + AI provider use karta hai (baaki CardWiz local hai). Card number/CVV type na karein.{" "}
           <a href="/privacy" className="underline hover:text-subtle">Privacy</a>
         </p>

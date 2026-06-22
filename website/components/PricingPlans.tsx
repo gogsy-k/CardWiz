@@ -81,11 +81,11 @@ export default function PricingPlans() {
               )}
 
               <h3 className="text-lg font-extrabold text-accent">{plan.name}</h3>
-              <p className="mt-1 text-sm text-muted">{plan.tagline}</p>
+              <p className="mt-1 text-sm text-muted">{t(`plan_tag_${plan.id}`)}</p>
 
               {/* Price (animates on Monthly↔Yearly toggle) */}
               <div className="mt-5 flex items-end gap-1">
-                <span key={`${plan.id}-${period}`} className="price-pop text-4xl font-black">₹{price}</span>
+                <span key={`${plan.id}-${period}`} className="price-pop text-4xl font-black tabular-nums">₹{price}</span>
                 {!isFree && (
                   <span className="mb-1 text-sm text-muted">
                     /{period === "yearly" ? "year" : "month"}

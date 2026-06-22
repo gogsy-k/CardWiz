@@ -46,6 +46,12 @@ body {
   font-family: var(--font-sans);
 }
 
+/* Display font for headings; body stays Geist. Numbers in headings cap at Space Grotesk 700. */
+h1, h2 {
+  font-family: var(--font-display), var(--font-sans);
+  letter-spacing: -0.01em;
+}
+
 /* Subtle scrollbar */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: #090D15; }

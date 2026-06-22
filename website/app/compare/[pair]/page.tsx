@@ -40,8 +40,8 @@ export async function generateMetadata(props: {
 function Cell({ a, b, winner }: { a: string; b: string; winner?: "a" | "b" | "tie" }) {
   return (
     <>
-      <td className={`px-4 py-3 text-sm ${winner === "a" ? "font-bold text-green" : "text-subtle"}`}>{a}</td>
-      <td className={`px-4 py-3 text-sm ${winner === "b" ? "font-bold text-green" : "text-subtle"}`}>{b}</td>
+      <td className={`px-4 py-3 text-sm tabular-nums ${winner === "a" ? "font-bold text-green" : "text-subtle"}`}>{a}</td>
+      <td className={`px-4 py-3 text-sm tabular-nums ${winner === "b" ? "font-bold text-green" : "text-subtle"}`}>{b}</td>
     </>
   );
 }

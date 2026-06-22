@@ -73,7 +73,7 @@ export default function SavingsCalculator({ cards }: { cards: Card[] }) {
           <label htmlFor="calc-amount" className="text-subtle">
             Kitna kharch karoge?
           </label>
-          <span className="font-bold text-fg">{fmt(amount)}</span>
+          <span className="font-bold text-fg tabular-nums">{fmt(amount)}</span>
         </div>
         <input
           id="calc-amount"
@@ -106,7 +106,7 @@ export default function SavingsCalculator({ cards }: { cards: Card[] }) {
                 {r.rate}% · {TYPE_LABEL[r.card.type]}
               </div>
             </div>
-            <div className={`shrink-0 text-sm font-extrabold ${i === 0 ? "text-green" : "text-subtle"}`}>
+            <div className={`shrink-0 text-sm font-extrabold tabular-nums ${i === 0 ? "text-green" : "text-subtle"}`}>
               {fmt(r.reward)}
             </div>
           </div>

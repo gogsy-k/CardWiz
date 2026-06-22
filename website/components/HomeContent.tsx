@@ -67,20 +67,21 @@ export default function HomeContent({
           <span className="inline-block rounded-full border border-border bg-surface px-4 py-1.5 text-xs font-semibold text-green">
             {t("home_badge")}
           </span>
-          <h1 className="mt-6 text-4xl font-black leading-tight sm:text-6xl">
+          <h1 className="mt-6 text-4xl font-black leading-tight sm:text-5xl">
             {t("home_h1")}
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-subtle sm:text-lg">
             {t("home_sub")}
           </p>
+          {/* Primary = live value (Browse); notify is secondary. #notify wrapper kept for the anchor. */}
           <div id="notify" className="mt-9 flex flex-wrap items-start justify-center gap-3">
-            <NotifyCTA variant="primary" />
             <Link
               href="/cards"
-              className="rounded-xl border border-border px-6 py-3.5 text-sm font-bold text-accent transition-colors hover:border-accent"
+              className="rounded-xl bg-accent px-6 py-3.5 text-sm font-bold text-onaccent transition-colors hover:bg-blue"
             >
               {t("home_browse", { n: total })}
             </Link>
+            <NotifyCTA variant="secondary" />
           </div>
 
           {/* Interactive Savings Calculator — live proof, not a static mockup */}

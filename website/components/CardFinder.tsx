@@ -2,11 +2,13 @@
 
 import { useMemo, useState } from "react";
 import { Card, cardCategories, topRate, prettyCategory } from "@/lib/cards";
+import { useLang } from "@/contexts/LangContext";
 import CardItem from "./CardItem";
 
 type SortKey = "reward" | "feeLow" | "name";
 
 export default function CardFinder({ cards }: { cards: Card[] }) {
+  const { t } = useLang();
   const [query, setQuery] = useState("");
   const [variant, setVariant] = useState<"all" | "credit" | "debit">("all");
   const [type, setType] = useState<"all" | "cashback" | "points" | "miles">("all");
@@ -65,7 +67,7 @@ export default function CardFinder({ cards }: { cards: Card[] }) {
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Card ya bank search karo — jaise 'HDFC', 'cashback', 'Amazon'…"
+          placeholder={t("cf_search_ph")}
           className="w-full rounded-xl border border-border bg-surface px-4 py-3 text-sm text-fg outline-none placeholder:text-muted focus:border-accent"
         />
       </div>
@@ -76,13 +78,13 @@ export default function CardFinder({ cards }: { cards: Card[] }) {
           <button
             key={v}
             onClick={() => setVariant(v)}
-            className={`rounded-lg px-4 py-1.5 text-sm font-semibold capitalize transition-colors ${
+            className={`rounded-lg px-4 py-1.5 text-sm font-semibold transition-colors ${
               variant === v
                 ? "bg-accent text-onaccent"
                 : "border border-border bg-surface text-subtle hover:text-fg"
             }`}
           >
-            {v === "all" ? "All cards" : v}
+            {t(v === "all" ? "cf_all_cards" : v === "credit" ? "cf_credit" : "cf_debit")}
           </button>
         ))}
       </div>
@@ -90,14 +92,14 @@ export default function CardFinder({ cards }: { cards: Card[] }) {
       {/* Filters */}
       <div className="mt-3 flex flex-wrap gap-2.5">
         <select value={type} onChange={(e) => setType(e.target.value as typeof type)} className={selectCls}>
-          <option value="all">All reward types</option>
-          <option value="cashback">Cashback</option>
-          <option value="points">Reward Points</option>
-          <option value="miles">Travel Miles</option>
+          <option value="all">{t("cf_all_types")}</option>
+          <option value="cashback">{t("cf_type_cashback")}</option>
+          <option value="points">{t("cf_type_points")}</option>
+          <option value="miles">{t("cf_type_miles")}</option>
         </select>
 
         <select value={bank} onChange={(e) => setBank(e.target.value)} className={selectCls}>
-          <option value="all">All banks</option>
+          <option value="all">{t("cf_all_banks")}</option>
           {banks.map((b) => (
             <option key={b} value={b}>
               {b}
@@ -106,7 +108,7 @@ export default function CardFinder({ cards }: { cards: Card[] }) {
         </select>
 
         <select value={category} onChange={(e) => setCategory(e.target.value)} className={selectCls}>
-          <option value="all">All categories</option>
+          <option value="all">{t("cf_all_categories")}</option>
           {categories.map((c) => (
             <option key={c} value={c}>
               {prettyCategory(c)}
@@ -115,15 +117,15 @@ export default function CardFinder({ cards }: { cards: Card[] }) {
         </select>
 
         <select value={sort} onChange={(e) => setSort(e.target.value as SortKey)} className={selectCls}>
-          <option value="reward">Sort: Highest reward</option>
-          <option value="feeLow">Sort: Lowest fee</option>
-          <option value="name">Sort: Name (A–Z)</option>
+          <option value="reward">{t("cf_sort_reward")}</option>
+          <option value="feeLow">{t("cf_sort_fee")}</option>
+          <option value="name">{t("cf_sort_name")}</option>
         </select>
       </div>
 
       {/* Count */}
-      <div className="mt-5 text-sm text-muted">
-        {filtered.length} {filtered.length === 1 ? "card" : "cards"} mile
+      <div className="mt-5 text-sm text-muted tabular-nums">
+        {t("cf_count", { n: filtered.length })}
       </div>
 
       {/* Grid */}
@@ -131,16 +133,14 @@ export default function CardFinder({ cards }: { cards: Card[] }) {
         <div className="mt-10 flex flex-col items-center rounded-2xl border border-dashed border-border py-16 text-center">
           <div className="text-4xl">🔍</div>
           <p className="mt-3 text-sm text-subtle">
-            {filtersActive
-              ? "In filters se koi card nahi mila."
-              : "Koi card nahi mila."}
+            {filtersActive ? t("cf_empty_filtered") : t("cf_empty_none")}
           </p>
           {filtersActive && (
             <button
               onClick={clearFilters}
               className="mt-4 rounded-xl bg-accent px-5 py-2 text-sm font-bold text-onaccent transition-colors hover:bg-blue"
             >
-              Clear filters
+              {t("cf_clear_filters")}
             </button>
           )}
         </div>

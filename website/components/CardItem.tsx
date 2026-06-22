@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import { Card, topRate, formatFee, TYPE_LABEL, cardCategories, prettyCategory } from "@/lib/cards";
+import { useLang } from "@/contexts/LangContext";
 
 const TYPE_BADGE: Record<Card["type"], string> = {
   cashback: "bg-green text-bg",
@@ -25,6 +28,7 @@ function bestForCategory(card: Card): string | null {
 }
 
 export default function CardItem({ card }: { card: Card }) {
+  const { t } = useLang();
   const cats = cardCategories(card).slice(0, 3);
   const bestFor = bestForCategory(card);
 
@@ -53,14 +57,14 @@ export default function CardItem({ card }: { card: Card }) {
 
       <div className="mt-4 flex items-end justify-between">
         <div>
-          <div className="text-2xl font-black text-green [text-shadow:0_0_18px_rgba(52,211,153,0.45)]">
+          <div className="text-2xl font-black text-green tabular-nums [text-shadow:0_0_18px_rgba(52,211,153,0.45)]">
             {topRate(card)}%
           </div>
-          <div className="text-[11px] text-muted">top reward · {TYPE_LABEL[card.type]}</div>
+          <div className="text-[11px] text-muted">{t("ci_top_reward")} · {TYPE_LABEL[card.type]}</div>
         </div>
         <div className="text-right">
-          <div className="text-sm font-semibold text-subtle">{formatFee(card)}</div>
-          <div className="text-[11px] text-muted">annual fee</div>
+          <div className="text-sm font-semibold text-subtle tabular-nums">{formatFee(card)}</div>
+          <div className="text-[11px] text-muted">{t("ci_annual_fee")}</div>
         </div>
       </div>
 
@@ -69,7 +73,7 @@ export default function CardItem({ card }: { card: Card }) {
         <div className="mt-4 flex flex-wrap items-center gap-1.5">
           {bestFor && (
             <span className="rounded-full border border-accent/40 bg-accent/10 px-2.5 py-0.5 text-[10px] font-bold text-accent">
-              ★ Best for {prettyCategory(bestFor)}
+              ★ {t("ci_best_for", { cat: prettyCategory(bestFor) })}
             </span>
           )}
           {cats

@@ -55,7 +55,7 @@ function StatCard({
   return (
     <div className="rounded-xl border border-border bg-surface2 p-4">
       <div className="text-xs text-muted mb-1">{label}</div>
-      <div className={`text-2xl font-black ${accent ?? ""} ${blurred ? "blur-sm select-none" : ""}`}>
+      <div className={`text-2xl font-black tabular-nums ${accent ?? ""} ${blurred ? "blur-sm select-none" : ""}`}>
         {value}
       </div>
       {sub && <div className={`text-xs text-muted mt-0.5 ${blurred ? "blur-sm select-none" : ""}`}>{sub}</div>}
