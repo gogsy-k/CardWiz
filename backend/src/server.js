@@ -30,6 +30,11 @@ const { autoSeedIfEmpty } = require('./routes/catalog');
 
 const app = express();
 
+// Render (aur baaki PaaS) reverse-proxy ke peeche chalte hain. Trust first hop only —
+// taaki req.ip asli client IP de (X-Forwarded-For), per-IP rate-limit sahi kaam kare.
+// '1' = sirf pehla proxy trust karo (clients arbitrary XFF spoof nahi kar sakte).
+app.set('trust proxy', 1);
+
 // --- CORS ---
 // Do tarah ke clients: extension (chrome-extension:// origin) aur website
 // (https://cardwiz.in). Extension: dev mein sab allow, prod mein configured IDs.

@@ -14,6 +14,7 @@ const fs   = require('fs');
 const path = require('path');
 const express = require('express');
 const db   = require('../db');
+const { requireAdmin } = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -46,7 +47,7 @@ router.get('/', async (req, res) => {
 
 // Seed / refresh Supabase from bundled cards.json.
 // Orphan entries (IDs not in cards.json) bhi delete ho jaate hain.
-router.post('/seed', async (req, res) => {
+router.post('/seed', requireAdmin, async (req, res) => {
   try {
     const { cards } = readSeedFile();
     for (const card of cards) await db.catalog.upsert(card);
