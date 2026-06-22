@@ -150,7 +150,7 @@ export default function PricingPlans() {
                 {plan.pros.map((pro) => (
                   <li key={pro} className="flex items-start gap-2 text-sm text-subtle">
                     <span className="mt-0.5 text-green">✓</span>
-                    <span>{pro}</span>
+                    <span>{t(pro)}</span>
                   </li>
                 ))}
               </ul>
@@ -168,7 +168,7 @@ export default function PricingPlans() {
           aria-expanded={showMatrix}
           className="rounded-xl border border-border px-5 py-2.5 text-sm font-bold text-accent transition-colors hover:border-accent"
         >
-          {showMatrix ? "Hide full comparison ↑" : "Compare all features ↓"}
+          {showMatrix ? t("pp_compare_hide") : t("pp_compare_show")}
         </button>
       </div>
 

@@ -10,6 +10,11 @@ type SortKey = "reward" | "feeLow" | "name";
 
 export default function CardFinder({ cards }: { cards: Card[] }) {
   const { t } = useLang();
+  // Localized category label; brands/unknown ids fall back to prettyCategory (English).
+  const catLabel = (c: string) => {
+    const v = t("cat_" + c);
+    return v === "cat_" + c ? prettyCategory(c) : v;
+  };
   const [query, setQuery] = useState("");
   const [variant, setVariant] = useState<"all" | "credit" | "debit">("all");
   const [type, setType] = useState<"all" | "cashback" | "points" | "miles">("all");
@@ -121,7 +126,7 @@ export default function CardFinder({ cards }: { cards: Card[] }) {
           <option value="all">{t("cf_all_categories")}</option>
           {categories.map((c) => (
             <option key={c} value={c}>
-              {prettyCategory(c)}
+              {catLabel(c)}
             </option>
           ))}
         </select>

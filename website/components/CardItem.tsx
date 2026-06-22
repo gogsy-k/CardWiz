@@ -29,6 +29,10 @@ function bestForCategory(card: Card): string | null {
 
 export default function CardItem({ card }: { card: Card }) {
   const { t } = useLang();
+  const catLabel = (c: string) => {
+    const v = t("cat_" + c);
+    return v === "cat_" + c ? prettyCategory(c) : v;
+  };
   const cats = cardCategories(card).slice(0, 3);
   const bestFor = bestForCategory(card);
 
@@ -73,7 +77,7 @@ export default function CardItem({ card }: { card: Card }) {
         <div className="mt-4 flex flex-wrap items-center gap-1.5">
           {bestFor && (
             <span className="rounded-full border border-accent/40 bg-accent/10 px-2.5 py-0.5 text-[10px] font-bold text-accent">
-              ★ {t("ci_best_for", { cat: prettyCategory(bestFor) })}
+              ★ {t("ci_best_for", { cat: catLabel(bestFor) })}
             </span>
           )}
           {cats

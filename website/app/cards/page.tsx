@@ -49,7 +49,7 @@ export default async function CardsPage() {
               href={`/best-card-for/${c.slug}`}
               className="rounded-full border border-border bg-surface2 px-4 py-2 text-sm text-subtle transition-colors hover:border-accent hover:text-fg"
             >
-              Best for {c.label}
+              <T k="ci_best_for" vars={{ cat: c.label }} />
             </Link>
           ))}
         </div>
