@@ -208,7 +208,7 @@ export default function UploadPage() {
             PDF statement upload requires CardWiz Premium. Upgrade to automatically
             import your transactions and unlock the full Missed Savings Report.
           </p>
-          <Link href="/pricing" className="inline-block rounded-xl bg-accent px-6 py-2.5 text-sm font-bold text-bg">
+          <Link href="/pricing" className="inline-block rounded-xl bg-accent px-6 py-2.5 text-sm font-bold text-onaccent">
             Upgrade to Premium →
           </Link>
         </div>
@@ -239,7 +239,7 @@ export default function UploadPage() {
             Your Missed Savings report has been updated.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
-            <Link href="/account/transactions" className="rounded-xl bg-accent px-5 py-2.5 text-sm font-bold text-bg">
+            <Link href="/account/transactions" className="rounded-xl bg-accent px-5 py-2.5 text-sm font-bold text-onaccent">
               View transactions →
             </Link>
             <Link href="/account/savings" className="rounded-xl border border-border px-5 py-2.5 text-sm font-bold hover:border-accent">
@@ -316,7 +316,7 @@ export default function UploadPage() {
             <button
               onClick={handleImport}
               disabled={submitting}
-              className="rounded-xl bg-accent px-6 py-2.5 text-sm font-bold text-bg disabled:opacity-50"
+              className="rounded-xl bg-accent px-6 py-2.5 text-sm font-bold text-onaccent disabled:opacity-50"
             >
               {submitting
                 ? "Importing…"
@@ -349,7 +349,7 @@ export default function UploadPage() {
             >
               Try another file
             </button>
-            <Link href="/account/transactions" className="rounded-xl bg-accent px-5 py-2.5 text-sm font-bold text-bg">
+            <Link href="/account/transactions" className="rounded-xl bg-accent px-5 py-2.5 text-sm font-bold text-onaccent">
               Add manually →
             </Link>
           </div>

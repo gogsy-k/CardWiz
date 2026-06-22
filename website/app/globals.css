@@ -1,19 +1,20 @@
 @import "tailwindcss";
 
-/* CardWiz dark theme (Catppuccin Mocha-ish) — extension se consistent */
+/* CardWiz dark theme — Indigo design system. One accent locked. */
 @theme {
-  --color-bg: #1e1e2e;
-  --color-surface: #313244;
-  --color-surface2: #181825;
-  --color-border: #45475a;
-  --color-fg: #cdd6f4;
-  --color-muted: #6c7086;
-  --color-subtle: #a6adc8;
-  --color-accent: #cba6f7;
-  --color-green: #a6e3a1;
-  --color-blue: #89b4fa;
-  --color-yellow: #f9e2af;
-  --color-pink: #f38ba8;
+  --color-bg: #0C1018;
+  --color-surface: #1A2336;
+  --color-surface2: #090D15;
+  --color-border: #283149;
+  --color-fg: #E8ECF4;
+  --color-muted: #8A93AC;
+  --color-subtle: #B7C0D4;
+  --color-accent: #6366F1;
+  --color-onaccent: #FFFFFF;
+  --color-green: #34D399;
+  --color-blue: #818CF8;
+  --color-yellow: #FBBF24;
+  --color-pink: #FB7185;
 
   --font-sans: var(--font-geist-sans), "Segoe UI", system-ui, sans-serif;
 }
@@ -30,36 +31,36 @@ body {
 
 /* Subtle scrollbar */
 ::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: #181825; }
-::-webkit-scrollbar-thumb { background: #45475a; border-radius: 6px; }
-::-webkit-scrollbar-thumb:hover { background: #585b70; }
+::-webkit-scrollbar-track { background: #090D15; }
+::-webkit-scrollbar-thumb { background: #283149; border-radius: 6px; }
+::-webkit-scrollbar-thumb:hover { background: #3A4563; }
 
 /* Legal / prose pages */
-.legal h2 { color: #a6e3a1; font-size: 1.15rem; font-weight: 700; margin: 1.75rem 0 0.5rem; }
-.legal p, .legal li { color: #cdd6f4; font-size: 0.95rem; line-height: 1.75; margin-bottom: 0.5rem; }
+.legal h2 { color: #34D399; font-size: 1.15rem; font-weight: 700; margin: 1.75rem 0 0.5rem; }
+.legal p, .legal li { color: #E8ECF4; font-size: 0.95rem; line-height: 1.75; margin-bottom: 0.5rem; }
 .legal ul { padding-left: 1.4rem; list-style: disc; margin-bottom: 0.5rem; }
-.legal a { color: #89b4fa; }
+.legal a { color: #818CF8; }
 .legal a:hover { text-decoration: underline; }
-.legal b { color: #cdd6f4; }
+.legal b { color: #E8ECF4; }
 
-/* News/blog markdown (PostBody) — Catppuccin Mocha */
-.prose-cw { color: #cdd6f4; font-size: 1rem; line-height: 1.8; }
-.prose-cw h1 { color: #cdd6f4; font-size: 1.8rem; font-weight: 800; margin: 1.75rem 0 0.75rem; }
-.prose-cw h2 { color: #a6e3a1; font-size: 1.4rem; font-weight: 700; margin: 1.75rem 0 0.6rem; }
-.prose-cw h3 { color: #a6e3a1; font-size: 1.15rem; font-weight: 700; margin: 1.4rem 0 0.5rem; }
+/* News/blog markdown (PostBody) — Indigo theme */
+.prose-cw { color: #E8ECF4; font-size: 1rem; line-height: 1.8; }
+.prose-cw h1 { color: #E8ECF4; font-size: 1.8rem; font-weight: 800; margin: 1.75rem 0 0.75rem; }
+.prose-cw h2 { color: #34D399; font-size: 1.4rem; font-weight: 700; margin: 1.75rem 0 0.6rem; }
+.prose-cw h3 { color: #34D399; font-size: 1.15rem; font-weight: 700; margin: 1.4rem 0 0.5rem; }
 .prose-cw p { margin: 0.75rem 0; }
-.prose-cw a { color: #89b4fa; text-decoration: underline; }
-.prose-cw a:hover { color: #cba6f7; }
+.prose-cw a { color: #818CF8; text-decoration: underline; }
+.prose-cw a:hover { color: #6366F1; }
 .prose-cw ul { padding-left: 1.4rem; list-style: disc; margin: 0.75rem 0; }
 .prose-cw ol { padding-left: 1.4rem; list-style: decimal; margin: 0.75rem 0; }
 .prose-cw li { margin-bottom: 0.35rem; }
-.prose-cw img { border-radius: 0.75rem; margin: 1.25rem 0; max-width: 100%; height: auto; border: 1px solid #45475a; }
-.prose-cw blockquote { border-left: 3px solid #cba6f7; padding-left: 1rem; margin: 1rem 0; color: #a6adc8; font-style: italic; }
-.prose-cw code { background: #313244; padding: 0.15rem 0.4rem; border-radius: 0.35rem; font-size: 0.875em; }
-.prose-cw pre { background: #181825; padding: 1rem; border-radius: 0.75rem; overflow-x: auto; margin: 1rem 0; border: 1px solid #45475a; }
+.prose-cw img { border-radius: 0.75rem; margin: 1.25rem 0; max-width: 100%; height: auto; border: 1px solid #283149; }
+.prose-cw blockquote { border-left: 3px solid #6366F1; padding-left: 1rem; margin: 1rem 0; color: #B7C0D4; font-style: italic; }
+.prose-cw code { background: #1A2336; padding: 0.15rem 0.4rem; border-radius: 0.35rem; font-size: 0.875em; }
+.prose-cw pre { background: #090D15; padding: 1rem; border-radius: 0.75rem; overflow-x: auto; margin: 1rem 0; border: 1px solid #283149; }
 .prose-cw pre code { background: none; padding: 0; }
-.prose-cw strong { color: #f9e2af; }
-.prose-cw hr { border: 0; border-top: 1px solid #45475a; margin: 2rem 0; }
+.prose-cw strong { color: #FBBF24; }
+.prose-cw hr { border: 0; border-top: 1px solid #283149; margin: 2rem 0; }
 .prose-cw table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
-.prose-cw th, .prose-cw td { border: 1px solid #45475a; padding: 0.5rem 0.75rem; text-align: left; }
-.prose-cw th { background: #313244; }
+.prose-cw th, .prose-cw td { border: 1px solid #283149; padding: 0.5rem 0.75rem; text-align: left; }
+.prose-cw th { background: #1A2336; }

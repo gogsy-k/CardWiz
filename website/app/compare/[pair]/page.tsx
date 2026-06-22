@@ -205,7 +205,7 @@ export default async function ComparePage(props: { params: Promise<{ pair: strin
       {/* CTA */}
       <div className="mt-10 rounded-2xl border border-border bg-surface2 p-5 text-center">
         <p className="text-sm text-subtle">Abhi bhi confused? Apni spending batao, AI dono mein se best suggest karega.</p>
-        <Link href="/ai" className="mt-3 inline-block rounded-xl bg-accent px-6 py-3 text-sm font-bold text-bg hover:bg-blue">
+        <Link href="/ai" className="mt-3 inline-block rounded-xl bg-accent px-6 py-3 text-sm font-bold text-onaccent hover:bg-blue">
           🤖 AI se poocho
         </Link>
       </div>

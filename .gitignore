@@ -9,6 +9,11 @@ node_modules/
 # Claude Code — personal/machine-specific settings (shared settings.json is fine)
 .claude/settings.local.json
 
+# Installed skills / agent tooling (local, not project code)
+.agents/
+.claude/skills/
+skills-lock.json
+
 # OS junk
 .DS_Store
 Thumbs.db

@@ -71,7 +71,7 @@ function EmailPrefsToggle({ isPremium }: { isPremium: boolean }) {
           </div>
           <p className="text-xs text-muted mt-0.5">Opt-in monthly email with your savings summary.</p>
         </div>
-        <Link href="/pricing" className="shrink-0 rounded-lg bg-accent px-3 py-1.5 text-xs font-bold text-bg">
+        <Link href="/pricing" className="shrink-0 rounded-lg bg-accent px-3 py-1.5 text-xs font-bold text-onaccent">
           Upgrade →
         </Link>
       </div>
@@ -130,7 +130,7 @@ export default function AccountPage() {
             className="h-16 w-16 rounded-full"
           />
         ) : (
-          <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-accent text-2xl font-black text-bg">
+          <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-accent text-2xl font-black text-onaccent">
             {initial}
           </span>
         )}
@@ -141,7 +141,7 @@ export default function AccountPage() {
           <span
             className={`mt-2 inline-block rounded-full px-3 py-1 text-xs font-bold ${
               isPremium
-                ? "bg-accent text-bg"
+                ? "bg-accent text-onaccent"
                 : "border border-border text-subtle"
             }`}
           >
@@ -152,7 +152,7 @@ export default function AccountPage() {
         {!isPremium && (
           <Link
             href="/pricing"
-            className="shrink-0 rounded-xl bg-accent px-4 py-2 text-sm font-bold text-bg transition-colors hover:bg-blue"
+            className="shrink-0 rounded-xl bg-accent px-4 py-2 text-sm font-bold text-onaccent transition-colors hover:bg-blue"
           >
             Upgrade →
           </Link>
@@ -173,7 +173,7 @@ export default function AccountPage() {
           </p>
           <Link
             href="/pricing"
-            className="inline-block rounded-xl bg-accent px-6 py-2.5 text-sm font-bold text-bg transition-colors hover:bg-blue"
+            className="inline-block rounded-xl bg-accent px-6 py-2.5 text-sm font-bold text-onaccent transition-colors hover:bg-blue"
           >
             See all plans →
           </Link>

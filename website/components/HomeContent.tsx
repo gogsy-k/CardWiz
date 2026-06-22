@@ -57,7 +57,7 @@ export default function HomeContent({
     <>
       {/* HERO */}
       <section className="relative overflow-hidden">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-[radial-gradient(ellipse_60%_60%_at_50%_0%,rgba(203,166,247,0.18),transparent_70%)]" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-[420px] bg-[radial-gradient(ellipse_60%_60%_at_50%_0%,rgba(99,102,241,0.18),transparent_70%)]" />
         <div className="mx-auto max-w-4xl px-5 pb-16 pt-20 text-center sm:pt-28">
           <span className="inline-block rounded-full border border-border bg-surface px-4 py-1.5 text-xs font-semibold text-green">
             {t("home_badge")}
@@ -74,7 +74,7 @@ export default function HomeContent({
               target="_blank"
               rel="noopener"
               onClick={() => track("install_cta", { location: "home_hero" })}
-              className="rounded-xl bg-accent px-6 py-3.5 text-sm font-bold text-bg transition-colors hover:bg-blue"
+              className="rounded-xl bg-accent px-6 py-3.5 text-sm font-bold text-onaccent transition-colors hover:bg-blue"
             >
               {t(INSTALL_CTA_KEY)}
             </a>
@@ -252,7 +252,7 @@ export default function HomeContent({
           href={INSTALL_HREF}
           target="_blank"
           rel="noopener"
-          className="mt-7 inline-block rounded-xl bg-accent px-7 py-4 text-sm font-bold text-bg transition-colors hover:bg-blue"
+          className="mt-7 inline-block rounded-xl bg-accent px-7 py-4 text-sm font-bold text-onaccent transition-colors hover:bg-blue"
         >
           {t(INSTALL_CTA_KEY)}
         </a>

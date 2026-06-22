@@ -316,7 +316,7 @@ function RecCard({ rec, hero = false }: { rec: CardRec; hero?: boolean }) {
       <div className="flex items-start justify-between gap-3">
         <div>
           {hero && (
-            <span className="mb-1.5 inline-block rounded-full bg-accent px-2.5 py-0.5 text-[10px] font-bold text-bg">
+            <span className="mb-1.5 inline-block rounded-full bg-accent px-2.5 py-0.5 text-[10px] font-bold text-onaccent">
               ⭐ {t("quiz_hero_badge")}
             </span>
           )}
@@ -367,7 +367,7 @@ function RecCard({ rec, hero = false }: { rec: CardRec; hero?: boolean }) {
           href={`/go/${c.id}`}
           target="_blank"
           rel="noopener"
-          className="flex-1 rounded-xl bg-accent px-4 py-2.5 text-center text-sm font-bold text-bg transition-colors hover:bg-blue"
+          className="flex-1 rounded-xl bg-accent px-4 py-2.5 text-center text-sm font-bold text-onaccent transition-colors hover:bg-blue"
         >
           {t("quiz_apply")}
         </a>

@@ -66,7 +66,7 @@ export default function CardFinder({ cards }: { cards: Card[] }) {
             onClick={() => setVariant(v)}
             className={`rounded-lg px-4 py-1.5 text-sm font-semibold capitalize transition-colors ${
               variant === v
-                ? "bg-accent text-bg"
+                ? "bg-accent text-onaccent"
                 : "border border-border bg-surface text-subtle hover:text-fg"
             }`}
           >

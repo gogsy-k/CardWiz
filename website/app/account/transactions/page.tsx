@@ -154,7 +154,7 @@ function AddForm({
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-lg bg-accent px-5 py-2 text-sm font-bold text-bg transition-opacity disabled:opacity-50"
+          className="rounded-lg bg-accent px-5 py-2 text-sm font-bold text-onaccent transition-opacity disabled:opacity-50"
         >
           {submitting ? "Saving…" : "Add"}
         </button>
@@ -290,7 +290,7 @@ export default function TransactionsPage() {
             )}
             <button
               onClick={() => setShowForm(true)}
-              className="shrink-0 rounded-xl bg-accent px-4 py-2 text-sm font-bold text-bg"
+              className="shrink-0 rounded-xl bg-accent px-4 py-2 text-sm font-bold text-onaccent"
             >
               + Add
             </button>
@@ -309,7 +309,7 @@ export default function TransactionsPage() {
           </p>
           <Link
             href="/pricing"
-            className="inline-block rounded-xl bg-accent px-6 py-2.5 text-sm font-bold text-bg"
+            className="inline-block rounded-xl bg-accent px-6 py-2.5 text-sm font-bold text-onaccent"
           >
             Upgrade to Premium →
           </Link>
@@ -365,7 +365,7 @@ export default function TransactionsPage() {
         </div>
         <Link
           href="/account/savings"
-          className="shrink-0 rounded-lg bg-accent px-3 py-1.5 text-xs font-bold text-bg"
+          className="shrink-0 rounded-lg bg-accent px-3 py-1.5 text-xs font-bold text-onaccent"
         >
           View →
         </Link>

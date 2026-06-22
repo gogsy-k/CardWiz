@@ -19,7 +19,7 @@ export default function PricingPlans() {
             key={p}
             onClick={() => setPeriod(p)}
             className={`rounded-full px-5 py-2 text-sm font-bold transition-colors ${
-              period === p ? "bg-accent text-bg" : "text-subtle hover:text-fg"
+              period === p ? "bg-accent text-onaccent" : "text-subtle hover:text-fg"
             }`}
           >
             {p === "monthly" ? t("toggle_monthly") : t("toggle_yearly")}
@@ -49,7 +49,7 @@ export default function PricingPlans() {
               }`}
             >
               {plan.badge && (
-                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-3 py-1 text-xs font-bold text-bg">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-3 py-1 text-xs font-bold text-onaccent">
                   {plan.badge}
                 </span>
               )}
@@ -79,7 +79,7 @@ export default function PricingPlans() {
                   href={INSTALL_HREF}
                   target="_blank"
                   rel="noopener"
-                  className="mt-6 rounded-xl bg-accent px-5 py-3 text-center text-sm font-bold text-bg transition-colors hover:bg-blue"
+                  className="mt-6 rounded-xl bg-accent px-5 py-3 text-center text-sm font-bold text-onaccent transition-colors hover:bg-blue"
                 >
                   {t(INSTALL_CTA_KEY)}
                 </a>
@@ -92,7 +92,7 @@ export default function PricingPlans() {
                   )}`}
                   className={`mt-6 rounded-xl px-5 py-3 text-center text-sm font-bold transition-colors ${
                     plan.highlighted
-                      ? "bg-accent text-bg hover:bg-blue"
+                      ? "bg-accent text-onaccent hover:bg-blue"
                       : "border border-border text-accent hover:border-accent"
                   }`}
                 >

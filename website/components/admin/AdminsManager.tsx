@@ -65,7 +65,7 @@ export default function AdminsManager() {
         {data?.superAdmins.map((e) => (
           <div key={e} className="flex items-center justify-between rounded-lg bg-surface px-3 py-2 text-sm">
             <span>{e}</span>
-            <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold text-bg">SUPER</span>
+            <span className="rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold text-onaccent">SUPER</span>
           </div>
         ))}
         {data?.admins.map((a) => (
@@ -95,7 +95,7 @@ export default function AdminsManager() {
         <button
           onClick={add}
           disabled={busy}
-          className="rounded-xl bg-accent px-4 py-2 text-sm font-bold text-bg transition-colors hover:bg-blue disabled:opacity-50"
+          className="rounded-xl bg-accent px-4 py-2 text-sm font-bold text-onaccent transition-colors hover:bg-blue disabled:opacity-50"
         >
           Add
         </button>

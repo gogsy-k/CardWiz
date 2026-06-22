@@ -135,7 +135,7 @@ export default function SavingsPage() {
             onClick={() => setPeriodIdx(i)}
             className={`rounded-full px-4 py-1.5 text-xs font-bold transition-colors ${
               i === periodIdx
-                ? "bg-accent text-bg"
+                ? "bg-accent text-onaccent"
                 : "border border-border text-muted hover:border-accent hover:text-text"
             }`}
           >
@@ -172,7 +172,7 @@ export default function SavingsPage() {
               </p>
               <Link
                 href="/account/transactions"
-                className="inline-block rounded-xl bg-accent px-5 py-2.5 text-sm font-bold text-bg"
+                className="inline-block rounded-xl bg-accent px-5 py-2.5 text-sm font-bold text-onaccent"
               >
                 Add transactions →
               </Link>
@@ -243,7 +243,7 @@ export default function SavingsPage() {
               </p>
               <Link
                 href="/pricing"
-                className="inline-block rounded-xl bg-accent px-6 py-2.5 text-sm font-bold text-bg"
+                className="inline-block rounded-xl bg-accent px-6 py-2.5 text-sm font-bold text-onaccent"
               >
                 Upgrade to Premium →
               </Link>
@@ -308,7 +308,7 @@ export default function SavingsPage() {
                     </div>
                     <Link
                       href={`/go/${r.betterCardId}`}
-                      className="shrink-0 rounded-lg bg-accent px-3 py-1.5 text-xs font-bold text-bg"
+                      className="shrink-0 rounded-lg bg-accent px-3 py-1.5 text-xs font-bold text-onaccent"
                     >
                       View →
                     </Link>

@@ -119,7 +119,7 @@ export default function PortfolioScoreWidget({ isPremium }: { isPremium: boolean
                   </div>
                   <Link
                     href={`/go/${s.cardId}`}
-                    className="shrink-0 rounded-lg bg-accent px-3 py-1.5 text-xs font-bold text-bg"
+                    className="shrink-0 rounded-lg bg-accent px-3 py-1.5 text-xs font-bold text-onaccent"
                   >
                     View →
                   </Link>
@@ -136,7 +136,7 @@ export default function PortfolioScoreWidget({ isPremium }: { isPremium: boolean
               </p>
               <Link
                 href="/pricing"
-                className="inline-block rounded-lg bg-accent px-4 py-1.5 text-xs font-bold text-bg"
+                className="inline-block rounded-lg bg-accent px-4 py-1.5 text-xs font-bold text-onaccent"
               >
                 Upgrade →
               </Link>

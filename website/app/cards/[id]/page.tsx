@@ -54,7 +54,7 @@ export default async function CardDetail(props: PageProps<"/cards/[id]">) {
       {/* Header */}
       <div className="mt-4 rounded-2xl border border-border bg-surface2 p-7">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="rounded-md bg-accent px-2.5 py-1 text-[11px] font-bold uppercase text-bg">
+          <span className="rounded-md bg-accent px-2.5 py-1 text-[11px] font-bold uppercase text-onaccent">
             {card.cardType}
           </span>
           <span className="text-xs font-semibold uppercase tracking-wide text-muted">
@@ -144,7 +144,7 @@ export default async function CardDetail(props: PageProps<"/cards/[id]">) {
           href={INSTALL_HREF}
           target="_blank"
           rel="noopener"
-          className="mt-4 inline-block rounded-xl bg-accent px-6 py-3 text-sm font-bold text-bg transition-colors hover:bg-blue"
+          className="mt-4 inline-block rounded-xl bg-accent px-6 py-3 text-sm font-bold text-onaccent transition-colors hover:bg-blue"
         >
           {EXTENSION_PUBLISHED ? "⚡ CardWiz free mein add karo" : "🔔 Launch pe notify karo"}
         </a>

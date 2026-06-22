@@ -137,7 +137,7 @@ function SubmitForm({ onSubmitted }: { onSubmitted: (o: Offer) => void }) {
       {error && <p className="text-xs text-red-400">{error}</p>}
 
       <button type="submit" disabled={submitting}
-        className="rounded-lg bg-accent px-5 py-2 text-sm font-bold text-bg disabled:opacity-50">
+        className="rounded-lg bg-accent px-5 py-2 text-sm font-bold text-onaccent disabled:opacity-50">
         {submitting ? "Submitting…" : "Submit Offer"}
       </button>
     </form>
@@ -170,12 +170,12 @@ export default function OffersPage() {
       {/* Bank filter */}
       <div className="flex flex-wrap gap-2">
         <button onClick={() => setBank("")}
-          className={`rounded-full px-3 py-1.5 text-xs font-bold border transition-colors ${!bank ? "bg-accent text-bg border-accent" : "border-border hover:border-accent"}`}>
+          className={`rounded-full px-3 py-1.5 text-xs font-bold border transition-colors ${!bank ? "bg-accent text-onaccent border-accent" : "border-border hover:border-accent"}`}>
           All
         </button>
         {BANKS.slice(0, 8).map((b) => (
           <button key={b} onClick={() => setBank(b === bank ? "" : b)}
-            className={`rounded-full px-3 py-1.5 text-xs font-bold border transition-colors ${bank === b ? "bg-accent text-bg border-accent" : "border-border hover:border-accent"}`}>
+            className={`rounded-full px-3 py-1.5 text-xs font-bold border transition-colors ${bank === b ? "bg-accent text-onaccent border-accent" : "border-border hover:border-accent"}`}>
             {b}
           </button>
         ))}
@@ -203,7 +203,7 @@ export default function OffersPage() {
           <div className="rounded-xl border border-border bg-surface2 p-5 text-center">
             <div className="font-bold text-sm mb-1">Offer share karna hai?</div>
             <p className="text-xs text-muted mb-4">Koi achha bank offer pata hai? Sign in karke submit karo.</p>
-            <Link href="/sign-in" className="inline-block rounded-xl bg-accent px-5 py-2.5 text-sm font-bold text-bg">
+            <Link href="/sign-in" className="inline-block rounded-xl bg-accent px-5 py-2.5 text-sm font-bold text-onaccent">
               Sign in to submit →
             </Link>
           </div>

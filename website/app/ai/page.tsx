@@ -45,7 +45,7 @@ function Bubble({ msg }: { msg: Msg }) {
         <div
           className={`rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap ${
             isUser
-              ? "bg-accent text-bg rounded-br-sm"
+              ? "bg-accent text-onaccent rounded-br-sm"
               : msg.error
               ? "bg-red-400/10 text-red-400 border border-red-400/20 rounded-bl-sm"
               : "bg-surface2 border border-border rounded-bl-sm"
@@ -161,7 +161,7 @@ export default function AiPage() {
             <div className="rounded-xl border border-accent/30 bg-accent/5 p-4 text-center text-sm mt-4">
               <div className="font-bold mb-1">Sign in for more queries</div>
               <p className="text-xs text-muted mb-3">Guests: 3/day · Free: 5/day · Premium: unlimited</p>
-              <Link href="/sign-in" className="inline-block rounded-lg bg-accent px-4 py-2 text-xs font-bold text-bg">
+              <Link href="/sign-in" className="inline-block rounded-lg bg-accent px-4 py-2 text-xs font-bold text-onaccent">
                 Sign in →
               </Link>
             </div>
@@ -194,7 +194,7 @@ export default function AiPage() {
         <div className="rounded-xl border border-accent/30 bg-accent/5 p-4 text-center">
           <div className="font-bold mb-1">💎 Unlimited AI queries chahiye?</div>
           <p className="text-xs text-muted mb-3">Premium pe upgrade karo — unlimited queries + full Missed Savings Report</p>
-          <Link href="/pricing" className="inline-block rounded-lg bg-accent px-5 py-2 text-xs font-bold text-bg">
+          <Link href="/pricing" className="inline-block rounded-lg bg-accent px-5 py-2 text-xs font-bold text-onaccent">
             Upgrade to Premium →
           </Link>
         </div>
@@ -220,7 +220,7 @@ export default function AiPage() {
             disabled={loading || !input.trim() || rateLimited}
             className="shrink-0 h-9 w-9 rounded-xl bg-accent flex items-center justify-center disabled:opacity-40 transition-opacity"
           >
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-bg rotate-90">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-onaccent rotate-90">
               <line x1="12" y1="19" x2="12" y2="5" /><polyline points="5 12 12 5 19 12" />
             </svg>
           </button>

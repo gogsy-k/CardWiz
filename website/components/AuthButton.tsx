@@ -98,7 +98,7 @@ function PlanPill({ plan, label }: { plan: "free" | "premium"; label: string }) 
   return (
     <span
       className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-        plan === "premium" ? "bg-accent text-bg" : "border border-border text-subtle"
+        plan === "premium" ? "bg-accent text-onaccent" : "border border-border text-subtle"
       }`}
     >
       {label}
@@ -124,7 +124,7 @@ function Avatar({ user, size }: { user: { picture: string; name: string }; size:
   }
   return (
     <span
-      className="flex items-center justify-center rounded-full bg-accent font-bold text-bg"
+      className="flex items-center justify-center rounded-full bg-accent font-bold text-onaccent"
       style={{ width: size, height: size, fontSize: size * 0.45 }}
     >
       {initial}

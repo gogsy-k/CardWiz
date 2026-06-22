@@ -57,7 +57,7 @@ function ReviewCard({ review, onDelete }: { review: Review; onDelete?: () => voi
           // eslint-disable-next-line @next/next/no-img-element
           <img src={review.userPicture} alt="" className="h-7 w-7 rounded-full" referrerPolicy="no-referrer" />
         ) : (
-          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-accent text-xs font-black text-bg">
+          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-accent text-xs font-black text-onaccent">
             {(review.userName || "?").charAt(0).toUpperCase()}
           </span>
         )}
@@ -145,7 +145,7 @@ function WriteReviewForm({
       <button
         type="submit"
         disabled={submitting}
-        className="rounded-lg bg-accent px-4 py-2 text-sm font-bold text-bg transition-opacity disabled:opacity-50"
+        className="rounded-lg bg-accent px-4 py-2 text-sm font-bold text-onaccent transition-opacity disabled:opacity-50"
       >
         {submitting ? "Saving…" : existingReview ? "Update review" : "Post review"}
       </button>

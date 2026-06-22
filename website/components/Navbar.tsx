@@ -70,7 +70,7 @@ export default function Navbar() {
             target="_blank"
             rel="noopener"
             onClick={() => track("install_cta", { location: "navbar" })}
-            className="rounded-lg bg-accent px-4 py-2 text-sm font-bold text-bg transition-colors hover:bg-blue"
+            className="rounded-lg bg-accent px-4 py-2 text-sm font-bold text-onaccent transition-colors hover:bg-blue"
           >
             {t(INSTALL_CTA_KEY)}
           </a>
@@ -128,7 +128,7 @@ export default function Navbar() {
             href={INSTALL_HREF}
             target="_blank"
             rel="noopener"
-            className="mt-1 rounded-lg bg-accent px-4 py-2 text-center text-sm font-bold text-bg"
+            className="mt-1 rounded-lg bg-accent px-4 py-2 text-center text-sm font-bold text-onaccent"
           >
             {t(INSTALL_CTA_KEY)}
           </a>

@@ -135,7 +135,7 @@ export default function PostForm({ post }: { post?: Post }) {
         <button
           onClick={() => save("published")}
           disabled={busy}
-          className="rounded-xl bg-accent px-5 py-2.5 text-sm font-bold text-bg transition-colors hover:bg-blue disabled:opacity-50"
+          className="rounded-xl bg-accent px-5 py-2.5 text-sm font-bold text-onaccent transition-colors hover:bg-blue disabled:opacity-50"
         >
           {editing ? "Update & Publish" : "Publish"}
         </button>

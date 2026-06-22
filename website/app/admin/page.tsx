@@ -33,7 +33,7 @@ function Dashboard() {
         {(["news", "offers"] as Tab[]).map((t) => (
           <button key={t} onClick={() => setTab(t)}
             className={`rounded-lg px-4 py-2 text-sm font-bold capitalize transition-colors ${
-              tab === t ? "bg-accent text-bg" : "border border-border hover:border-accent"
+              tab === t ? "bg-accent text-onaccent" : "border border-border hover:border-accent"
             }`}>
             {t === "news" ? "News" : "Offers Moderation"}
           </button>
@@ -83,7 +83,7 @@ function EmailTestCard() {
       <button
         onClick={send}
         disabled={state === "sending"}
-        className="mt-4 rounded-xl bg-accent px-4 py-2 text-sm font-bold text-bg transition-colors hover:bg-blue disabled:opacity-50"
+        className="mt-4 rounded-xl bg-accent px-4 py-2 text-sm font-bold text-onaccent transition-colors hover:bg-blue disabled:opacity-50"
       >
         {state === "sending" ? "Sending…" : "Send me a test report"}
       </button>
@@ -109,7 +109,7 @@ function NewsTab() {
       <div className="flex items-center justify-between">
         <h2 className="text-lg font-extrabold">News Posts</h2>
         <Link href="/admin/new"
-          className="rounded-xl bg-accent px-4 py-2 text-sm font-bold text-bg transition-colors hover:bg-blue">
+          className="rounded-xl bg-accent px-4 py-2 text-sm font-bold text-onaccent transition-colors hover:bg-blue">
           + New post
         </Link>
       </div>
@@ -176,7 +176,7 @@ function OffersTab() {
           {(["pending", "approved", "rejected"] as const).map((s) => (
             <button key={s} onClick={() => setFilter(s)}
               className={`rounded-lg px-3 py-1.5 text-xs font-bold capitalize transition-colors ${
-                filter === s ? "bg-accent text-bg" : "border border-border hover:border-accent"
+                filter === s ? "bg-accent text-onaccent" : "border border-border hover:border-accent"
               }`}>
               {s}
             </button>
