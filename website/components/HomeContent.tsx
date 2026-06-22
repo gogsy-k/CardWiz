@@ -5,7 +5,9 @@ import { useLang } from "@/contexts/LangContext";
 import QuizTeaser from "@/components/QuizTeaser";
 import PostCard from "@/components/PostCard";
 import type { Post } from "@/lib/posts";
+import type { Card } from "@/lib/cards";
 import NotifyCTA from "@/components/NotifyCTA";
+import SavingsCalculator from "@/components/SavingsCalculator";
 
 const FEAT_ICONS = ["🛒", "💳", "🏦", "🔔", "🔒", "⭐"];
 
@@ -14,11 +16,13 @@ export default function HomeContent({
   credit,
   banks,
   posts = [],
+  calcCards = [],
 }: {
   total: number;
   credit: number;
   banks: number;
   posts?: Post[];
+  calcCards?: Card[];
 }) {
   const { t } = useLang();
 
@@ -77,41 +81,12 @@ export default function HomeContent({
             </Link>
           </div>
 
-          {/* Widget demo */}
-          <div className="mx-auto mt-16 max-w-xs rounded-2xl border border-border bg-bg p-4 text-left shadow-2xl">
-            <div className="mb-2 flex items-center justify-between">
-              <span className="text-sm font-bold text-accent">💳 CardWiz</span>
-              <span className="text-xs text-muted">✕</span>
+          {/* Interactive Savings Calculator — live proof, not a static mockup */}
+          {calcCards.length > 0 && (
+            <div className="mt-14">
+              <SavingsCalculator cards={calcCards} />
             </div>
-            <div className="mb-2.5 text-xs text-subtle">{t("home_demo_caption")}</div>
-            {[
-              { name: "⭐ ICICI Coral", val: "≈₹30", tag: "in points", off: "+₹600 instant off", best: true },
-              { name: "Axis Magnus", val: "≈₹360", tag: "in miles", off: "", best: false },
-              { name: "Amazon Pay ICICI", val: "₹300", tag: "cashback", off: "", best: false },
-            ].map((r) => (
-              <div
-                key={r.name}
-                className={`mb-1.5 flex items-center justify-between rounded-lg border px-2.5 py-2 ${
-                  r.best ? "border-green bg-green/10" : "border-border bg-surface"
-                }`}
-              >
-                <span className="text-xs font-semibold">{r.name}</span>
-                <div className="flex flex-col items-end gap-1">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-sm font-extrabold text-green">{r.val}</span>
-                    <span className="rounded bg-blue px-1.5 py-0.5 text-[8px] font-bold text-bg">
-                      {r.tag}
-                    </span>
-                  </div>
-                  {r.off && (
-                    <span className="rounded bg-blue px-1.5 py-0.5 text-[10px] font-extrabold text-bg">
-                      {r.off}
-                    </span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
+          )}
         </div>
       </section>
 

@@ -33,6 +33,14 @@ export function getBestCategory(slug: string): BestCategory | undefined {
   return BEST_CARD_CATEGORIES.find((c) => c.slug === slug);
 }
 
+/** Effective reward rate a card gives for a category — explicit rule, else base rate.
+ *  (Unlike rankCardsForCategory, this never drops base-rate-only cards — used by the
+ *  Savings Calculator where every curated card needs a number.) */
+export function rateForCategory(card: Card, category: string): number {
+  const rule = (card.rules ?? []).find((r) => r.categories?.includes(category));
+  return rule ? rule.effectiveRate : (card.baseRate ?? 0);
+}
+
 export type RankedCard = { card: Card; rate: number };
 
 /** Cards jinke paas is category ka explicit reward rule hai, rate-desc se ranked. */

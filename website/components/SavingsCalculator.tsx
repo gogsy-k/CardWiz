@@ -1,0 +1,135 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { track } from "@vercel/analytics";
+import { type Card, TYPE_LABEL } from "@/lib/cards";
+import { rateForCategory } from "@/lib/best-cards";
+
+const PLATFORMS: { category: string; label: string; icon: string }[] = [
+  { category: "amazon", label: "Amazon", icon: "🛒" },
+  { category: "flipkart", label: "Flipkart", icon: "🛍️" },
+  { category: "food_delivery", label: "Swiggy/Zomato", icon: "🍔" },
+  { category: "dining", label: "Dining", icon: "🍽️" },
+  { category: "fuel", label: "Fuel", icon: "⛽" },
+  { category: "travel", label: "Travel", icon: "✈️" },
+  { category: "online_shopping", label: "Online", icon: "💻" },
+];
+
+const MIN = 500;
+const MAX = 50000;
+const fmt = (n: number) => "₹" + Math.round(n).toLocaleString("en-IN");
+
+export default function SavingsCalculator({ cards }: { cards: Card[] }) {
+  const [category, setCategory] = useState("amazon");
+  const [amount, setAmount] = useState(10000);
+
+  // Every curated card gets a number (rateForCategory falls back to base rate),
+  // so the list is never empty and there's no division anywhere → no NaN.
+  const ranked = cards
+    .map((c) => {
+      const rate = rateForCategory(c, category);
+      return { card: c, rate, reward: (amount * rate) / 100 };
+    })
+    .sort((a, b) => b.reward - a.reward)
+    .slice(0, 4);
+
+  const top = ranked[0];
+  const second = ranked[1];
+  const delta = top && second ? top.reward - second.reward : 0;
+
+  return (
+    <div className="mx-auto w-full max-w-sm rounded-2xl border border-border bg-surface2 p-5 text-left shadow-2xl">
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-bold text-accent">💳 Savings Calculator</span>
+        <span className="rounded-full bg-green/15 px-2 py-0.5 text-[10px] font-bold text-green">live</span>
+      </div>
+
+      {/* Platform chips */}
+      <div className="mt-3 flex flex-wrap gap-1.5" role="group" aria-label="Platform">
+        {PLATFORMS.map((p) => (
+          <button
+            key={p.category}
+            type="button"
+            onClick={() => {
+              setCategory(p.category);
+              track("calc_platform", { platform: p.category });
+            }}
+            aria-pressed={category === p.category}
+            className={`rounded-full px-2.5 py-1 text-xs font-semibold transition-colors ${
+              category === p.category
+                ? "bg-accent text-onaccent"
+                : "border border-border text-subtle hover:text-fg"
+            }`}
+          >
+            {p.icon} {p.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Amount slider */}
+      <div className="mt-4">
+        <div className="flex items-center justify-between text-xs">
+          <label htmlFor="calc-amount" className="text-subtle">
+            Kitna kharch karoge?
+          </label>
+          <span className="font-bold text-fg">{fmt(amount)}</span>
+        </div>
+        <input
+          id="calc-amount"
+          type="range"
+          min={MIN}
+          max={MAX}
+          step={500}
+          value={amount}
+          onChange={(e) => setAmount(Number(e.target.value))}
+          aria-valuetext={fmt(amount)}
+          className="mt-2 w-full cursor-pointer accent-[var(--color-accent)]"
+        />
+      </div>
+
+      {/* Ranked results */}
+      <div className="mt-4 space-y-1.5">
+        {ranked.map((r, i) => (
+          <div
+            key={r.card.id}
+            className={`flex items-center justify-between rounded-lg border px-3 py-2 ${
+              i === 0 ? "border-green bg-green/10" : "border-border bg-surface"
+            }`}
+          >
+            <div className="min-w-0">
+              <div className="truncate text-xs font-semibold">
+                {i === 0 ? "⭐ " : ""}
+                {r.card.name}
+              </div>
+              <div className="text-[10px] text-muted">
+                {r.rate}% · {TYPE_LABEL[r.card.type]}
+              </div>
+            </div>
+            <div className={`shrink-0 text-sm font-extrabold ${i === 0 ? "text-green" : "text-subtle"}`}>
+              {fmt(r.reward)}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {top && delta > 0 && (
+        <p className="mt-3 text-xs text-subtle">
+          <span className="font-bold text-green">{top.card.name.split(" ").slice(0, 2).join(" ")}</span> se{" "}
+          <span className="font-bold text-green">+{fmt(delta)}</span> zyada — har {fmt(amount)} pe.
+        </p>
+      )}
+
+      <p className="mt-2 text-[10px] text-muted">
+        Estimate — actual rewards card terms pe depend karte hain.
+      </p>
+
+      <Link
+        href="/cards"
+        className="mt-3 block rounded-lg bg-accent px-4 py-2 text-center text-xs font-bold text-onaccent transition-colors hover:bg-blue"
+      >
+        Sabhi 195+ cards compare karo →
+      </Link>
+    </div>
+  );
+}
