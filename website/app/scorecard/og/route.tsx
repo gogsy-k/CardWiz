@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 
+export const runtime = "edge"; // next/og ImageResponse needs the edge runtime in route handlers
 export const alt = "My CardWiz savings scorecard";
 export const contentType = "image/png";
 
