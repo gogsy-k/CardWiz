@@ -3,7 +3,7 @@
  * requireAdmin / requireSuperAdmin; this is just the typed client.
  */
 import { authedFetch } from "./auth";
-import type { Post } from "./posts";
+import type { Post, PostLang } from "./posts";
 
 export type AdminPostInput = {
   title: string;
@@ -13,6 +13,8 @@ export type AdminPostInput = {
   category?: string;
   status: "draft" | "published";
   slug?: string;
+  lang?: PostLang;
+  translationGroup?: string;
 };
 
 export type AdminListResponse = {

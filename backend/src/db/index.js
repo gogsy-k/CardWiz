@@ -61,6 +61,7 @@ const posts = {
   create:        (...a) => driver.createPost(...a),
   update:        (...a) => driver.updatePost(...a),
   remove:        (...a) => driver.deletePost(...a),
+  listTranslations: (...a) => driver.listTranslations(...a),
 };
 
 const admins = {

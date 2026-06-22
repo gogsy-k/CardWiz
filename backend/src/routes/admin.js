@@ -38,6 +38,8 @@ async function uniqueSlug(base) {
 
 const cap = (s, n) => (typeof s === 'string' ? s.slice(0, n) : s);
 
+const LANGS = ['en', 'hinglish', 'hi'];
+
 function cleanPostInput(body) {
   return {
     title: cap((body.title || '').trim(), 200),
@@ -46,6 +48,8 @@ function cleanPostInput(body) {
     content: typeof body.content === 'string' ? body.content : '',
     category: cap((body.category || '').trim(), 60),
     status: body.status === 'published' ? 'published' : 'draft',
+    lang: LANGS.includes(body.lang) ? body.lang : 'hinglish',
+    translationGroup: cap((body.translationGroup || '').trim(), 80) || null,
   };
 }
 

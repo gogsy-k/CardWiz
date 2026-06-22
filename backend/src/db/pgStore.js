@@ -122,13 +122,19 @@ async function init(databaseUrl) {
       author_id     UUID REFERENCES users(id) ON DELETE SET NULL,
       author_name   TEXT,
       status        TEXT NOT NULL DEFAULT 'draft',
+      lang          TEXT NOT NULL DEFAULT 'hinglish',
+      translation_group TEXT,
       published_at  TIMESTAMPTZ,
       created_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
       updated_at    TIMESTAMPTZ NOT NULL DEFAULT now()
     );
   `);
+  // Migrations for existing deployments (idempotent).
+  await pool.query(`ALTER TABLE posts ADD COLUMN IF NOT EXISTS lang TEXT NOT NULL DEFAULT 'hinglish';`);
+  await pool.query(`ALTER TABLE posts ADD COLUMN IF NOT EXISTS translation_group TEXT;`);
   await pool.query(`
     CREATE INDEX IF NOT EXISTS posts_status_published_idx ON posts (status, published_at DESC);
+    CREATE INDEX IF NOT EXISTS posts_translation_group_idx ON posts (translation_group);
   `);
 
   // Admin allowlist — emails jinke paas admin access hai (super-admins config mein alag).
@@ -478,10 +484,22 @@ function rowToPost(r) {
     authorId: r.author_id,
     authorName: r.author_name || '',
     status: r.status,
+    lang: r.lang || 'hinglish',
+    translationGroup: r.translation_group || null,
     publishedAt: r.published_at,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
   };
+}
+
+// Published sibling translations (same group, different slug) — for hreflang + switcher.
+async function listTranslations(translationGroup, excludeSlug) {
+  if (!translationGroup) return [];
+  const res = await pool.query(
+    "SELECT slug, title, lang FROM posts WHERE translation_group=$1 AND status='published' AND slug<>$2 ORDER BY lang",
+    [translationGroup, excludeSlug || '']
+  );
+  return res.rows.map((r) => ({ slug: r.slug, title: r.title, lang: r.lang }));
 }
 
 async function listPublishedPosts({ limit = 50, offset = 0 } = {}) {
@@ -510,10 +528,11 @@ async function getPostById(id) {
 async function createPost(p) {
   const publishedAt = p.status === 'published' ? new Date().toISOString() : null;
   const res = await pool.query(
-    `INSERT INTO posts (slug, title, excerpt, cover_image, content, category, author_id, author_name, status, published_at)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *`,
+    `INSERT INTO posts (slug, title, excerpt, cover_image, content, category, author_id, author_name, status, lang, translation_group, published_at)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING *`,
     [p.slug, p.title, p.excerpt || null, p.coverImage || null, p.content, p.category || null,
-     p.authorId || null, p.authorName || null, p.status || 'draft', publishedAt]
+     p.authorId || null, p.authorName || null, p.status || 'draft',
+     p.lang || 'hinglish', p.translationGroup || null, publishedAt]
   );
   return rowToPost(res.rows[0]);
 }
@@ -527,7 +546,7 @@ async function updatePost(id, patch) {
   const res = await pool.query(
     `UPDATE posts SET
        title=$2, excerpt=$3, cover_image=$4, content=$5, category=$6, status=$7,
-       published_at=$8, updated_at=now()
+       lang=$9, translation_group=$10, published_at=$8, updated_at=now()
      WHERE id=$1 RETURNING *`,
     [
       id,
@@ -538,6 +557,8 @@ async function updatePost(id, patch) {
       patch.category ?? cur.category,
       patch.status ?? cur.status,
       publishedAt,
+      patch.lang ?? cur.lang,
+      patch.translationGroup ?? cur.translationGroup,
     ]
   );
   return rowToPost(res.rows[0]);
@@ -784,7 +805,7 @@ module.exports = {
   createPayment, findPendingPayments, markPaymentPaid,
   createSubscription, findPendingSubscriptions, markSubscriptionActive,
   listCatalog, countCatalog, upsertCard, deleteNotInCatalog,
-  listPublishedPosts, listAllPosts, getPostBySlug, getPostById, createPost, updatePost, deletePost,
+  listPublishedPosts, listAllPosts, getPostBySlug, getPostById, createPost, updatePost, deletePost, listTranslations,
   listAdmins, hasAdmin, addAdmin, removeAdmin,
   listReviewsForCard, upsertReview, removeReview,
   createTransaction, listTransactions, countTransactions, deleteTransaction,

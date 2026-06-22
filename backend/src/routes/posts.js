@@ -24,7 +24,9 @@ router.get('/:slug', async (req, res) => {
   try {
     const post = await db.posts.getBySlug(req.params.slug);
     if (!post || post.status !== 'published') return res.status(404).json({ error: 'Not found' });
-    res.json({ post });
+    // Sibling translations (other published languages of the same article).
+    const translations = await db.posts.listTranslations(post.translationGroup, post.slug);
+    res.json({ post, translations });
   } catch (err) {
     console.error('[posts/get]', err.message);
     res.status(502).json({ error: 'Post fetch fail' });

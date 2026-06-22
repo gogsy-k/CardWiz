@@ -238,6 +238,8 @@ async function createPost(p) {
     authorId: p.authorId || null,
     authorName: p.authorName || '',
     status: p.status || 'draft',
+    lang: p.lang || 'hinglish',
+    translationGroup: p.translationGroup || null,
     publishedAt: p.status === 'published' ? now : null,
     createdAt: now,
     updatedAt: now,
@@ -245,6 +247,14 @@ async function createPost(p) {
   cache.posts.push(post);
   persist();
   return post;
+}
+
+async function listTranslations(translationGroup, excludeSlug) {
+  load();
+  if (!translationGroup) return [];
+  return cache.posts
+    .filter((p) => p.translationGroup === translationGroup && p.status === 'published' && p.slug !== excludeSlug)
+    .map((p) => ({ slug: p.slug, title: p.title, lang: p.lang || 'hinglish' }));
 }
 
 async function updatePost(id, patch) {
@@ -256,6 +266,8 @@ async function updatePost(id, patch) {
   if (patch.coverImage !== undefined) p.coverImage = patch.coverImage;
   if (patch.content !== undefined) p.content = patch.content;
   if (patch.category !== undefined) p.category = patch.category;
+  if (patch.lang !== undefined) p.lang = patch.lang;
+  if (patch.translationGroup !== undefined) p.translationGroup = patch.translationGroup;
   if (patch.status !== undefined) {
     p.status = patch.status;
     if (patch.status === 'published' && !p.publishedAt) p.publishedAt = new Date().toISOString();
@@ -506,7 +518,7 @@ module.exports = {
   createPayment, findPendingPayments, markPaymentPaid,
   createSubscription, findPendingSubscriptions, markSubscriptionActive,
   listCatalog, countCatalog, upsertCard, deleteNotInCatalog,
-  listPublishedPosts, listAllPosts, getPostBySlug, getPostById, createPost, updatePost, deletePost,
+  listPublishedPosts, listAllPosts, getPostBySlug, getPostById, createPost, updatePost, deletePost, listTranslations,
   listAdmins, hasAdmin, addAdmin, removeAdmin,
   listReviewsForCard, upsertReview, removeReview,
   createTransaction, listTransactions, countTransactions, deleteTransaction,

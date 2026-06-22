@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import MarkdownEditor from "@/components/MarkdownEditor";
 import { adminCreatePost, adminUpdatePost, adminDeletePost, type AdminPostInput } from "@/lib/admin-api";
 import { cloudinaryEnabled, uploadImage } from "@/lib/cloudinary";
-import type { Post } from "@/lib/posts";
+import { type Post, type PostLang, LANG_LABEL } from "@/lib/posts";
 
 const inputCls =
   "w-full rounded-xl border border-border bg-surface2 px-3.5 py-2.5 text-sm text-fg outline-none focus:border-accent";
@@ -19,6 +19,8 @@ export default function PostForm({ post }: { post?: Post }) {
   const [category, setCategory] = useState(post?.category ?? "");
   const [coverImage, setCoverImage] = useState(post?.coverImage ?? "");
   const [content, setContent] = useState(post?.content ?? "");
+  const [lang, setLang] = useState<PostLang>(post?.lang ?? "hinglish");
+  const [translationGroup, setTranslationGroup] = useState(post?.translationGroup ?? "");
   const [busy, setBusy] = useState(false);
   const [coverUploading, setCoverUploading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -30,7 +32,10 @@ export default function PostForm({ post }: { post?: Post }) {
       return;
     }
     setBusy(true);
-    const input: AdminPostInput = { title, excerpt, category, coverImage, content, status };
+    const input: AdminPostInput = {
+      title, excerpt, category, coverImage, content, status,
+      lang, translationGroup: translationGroup.trim() || undefined,
+    };
     try {
       if (editing) await adminUpdatePost(post.id, input);
       else await adminCreatePost(input);
@@ -112,6 +117,30 @@ export default function PostForm({ post }: { post?: Post }) {
         // eslint-disable-next-line @next/next/no-img-element
         <img src={coverImage} alt="" loading="lazy" className="max-h-48 rounded-xl border border-border object-cover" />
       )}
+
+      {/* Multilingual: language + translation group (links versions for hreflang/SEO) */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <label className="mb-1 block text-xs font-semibold text-subtle">Language</label>
+          <select className={inputCls} value={lang} onChange={(e) => setLang(e.target.value as PostLang)}>
+            {(["hinglish", "en", "hi"] as PostLang[]).map((l) => (
+              <option key={l} value={l}>{LANG_LABEL[l]}</option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <label className="mb-1 block text-xs font-semibold text-subtle">Translation group (optional)</label>
+          <input
+            className={inputCls}
+            value={translationGroup}
+            onChange={(e) => setTranslationGroup(e.target.value)}
+            placeholder="e.g. rbi-rules-2026"
+          />
+          <p className="mt-1 text-[11px] text-muted">
+            Same id across the EN / Hindi / Hinglish versions of one article → links them (hreflang + "Read in" switcher).
+          </p>
+        </div>
+      </div>
 
       <div>
         <label className="mb-1 block text-xs font-semibold text-subtle">Excerpt (short summary)</label>
