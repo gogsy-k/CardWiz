@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getCards } from "@/lib/cards";
 import CardFinder from "@/components/CardFinder";
+import T from "@/components/T";
 import { BEST_CARD_CATEGORIES } from "@/lib/best-cards";
 import { COMPARE_PAIRS, pairToSlug } from "@/lib/compare";
 
@@ -16,10 +17,11 @@ export default async function CardsPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-5 py-12">
-      <h1 className="text-3xl font-extrabold sm:text-4xl">Find your best card</h1>
+      <h1 className="text-3xl font-extrabold sm:text-4xl">
+        <T k="cards_h1" />
+      </h1>
       <p className="mt-2 max-w-2xl text-subtle">
-        India ke {cards.length || "195+"} credit & debit cards ek jagah — reward rate, fee aur
-        category ke hisaab se compare karo. Kisi card pe click karke poori detail dekho.
+        <T k="cards_intro" vars={{ n: cards.length || "195+" }} />
       </p>
 
       <div className="mt-8">
@@ -36,9 +38,9 @@ export default async function CardsPage() {
 
       {/* Best card by category — SEO hub + internal links */}
       <section className="mt-14 border-t border-border pt-10">
-        <h2 className="text-xl font-extrabold">Best card by category</h2>
+        <h2 className="text-xl font-extrabold"><T k="cards_bestcat_h" /></h2>
         <p className="mt-1.5 text-sm text-subtle">
-          Apne kharch ke hisaab se sabse zyada rewards dene wale cards dekho.
+          <T k="cards_bestcat_p" />
         </p>
         <div className="mt-5 flex flex-wrap gap-2">
           {BEST_CARD_CATEGORIES.map((c) => (
@@ -57,11 +59,11 @@ export default async function CardsPage() {
       <section className="mt-12">
         <div className="flex items-end justify-between gap-3">
           <div>
-            <h2 className="text-xl font-extrabold">Popular comparisons</h2>
-            <p className="mt-1.5 text-sm text-subtle">Do cards ka side-by-side — kaunsa aapke liye behtar.</p>
+            <h2 className="text-xl font-extrabold"><T k="cards_compare_h" /></h2>
+            <p className="mt-1.5 text-sm text-subtle"><T k="cards_compare_p" /></p>
           </div>
           <Link href="/compare" className="shrink-0 text-sm font-bold text-accent hover:underline">
-            Compare any cards →
+            <T k="cards_compare_all" />
           </Link>
         </div>
         <div className="mt-5 flex flex-wrap gap-2">

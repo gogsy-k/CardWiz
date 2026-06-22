@@ -5,15 +5,10 @@ import Link from "next/link";
 import { track } from "@vercel/analytics";
 import { sendChatMessage, type TopCard } from "@/lib/ai-api";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLang } from "@/contexts/LangContext";
 import Reveal from "@/components/motion/Reveal";
 
-const SUGGESTIONS = [
-  "Swiggy pe ₹500 ka order — kaunsa card use karoon?",
-  "Flipkart pe ₹30,000 ka phone — best card?",
-  "IRCTC train booking ke liye konsa card best hai?",
-  "Travel card chahiye — lounge access bhi ho",
-  "Petrol ke liye sabse zyada reward dene wala card?",
-];
+const SUGGESTION_KEYS = ["ai_ex_1", "ai_ex_2", "ai_ex_3", "ai_ex_4", "ai_ex_5"];
 
 type Msg = {
   role: "user" | "assistant";
@@ -68,6 +63,7 @@ function Bubble({ msg }: { msg: Msg }) {
 
 export default function AiPage() {
   const { user } = useAuth();
+  const { t } = useLang();
   const isPremium = user?.plan === "premium";
 
   const [messages, setMessages] = useState<Msg[]>([]);
@@ -141,7 +137,7 @@ export default function AiPage() {
             🤖 CardWiz AI
             <span className="text-xs font-bold rounded-full bg-accent/15 text-accent px-2 py-0.5">Beta</span>
           </h1>
-          <p className="text-sm text-subtle mt-0.5">Credit card ke baare mein kuch bhi pucho</p>
+          <p className="text-sm text-subtle mt-0.5">{t("ai_sub")}</p>
         </div>
         {!isPremium && remaining !== null && (
           <div className="text-xs text-muted text-right">
@@ -154,18 +150,21 @@ export default function AiPage() {
       {/* Suggestions (only before first message) */}
       {messages.length === 0 && (
         <div className="space-y-2">
-          <div className="text-xs text-muted font-bold uppercase tracking-wide">Try these</div>
-          {SUGGESTIONS.map((s, i) => (
-            <Reveal key={s} delay={i * 0.06}>
-              <button
-                onClick={() => send(s)}
-                disabled={loading}
-                className="w-full text-left rounded-xl border border-border bg-surface2 px-4 py-3 text-sm hover:border-accent transition-colors disabled:opacity-50"
-              >
-                {s}
-              </button>
-            </Reveal>
-          ))}
+          <div className="text-xs text-muted font-bold uppercase tracking-wide">{t("ai_try")}</div>
+          {SUGGESTION_KEYS.map((key, i) => {
+            const prompt = t(key);
+            return (
+              <Reveal key={key} delay={i * 0.06}>
+                <button
+                  onClick={() => send(prompt)}
+                  disabled={loading}
+                  className="w-full text-left rounded-xl border border-border bg-surface2 px-4 py-3 text-sm hover:border-accent transition-colors disabled:opacity-50"
+                >
+                  {prompt}
+                </button>
+              </Reveal>
+            );
+          })}
           {!user && (
             <div className="rounded-xl border border-accent/30 bg-accent/5 p-4 text-center text-sm mt-4">
               <div className="font-bold mb-1">Sign in for more queries</div>
@@ -249,10 +248,10 @@ export default function AiPage() {
           </button>
         </div>
         <p className="text-center text-xs text-subtle mt-1.5">
-          Powered by Claude · Verify important details before applying
+          {t("ai_disclaimer")}
         </p>
         <p className="text-center text-xs text-subtle mt-0.5">
-          🔒 Yeh feature server + AI provider use karta hai (baaki CardWiz local hai). Card number/CVV type na karein.{" "}
+          {t("ai_priv")}{" "}
           <a href="/privacy" className="underline hover:text-subtle">Privacy</a>
         </p>
       </div>
