@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { getCards } from "@/lib/cards";
 import CardFinder from "@/components/CardFinder";
+import { BEST_CARD_CATEGORIES } from "@/lib/best-cards";
 
 export const metadata: Metadata = {
   title: "Find the best card — 195+ Indian credit & debit cards",
@@ -30,6 +32,25 @@ export default async function CardsPage() {
           <CardFinder cards={cards} />
         )}
       </div>
+
+      {/* Best card by category — SEO hub + internal links */}
+      <section className="mt-14 border-t border-border pt-10">
+        <h2 className="text-xl font-extrabold">Best card by category</h2>
+        <p className="mt-1.5 text-sm text-muted">
+          Apne kharch ke hisaab se sabse zyada rewards dene wale cards dekho.
+        </p>
+        <div className="mt-5 flex flex-wrap gap-2">
+          {BEST_CARD_CATEGORIES.map((c) => (
+            <Link
+              key={c.slug}
+              href={`/best-card-for/${c.slug}`}
+              className="rounded-full border border-border bg-surface2 px-4 py-2 text-sm text-subtle transition-colors hover:border-accent hover:text-fg"
+            >
+              Best for {c.label}
+            </Link>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

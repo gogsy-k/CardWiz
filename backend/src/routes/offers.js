@@ -33,7 +33,11 @@ router.get('/', async (req, res) => {
   const { bank, cardId } = req.query;
   try {
     const list = await db.offers.list({ status: 'approved', bank, cardId });
-    res.json({ offers: list });
+    // Freshness: expired offers (validUntil < today) public list se hide.
+    // validUntil null = no expiry (hamesha dikhao). Admin view sab dikhata hai.
+    const today = new Date().toISOString().slice(0, 10);
+    const fresh = list.filter((o) => !o.validUntil || o.validUntil >= today);
+    res.json({ offers: fresh });
   } catch (err) {
     console.error('[offers GET]', err.message);
     res.status(502).json({ error: 'Could not load offers' });

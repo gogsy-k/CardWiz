@@ -37,6 +37,13 @@ export const metadata: Metadata = {
     locale: "en_IN",
     type: "website",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "CardWiz — India ka smart card reward finder",
+    description:
+      "195+ Indian credit & debit cards compare karo. Checkout pe best card batao. Free.",
+  },
+  alternates: { canonical: "/" },
   robots: { index: true, follow: true },
 };
 
