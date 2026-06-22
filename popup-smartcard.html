@@ -515,6 +515,35 @@
     .m-x:hover { transform: none; box-shadow: none; filter: brightness(1); }
 
     [hidden] { display: none !important; }
+
+    /* ====== Numbers: tabular alignment (matches website) ====== */
+    .card-row .save, .card-row .rate, .bc-badge, .ps-score,
+    .bill-row .bdays, .mycard-due, .tracker-pct, .tracker-days,
+    .tracker-remaining, .tracker-tracked, .ben-count, .ben-fuel {
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ====== Subtle entrance motion (replays on popup open / view switch) ====== */
+    @keyframes cwFadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes cwFadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes cwModalIn { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+    body { animation: cwFadeIn .22s ease both; }
+    .bestcard, .mycard, .card-row, .bill-row, .featured, .portfolio-score-card {
+      animation: cwFadeUp .28s cubic-bezier(.16, 1, .3, 1) both;
+    }
+    .modal-overlay { animation: cwFadeIn .18s ease both; }
+    .modal, .cd-modal { animation: cwModalIn .24s cubic-bezier(.16, 1, .3, 1) both; }
+
+    /* ====== Respect reduced-motion (a11y) — kill all motion ====== */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
+      }
+      button:hover, .mycard:hover, .bestcard:hover,
+      .mycard-actions button:hover, .bc-actions button:hover { transform: none !important; }
+    }
   </style>
 </head>
 <body>

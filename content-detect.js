@@ -349,11 +349,13 @@ function renderWidget(site, amount, ranked, usingWallet, otherOffers, myCards) {
   shadow.innerHTML = `
     <style>
       :host { all: initial; }
+      @keyframes cwSlideIn { from { opacity: 0; transform: translateY(10px) scale(.98); } to { opacity: 1; transform: none; } }
       .box {
         font-family: 'Segoe UI', system-ui, sans-serif;
         width: 280px; background: #0C1018; color: #E8ECF4;
         border: 1px solid #2A3450; border-radius: 14px; padding: 14px;
         box-shadow: 0 8px 30px rgba(0,0,0,.45);
+        animation: cwSlideIn .26s cubic-bezier(.16, 1, .3, 1) both;
       }
       .hd { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
       .title { font-size:13px; font-weight:700; color:#6366F1; }
@@ -389,6 +391,8 @@ function renderWidget(site, amount, ranked, usingWallet, otherOffers, myCards) {
       .disc { font-size:8px; color:#8A93AC; margin-top:3px; line-height:1.4; }
       .ft { font-size:9px; color:#8A93AC; margin-top:6px; line-height:1.4; }
       .ft b { color:#B7C0D4; }
+      .csave .reward, .csave .offer, .whydiff, .pill { font-variant-numeric: tabular-nums; }
+      @media (prefers-reduced-motion: reduce) { .box { animation: none !important; } }
     </style>
     <div class="box">
       <div class="hd">
