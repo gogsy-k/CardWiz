@@ -5,8 +5,7 @@ import { useLang } from "@/contexts/LangContext";
 import QuizTeaser from "@/components/QuizTeaser";
 import PostCard from "@/components/PostCard";
 import type { Post } from "@/lib/posts";
-
-const CHROME_STORE_URL = "https://chrome.google.com/webstore";
+import { INSTALL_HREF, INSTALL_CTA_KEY } from "@/lib/constants";
 
 const FEAT_ICONS = ["🛒", "💳", "🏦", "🔔", "🔒", "⭐"];
 
@@ -60,12 +59,12 @@ export default function HomeContent({
           </p>
           <div className="mt-9 flex flex-wrap justify-center gap-3">
             <a
-              href={CHROME_STORE_URL}
+              href={INSTALL_HREF}
               target="_blank"
               rel="noopener"
               className="rounded-xl bg-accent px-6 py-3.5 text-sm font-bold text-bg transition-colors hover:bg-blue"
             >
-              {t("home_add")}
+              {t(INSTALL_CTA_KEY)}
             </a>
             <Link
               href="/cards"
@@ -216,12 +215,12 @@ export default function HomeContent({
           {t("home_cta_sub", { credit, total })}
         </p>
         <a
-          href={CHROME_STORE_URL}
+          href={INSTALL_HREF}
           target="_blank"
           rel="noopener"
           className="mt-7 inline-block rounded-xl bg-accent px-7 py-4 text-sm font-bold text-bg transition-colors hover:bg-blue"
         >
-          {t("home_cta_btn")}
+          {t(INSTALL_CTA_KEY)}
         </a>
       </section>
     </>

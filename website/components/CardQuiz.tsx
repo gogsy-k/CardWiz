@@ -12,8 +12,6 @@ import {
 } from "@/lib/quiz-engine";
 import { useLang } from "@/contexts/LangContext";
 
-const CHROME_STORE_URL = "https://chrome.google.com/webstore";
-
 type Field = keyof QuizAnswers;
 type Opt = { value: string; icon: string; key: string };
 type Question = { field: Field; titleKey: string; opts: Opt[] };

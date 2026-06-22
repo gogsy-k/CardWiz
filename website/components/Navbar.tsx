@@ -6,8 +6,7 @@ import { useLang } from "@/contexts/LangContext";
 import { useAuth } from "@/contexts/AuthContext";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import AuthButton from "@/components/AuthButton";
-
-const CHROME_STORE_URL = "https://chrome.google.com/webstore";
+import { INSTALL_HREF, INSTALL_CTA_KEY } from "@/lib/constants";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -55,12 +54,12 @@ export default function Navbar() {
           <LanguageSwitcher compact />
           <AuthButton />
           <a
-            href={CHROME_STORE_URL}
+            href={INSTALL_HREF}
             target="_blank"
             rel="noopener"
             className="rounded-lg bg-accent px-4 py-2 text-sm font-bold text-bg transition-colors hover:bg-blue"
           >
-            {t("nav_add")}
+            {t(INSTALL_CTA_KEY)}
           </a>
         </div>
 
@@ -110,12 +109,12 @@ export default function Navbar() {
             <AuthButton />
           </div>
           <a
-            href={CHROME_STORE_URL}
+            href={INSTALL_HREF}
             target="_blank"
             rel="noopener"
             className="mt-1 rounded-lg bg-accent px-4 py-2 text-center text-sm font-bold text-bg"
           >
-            {t("nav_add")}
+            {t(INSTALL_CTA_KEY)}
           </a>
         </div>
       )}

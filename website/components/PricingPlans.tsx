@@ -3,9 +3,7 @@
 import { useState } from "react";
 import { PLANS, priceFor, yearlySaving, type BillingPeriod } from "@/lib/plans";
 import { useLang } from "@/contexts/LangContext";
-
-const CHROME_STORE_URL = "https://chrome.google.com/webstore";
-const NOTIFY_EMAIL = "gurpreetsj8871@gmail.com";
+import { INSTALL_HREF, INSTALL_CTA_KEY, NOTIFY_EMAIL } from "@/lib/constants";
 
 export default function PricingPlans() {
   const [period, setPeriod] = useState<BillingPeriod>("monthly");
@@ -78,12 +76,12 @@ export default function PricingPlans() {
               {/* CTA */}
               {plan.cta === "install" ? (
                 <a
-                  href={CHROME_STORE_URL}
+                  href={INSTALL_HREF}
                   target="_blank"
                   rel="noopener"
                   className="mt-6 rounded-xl bg-accent px-5 py-3 text-center text-sm font-bold text-bg transition-colors hover:bg-blue"
                 >
-                  {t("cta_install")}
+                  {t(INSTALL_CTA_KEY)}
                 </a>
               ) : (
                 <a
