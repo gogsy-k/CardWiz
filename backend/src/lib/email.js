@@ -28,7 +28,7 @@ function buildEmailHtml({ name, month, totalSpend, actualRewards, missed, topCat
   const topMissSection = topCategory
     ? `<div style="background:#fff8ed;border-radius:10px;padding:14px 16px;margin:16px 0">
         <div style="font-size:11px;color:#b45309;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">Biggest opportunity</div>
-        <div style="font-size:14px;color:#1e1e2e">
+        <div style="font-size:14px;color:#0C1018">
           <strong>${topCategory.category.replace(/_/g, ' ')}</strong> — use
           <strong>${topCategory.betterCardName || 'a better card'}</strong> to earn
           ${topCategory.rateIfUsed}% instead of your current card.
@@ -42,22 +42,22 @@ function buildEmailHtml({ name, month, totalSpend, actualRewards, missed, topCat
 <body style="margin:0;padding:0;background:#f0f0f4;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,sans-serif">
   <div style="max-width:600px;margin:0 auto;padding:24px 16px">
 
-    <div style="background:#1e1e2e;border-radius:16px 16px 0 0;padding:28px 24px;text-align:center">
+    <div style="background:#0C1018;border-radius:16px 16px 0 0;padding:28px 24px;text-align:center">
       <div style="font-size:32px">💳</div>
-      <div style="color:#cba6f7;font-size:22px;font-weight:900;margin-top:6px;letter-spacing:-0.5px">CardWiz</div>
-      <div style="color:#6e6e8e;font-size:13px;margin-top:4px">Monthly Report · ${month}</div>
+      <div style="color:#818CF8;font-size:22px;font-weight:900;margin-top:6px;letter-spacing:-0.5px">CardWiz</div>
+      <div style="color:#B7C0D4;font-size:13px;margin-top:4px">Monthly Report · ${month}</div>
     </div>
 
     <div style="background:#ffffff;padding:28px 24px;border-radius:0 0 16px 16px">
-      <p style="color:#1e1e2e;font-size:16px;margin:0 0 6px 0">Hi ${name},</p>
-      <p style="color:#6e6e8e;font-size:14px;line-height:1.6;margin:0 0 20px 0">
+      <p style="color:#0C1018;font-size:16px;margin:0 0 6px 0">Hi ${name},</p>
+      <p style="color:#64748B;font-size:14px;line-height:1.6;margin:0 0 20px 0">
         Here's your CardWiz spending summary for <strong>${month}</strong>.
       </p>
 
       <table width="100%" cellspacing="0" cellpadding="0" style="margin-bottom:20px">
         <tr>
           <td style="width:33%;padding:14px 12px;background:#f8f8ff;border-radius:10px;text-align:center;vertical-align:top">
-            <div style="font-size:20px;font-weight:900;color:#1e1e2e">${fmtINR(totalSpend)}</div>
+            <div style="font-size:20px;font-weight:900;color:#0C1018">${fmtINR(totalSpend)}</div>
             <div style="font-size:11px;color:#888;margin-top:3px">Total Spend</div>
           </td>
           <td style="width:12px"></td>
@@ -77,7 +77,7 @@ function buildEmailHtml({ name, month, totalSpend, actualRewards, missed, topCat
 
       <div style="text-align:center;margin:28px 0 20px">
         <a href="https://cardwiz.in/account/savings"
-           style="background:#cba6f7;color:#1e1e2e;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:900;font-size:14px;display:inline-block">
+           style="background:#6366F1;color:#ffffff;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:900;font-size:14px;display:inline-block">
           View Full Report →
         </a>
       </div>
@@ -133,26 +133,26 @@ function buildOfferAlertHtml({ name, keyword, title, excerpt, link }) {
 <body style="margin:0;padding:0;background:#f0f0f4;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,sans-serif">
   <div style="max-width:600px;margin:0 auto;padding:24px 16px">
 
-    <div style="background:#1e1e2e;border-radius:16px 16px 0 0;padding:24px;text-align:center">
+    <div style="background:#0C1018;border-radius:16px 16px 0 0;padding:24px;text-align:center">
       <div style="font-size:30px">🏷️</div>
-      <div style="color:#cba6f7;font-size:20px;font-weight:900;margin-top:6px;letter-spacing:-0.5px">CardWiz</div>
-      <div style="color:#6e6e8e;font-size:13px;margin-top:4px">Offer Alert</div>
+      <div style="color:#818CF8;font-size:20px;font-weight:900;margin-top:6px;letter-spacing:-0.5px">CardWiz</div>
+      <div style="color:#B7C0D4;font-size:13px;margin-top:4px">Offer Alert</div>
     </div>
 
     <div style="background:#ffffff;padding:28px 24px;border-radius:0 0 16px 16px">
-      <p style="color:#1e1e2e;font-size:16px;margin:0 0 6px 0">Hi ${name},</p>
-      <p style="color:#6e6e8e;font-size:14px;line-height:1.6;margin:0 0 18px 0">
-        Aapke watchlist keyword <strong style="color:#1e1e2e">"${keyword}"</strong> se ek naya offer match hua hai:
+      <p style="color:#0C1018;font-size:16px;margin:0 0 6px 0">Hi ${name},</p>
+      <p style="color:#64748B;font-size:14px;line-height:1.6;margin:0 0 18px 0">
+        Aapke watchlist keyword <strong style="color:#0C1018">"${keyword}"</strong> se ek naya offer match hua hai:
       </p>
 
       <div style="background:#f8f8ff;border-radius:10px;padding:16px;margin-bottom:20px">
-        <div style="font-size:16px;font-weight:800;color:#1e1e2e">${title}</div>
-        ${excerpt ? `<div style="font-size:13px;color:#6e6e8e;margin-top:6px;line-height:1.6">${excerpt}</div>` : ''}
+        <div style="font-size:16px;font-weight:800;color:#0C1018">${title}</div>
+        ${excerpt ? `<div style="font-size:13px;color:#64748B;margin-top:6px;line-height:1.6">${excerpt}</div>` : ''}
       </div>
 
       <div style="text-align:center;margin:24px 0 18px">
         <a href="https://cardwiz.in${link}"
-           style="background:#cba6f7;color:#1e1e2e;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:900;font-size:14px;display:inline-block">
+           style="background:#6366F1;color:#ffffff;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:900;font-size:14px;display:inline-block">
           Offer dekho →
         </a>
       </div>
