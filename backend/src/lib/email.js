@@ -126,4 +126,72 @@ async function sendMonthlyReport({ to, name, reportData, forMonth }) {
   return result;
 }
 
-module.exports = { sendMonthlyReport };
+function buildOfferAlertHtml({ name, keyword, title, excerpt, link }) {
+  return `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f0f0f4;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,sans-serif">
+  <div style="max-width:600px;margin:0 auto;padding:24px 16px">
+
+    <div style="background:#1e1e2e;border-radius:16px 16px 0 0;padding:24px;text-align:center">
+      <div style="font-size:30px">🏷️</div>
+      <div style="color:#cba6f7;font-size:20px;font-weight:900;margin-top:6px;letter-spacing:-0.5px">CardWiz</div>
+      <div style="color:#6e6e8e;font-size:13px;margin-top:4px">Offer Alert</div>
+    </div>
+
+    <div style="background:#ffffff;padding:28px 24px;border-radius:0 0 16px 16px">
+      <p style="color:#1e1e2e;font-size:16px;margin:0 0 6px 0">Hi ${name},</p>
+      <p style="color:#6e6e8e;font-size:14px;line-height:1.6;margin:0 0 18px 0">
+        Aapke watchlist keyword <strong style="color:#1e1e2e">"${keyword}"</strong> se ek naya offer match hua hai:
+      </p>
+
+      <div style="background:#f8f8ff;border-radius:10px;padding:16px;margin-bottom:20px">
+        <div style="font-size:16px;font-weight:800;color:#1e1e2e">${title}</div>
+        ${excerpt ? `<div style="font-size:13px;color:#6e6e8e;margin-top:6px;line-height:1.6">${excerpt}</div>` : ''}
+      </div>
+
+      <div style="text-align:center;margin:24px 0 18px">
+        <a href="https://cardwiz.in${link}"
+           style="background:#cba6f7;color:#1e1e2e;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:900;font-size:14px;display:inline-block">
+          Offer dekho →
+        </a>
+      </div>
+
+      <hr style="border:none;border-top:1px solid #eee;margin:20px 0">
+      <p style="font-size:11px;color:#aaa;text-align:center;line-height:1.7;margin:0">
+        Aapko ye isliye mila kyunki aapne "${keyword}" ko watchlist mein add kiya tha.<br>
+        <a href="https://cardwiz.in/account" style="color:#aaa;text-decoration:underline">Manage watchlist</a>
+        &nbsp;·&nbsp;
+        <a href="https://cardwiz.in" style="color:#aaa;text-decoration:underline">CardWiz</a>
+      </p>
+    </div>
+
+  </div>
+</body>
+</html>`;
+}
+
+async function sendOfferAlert({ to, name, post, keyword }) {
+  const client = getResend();
+  if (!client) {
+    console.log(`[email] RESEND_API_KEY missing — skipping offer alert to ${to}`);
+    return { skipped: true };
+  }
+
+  const html = buildOfferAlertHtml({
+    name: name || 'there',
+    keyword,
+    title: post.title,
+    excerpt: post.excerpt || '',
+    link: post.slug ? `/news/${post.slug}` : '/news',
+  });
+
+  return client.emails.send({
+    from: 'CardWiz <reports@cardwiz.in>',
+    to,
+    subject: `🏷️ New offer matching "${keyword}" — CardWiz`,
+    html,
+  });
+}
+
+module.exports = { sendMonthlyReport, sendOfferAlert };

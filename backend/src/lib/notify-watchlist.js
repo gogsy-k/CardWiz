@@ -1,6 +1,7 @@
 'use strict';
 
 const db = require('../db');
+const { sendOfferAlert } = require('./email');
 
 /*
  * fireWatchlistNotifications(post)
@@ -22,6 +23,7 @@ async function fireWatchlistNotifications(post) {
   }
 
   for (const [userId, keyword] of matched) {
+    // In-app notification (extension polls these).
     try {
       await db.notifications.create(
         userId,
@@ -30,6 +32,16 @@ async function fireWatchlistNotifications(post) {
       );
     } catch (err) {
       console.error('[watchlist notify]', err.message);
+    }
+
+    // Email alert (best-effort — Resend no-ops if key missing).
+    try {
+      const user = await db.users.findById(userId);
+      if (user && user.email) {
+        await sendOfferAlert({ to: user.email, name: user.name, post, keyword });
+      }
+    } catch (err) {
+      console.error('[watchlist email]', err.message);
     }
   }
 }
