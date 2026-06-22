@@ -55,8 +55,15 @@ export default async function CardsPage() {
 
       {/* Popular comparisons — SEO hub + internal links */}
       <section className="mt-12">
-        <h2 className="text-xl font-extrabold">Popular comparisons</h2>
-        <p className="mt-1.5 text-sm text-subtle">Do cards ka side-by-side — kaunsa aapke liye behtar.</p>
+        <div className="flex items-end justify-between gap-3">
+          <div>
+            <h2 className="text-xl font-extrabold">Popular comparisons</h2>
+            <p className="mt-1.5 text-sm text-subtle">Do cards ka side-by-side — kaunsa aapke liye behtar.</p>
+          </div>
+          <Link href="/compare" className="shrink-0 text-sm font-bold text-accent hover:underline">
+            Compare any cards →
+          </Link>
+        </div>
         <div className="mt-5 flex flex-wrap gap-2">
           {(() => {
             const byId = new Map(cards.map((c) => [c.id, c.name]));

@@ -30,6 +30,16 @@ html {
   border-radius: 4px;
 }
 
+/* Price change pop (pricing toggle). Respects reduced-motion. */
+@keyframes pricePop {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.price-pop { animation: pricePop 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+@media (prefers-reduced-motion: reduce) {
+  .price-pop { animation: none; }
+}
+
 body {
   background: var(--color-bg);
   color: var(--color-fg);
