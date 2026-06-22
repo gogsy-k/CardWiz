@@ -6,6 +6,7 @@ import AdminGate from "@/components/AdminGate";
 import AdminsManager from "@/components/admin/AdminsManager";
 import { adminListPosts } from "@/lib/admin-api";
 import { adminGetOffers, adminUpdateOffer, type Offer } from "@/lib/offers-api";
+import { authedFetch } from "@/lib/auth";
 import { formatDate, type Post } from "@/lib/posts";
 
 type Tab = "news" | "offers";
@@ -41,7 +42,54 @@ function Dashboard() {
 
       {tab === "news" ? <NewsTab /> : <OffersTab />}
 
+      <EmailTestCard />
+
       <AdminsManager />
+    </div>
+  );
+}
+
+function EmailTestCard() {
+  const [state, setState] = useState<"idle" | "sending" | "ok" | "err">("idle");
+  const [msg, setMsg] = useState("");
+
+  async function send() {
+    setState("sending");
+    setMsg("");
+    try {
+      const res = await authedFetch("/account/test-report", { method: "POST" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setState("err");
+        setMsg(data.message || data.error || "Failed");
+        return;
+      }
+      setState("ok");
+      setMsg(
+        `Sent to ${data.sentTo}${data.usedSampleData ? " (sample data — no txns last month)" : " (your real last-month data)"}. Inbox check karo.`,
+      );
+    } catch (e) {
+      setState("err");
+      setMsg(e instanceof Error ? e.message : "Network error");
+    }
+  }
+
+  return (
+    <div className="rounded-2xl border border-border bg-surface2 p-5">
+      <h2 className="text-lg font-extrabold">📧 Email Test</h2>
+      <p className="mt-1 text-sm text-muted">
+        Apne aap ko ek sample monthly report bhej ke Resend pipeline confirm karo.
+      </p>
+      <button
+        onClick={send}
+        disabled={state === "sending"}
+        className="mt-4 rounded-xl bg-accent px-4 py-2 text-sm font-bold text-bg transition-colors hover:bg-blue disabled:opacity-50"
+      >
+        {state === "sending" ? "Sending…" : "Send me a test report"}
+      </button>
+      {msg && (
+        <p className={`mt-3 text-sm ${state === "ok" ? "text-green" : "text-pink"}`}>{msg}</p>
+      )}
     </div>
   );
 }
