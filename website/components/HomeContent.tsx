@@ -5,6 +5,7 @@ import { useLang } from "@/contexts/LangContext";
 import QuizTeaser from "@/components/QuizTeaser";
 import PostCard from "@/components/PostCard";
 import type { Post } from "@/lib/posts";
+import { track } from "@vercel/analytics";
 import { INSTALL_HREF, INSTALL_CTA_KEY } from "@/lib/constants";
 
 const FEAT_ICONS = ["🛒", "💳", "🏦", "🔔", "🔒", "⭐"];
@@ -72,6 +73,7 @@ export default function HomeContent({
               href={INSTALL_HREF}
               target="_blank"
               rel="noopener"
+              onClick={() => track("install_cta", { location: "home_hero" })}
               className="rounded-xl bg-accent px-6 py-3.5 text-sm font-bold text-bg transition-colors hover:bg-blue"
             >
               {t(INSTALL_CTA_KEY)}

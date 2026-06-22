@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
+import { track } from "@vercel/analytics";
 import { useLang } from "@/contexts/LangContext";
 import { useAuth } from "@/contexts/AuthContext";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
@@ -68,6 +69,7 @@ export default function Navbar() {
             href={INSTALL_HREF}
             target="_blank"
             rel="noopener"
+            onClick={() => track("install_cta", { location: "navbar" })}
             className="rounded-lg bg-accent px-4 py-2 text-sm font-bold text-bg transition-colors hover:bg-blue"
           >
             {t(INSTALL_CTA_KEY)}

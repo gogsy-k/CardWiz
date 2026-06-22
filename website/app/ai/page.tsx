@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { track } from "@vercel/analytics";
 import { sendChatMessage, type TopCard } from "@/lib/ai-api";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -87,6 +88,7 @@ export default function AiPage() {
     setRateLimited(false);
     setMessages((prev) => [...prev, { role: "user", text: q }]);
     setLoading(true);
+    track("ai_query");
     try {
       const res = await sendChatMessage(q);
       setRemaining(res.remaining);

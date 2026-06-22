@@ -16,6 +16,7 @@ import {
   googleLogin,
   getMe,
 } from "@/lib/auth";
+import { track } from "@vercel/analytics";
 
 type AuthCtx = {
   user: AuthUser | null;
@@ -65,6 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const auth: StoredAuth = await googleLogin(idToken);
     setStoredAuth(auth);
     setUser(auth.user);
+    track("signin");
   }
 
   function signOut() {

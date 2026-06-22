@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { track } from "@vercel/analytics";
 import { useAuth } from "@/contexts/AuthContext";
 import { getOffers, submitOffer, type Offer, type SubmitOfferPayload } from "@/lib/offers-api";
 
@@ -67,6 +68,7 @@ function SubmitForm({ onSubmitted }: { onSubmitted: (o: Offer) => void }) {
         validUntil: form.validUntil || undefined,
       });
       setDone(true);
+      track("offer_submit");
       onSubmitted(offer);
     } catch (err) {
       if (err instanceof Error && err.message === "daily_limit") {
