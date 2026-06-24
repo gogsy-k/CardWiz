@@ -35,7 +35,7 @@ const config = {
   razorpayKeySecret: process.env.RAZORPAY_KEY_SECRET || '',
   razorpayWebhookSecret: process.env.RAZORPAY_WEBHOOK_SECRET || '',
   premiumMonthlyInr: Number(process.env.PREMIUM_MONTHLY_INR) || 49,
-  premiumYearlyInr:  Number(process.env.PREMIUM_YEARLY_INR)  || 299,
+  premiumYearlyInr:  Number(process.env.PREMIUM_YEARLY_INR)  || 399,
   premiumTrialDays:  Number(process.env.PREMIUM_TRIAL_DAYS)  || 30,
   // backward compat
   get premiumPriceInr() { return this.premiumMonthlyInr; },
