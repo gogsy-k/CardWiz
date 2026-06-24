@@ -227,7 +227,7 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
       "Premium for regular shoppers (unlimited cards, analytics, cloud sync). Pro will have extra advanced features — details coming soon.",
     faq_2_q: "How will payment work?",
     faq_2_a:
-      "Premium & Pro are launching soon. Tap 'Notify me' — we'll email you when live. We never ask for card number/CVV.",
+      "Premium is live — pay securely via Razorpay (UPI / cards / netbanking) right on this page. Payment happens on Razorpay's page; we never see your card number/CVV. (Pro is coming soon.)",
     faq_3_q: "Can I cancel?",
     faq_3_a:
       "Yes, anytime. On cancellation, benefits continue until end of current period, then back to free.",
@@ -545,7 +545,7 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
       "Premium regular shoppers ke liye (unlimited cards, analytics, cloud sync). Pro mein extra advanced features honge — detail jald hi.",
     faq_2_q: "Payment kaise hoga?",
     faq_2_a:
-      "Premium & Pro abhi launch ho rahe hain. 'Notify me' dabao — live hote hi aapko email karenge. Hum kabhi card number/CVV nahi maangte.",
+      "Premium live hai — isi page pe Razorpay se secure pay karo (UPI / cards / netbanking). Payment Razorpay ke page pe hota hai; hum kabhi card number/CVV nahi dekhte. (Pro jald aa raha.)",
     faq_3_q: "Cancel kar sakta hoon?",
     faq_3_a:
       "Haan, kabhi bhi. Cancel karne par current period ke end tak benefits chalte hain, phir free pe wapas.",
@@ -863,7 +863,7 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
       "Premium regular shoppers के लिए (unlimited cards, analytics, cloud sync)। Pro में extra advanced features होंगे — विवरण जल्द ही।",
     faq_2_q: "Payment कैसे होगा?",
     faq_2_a:
-      "Premium & Pro अभी launch हो रहे हैं। 'Notify me' दबाएँ — live होते ही email करेंगे। हम कभी card number/CVV नहीं माँगते।",
+      "Premium live है — इसी page पर Razorpay से secure pay करें (UPI / cards / netbanking)। Payment Razorpay के page पर होता है; हम कभी card number/CVV नहीं देखते। (Pro जल्द आ रहा।)",
     faq_3_q: "Cancel कर सकता हूँ?",
     faq_3_a:
       "हाँ, कभी भी। Cancel करने पर current period के end तक benefits चलते हैं, फिर free पर वापस।",
