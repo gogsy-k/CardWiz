@@ -6,6 +6,7 @@ import { PLANS, priceFor, yearlySaving, type BillingPeriod } from "@/lib/plans";
 import { useLang } from "@/contexts/LangContext";
 import { NOTIFY_EMAIL } from "@/lib/constants";
 import NotifyCTA from "@/components/NotifyCTA";
+import UpgradeButton from "@/components/UpgradeButton";
 import Reveal from "@/components/motion/Reveal";
 import AnimatedNumber from "@/components/motion/AnimatedNumber";
 
@@ -128,6 +129,9 @@ export default function PricingPlans() {
                 <div className="mt-6">
                   <NotifyCTA variant="primary" className="w-full" />
                 </div>
+              ) : plan.id === "premium" ? (
+                // Live Razorpay subscription (Premium). Pro stays "notify" until backend supports it.
+                <UpgradeButton period={period} className="mt-6" />
               ) : (
                 <a
                   href={`mailto:${NOTIFY_EMAIL}?subject=${encodeURIComponent(

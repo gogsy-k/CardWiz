@@ -206,8 +206,16 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
     plan_trial: "1st month free · cancel anytime",
     cta_install: "⚡ Add to Chrome — Free",
     cta_notify: "🔔 Coming soon — notify me",
+    pay_upgrade: "🚀 Get Premium",
+    pay_signin: "Sign in to upgrade",
+    pay_already: "You're on Premium",
+    pay_starting: "Starting…",
+    pay_check: "I've paid — check status",
+    pay_waiting: "Finish payment in the Razorpay tab — we'll detect it automatically.",
+    pay_done: "Premium active!",
+    pay_refresh: "Refresh",
     plan_note:
-      "Premium & Pro plans launching soon. All core features completely free for now — install the extension and start today. Prices in INR.",
+      "Premium is live — pay securely via Razorpay (UPI / cards / netbanking). Pro launching soon. Prices in INR.",
 
     // Pricing — FAQ
     faq_h: "FAQ",
@@ -516,8 +524,16 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
     plan_trial: "1st month free · cancel anytime",
     cta_install: "⚡ Chrome mein add karo — Free",
     cta_notify: "🔔 Jald aata hai — notify karo",
+    pay_upgrade: "🚀 Premium le lo",
+    pay_signin: "Upgrade ke liye sign in karo",
+    pay_already: "Aap Premium pe ho",
+    pay_starting: "Shuru ho raha…",
+    pay_check: "Maine pay kiya — status check karo",
+    pay_waiting: "Razorpay tab mein payment complete karo — hum khud detect kar lenge.",
+    pay_done: "Premium active ho gaya!",
+    pay_refresh: "Refresh",
     plan_note:
-      "Premium & Pro plans jald hi live ho rahe hain. Abhi saare core features bilkul free hain — extension install karke aaj hi shuru karo. Prices in INR.",
+      "Premium live hai — Razorpay se secure pay karo (UPI / cards / netbanking). Pro jald aa raha. Prices INR mein.",
 
     // Pricing — FAQ
     faq_h: "Sawaal-jawaab",
@@ -826,8 +842,16 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
     plan_trial: "पहला महीना free · कभी भी cancel करें",
     cta_install: "⚡ Chrome में जोड़ें — Free",
     cta_notify: "🔔 जल्द आ रहा है — notify करें",
+    pay_upgrade: "🚀 Premium लें",
+    pay_signin: "Upgrade के लिए sign in करें",
+    pay_already: "आप Premium पर हैं",
+    pay_starting: "शुरू हो रहा…",
+    pay_check: "मैंने pay किया — status check करें",
+    pay_waiting: "Razorpay tab में payment complete करें — हम खुद detect कर लेंगे।",
+    pay_done: "Premium active हो गया!",
+    pay_refresh: "Refresh",
     plan_note:
-      "Premium & Pro plans जल्द ही live हो रहे हैं। अभी सारे core features बिल्कुल free हैं — extension install करके आज ही शुरू करें। कीमतें INR में।",
+      "Premium live है — Razorpay से secure pay करें (UPI / cards / netbanking)। Pro जल्द आ रहा। कीमतें INR में।",
 
     // Pricing — FAQ
     faq_h: "सवाल-जवाब",
