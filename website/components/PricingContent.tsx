@@ -1,6 +1,7 @@
 "use client";
 
 import PricingPlans from "@/components/PricingPlans";
+import PricingReviews from "@/components/PricingReviews";
 import { useLang } from "@/contexts/LangContext";
 
 const FAQ_KEYS = ["0", "1", "2", "3"];
@@ -32,6 +33,9 @@ export default function PricingContent() {
       <section className="mx-auto max-w-5xl px-5 pb-16">
         <PricingPlans />
       </section>
+
+      {/* REVIEWS — social proof, above the FAQ */}
+      <PricingReviews />
 
       {/* FAQ */}
       <section className="mx-auto max-w-3xl px-5 pb-24">

@@ -33,6 +33,18 @@ export async function getReviews(cardId: string): Promise<ReviewsResponse> {
   return res.json() as Promise<ReviewsResponse>;
 }
 
+/** Recent reviews across all cards — pricing-page social proof. */
+export async function getRecentReviews(limit = 6): Promise<Review[]> {
+  try {
+    const res = await fetch(`${BACKEND_URL}/reviews/recent?limit=${limit}`);
+    if (!res.ok) return [];
+    const data = (await res.json()) as { reviews?: Review[] };
+    return data.reviews ?? [];
+  } catch {
+    return [];
+  }
+}
+
 export async function postReview(data: {
   cardId: string;
   rating: number;

@@ -613,6 +613,15 @@ async function listReviewsForCard(cardId) {
   return res.rows.map(rowToReview);
 }
 
+// Recent reviews across all cards (for pricing-page social proof).
+async function listRecentReviews(limit = 6) {
+  const res = await pool.query(
+    'SELECT * FROM reviews ORDER BY created_at DESC LIMIT $1',
+    [Math.min(Number(limit) || 6, 20)]
+  );
+  return res.rows.map(rowToReview);
+}
+
 async function upsertReview({ cardId, userId, userName, userPicture, userPlan, rating, title, body }) {
   const res = await pool.query(
     `INSERT INTO reviews (card_id, user_id, user_name, user_picture, user_plan, rating, title, body)
@@ -807,7 +816,7 @@ module.exports = {
   listCatalog, countCatalog, upsertCard, deleteNotInCatalog,
   listPublishedPosts, listAllPosts, getPostBySlug, getPostById, createPost, updatePost, deletePost, listTranslations,
   listAdmins, hasAdmin, addAdmin, removeAdmin,
-  listReviewsForCard, upsertReview, removeReview,
+  listReviewsForCard, listRecentReviews, upsertReview, removeReview,
   createTransaction, listTransactions, countTransactions, deleteTransaction,
   createOffer, listOffers, updateOfferStatus, countOffersByUser,
   addWatchword, removeWatchword, listWatchwords, countWatchwords, listAllWatchwords,

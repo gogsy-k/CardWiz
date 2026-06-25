@@ -323,6 +323,14 @@ async function listReviewsForCard(cardId) {
     .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
 }
 
+// Recent reviews across all cards (for pricing-page social proof).
+async function listRecentReviews(limit = 6) {
+  load();
+  return [...cache.reviews]
+    .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
+    .slice(0, Math.min(Number(limit) || 6, 20));
+}
+
 async function upsertReview({ cardId, userId, userName, userPicture, userPlan, rating, title, body }) {
   load();
   const now = new Date().toISOString();
@@ -520,7 +528,7 @@ module.exports = {
   listCatalog, countCatalog, upsertCard, deleteNotInCatalog,
   listPublishedPosts, listAllPosts, getPostBySlug, getPostById, createPost, updatePost, deletePost, listTranslations,
   listAdmins, hasAdmin, addAdmin, removeAdmin,
-  listReviewsForCard, upsertReview, removeReview,
+  listReviewsForCard, listRecentReviews, upsertReview, removeReview,
   createTransaction, listTransactions, countTransactions, deleteTransaction,
   createOffer, listOffers, updateOfferStatus, countOffersByUser,
   addWatchword, removeWatchword, listWatchwords, countWatchwords, listAllWatchwords,

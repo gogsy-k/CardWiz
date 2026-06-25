@@ -73,6 +73,7 @@ const admins = {
 
 const reviews = {
   listForCard: (...a) => driver.listReviewsForCard(...a),
+  listRecent:  (...a) => driver.listRecentReviews(...a),
   upsert:      (...a) => driver.upsertReview(...a),
   remove:      (...a) => driver.removeReview(...a),
 };

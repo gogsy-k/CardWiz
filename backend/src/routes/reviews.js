@@ -17,6 +17,17 @@ const db = require('../db');
 
 const router = express.Router();
 
+// ── GET /reviews/recent?limit=6 ── recent reviews across all cards (social proof)
+router.get('/recent', async (req, res) => {
+  try {
+    const reviews = await db.reviews.listRecent(req.query.limit);
+    res.json({ reviews });
+  } catch (err) {
+    console.error('[reviews/recent]', err.message);
+    res.status(502).json({ error: 'Recent reviews fetch fail' });
+  }
+});
+
 // ── GET /reviews?cardId=hdfc-millennia ──
 router.get('/', async (req, res) => {
   const { cardId } = req.query;
