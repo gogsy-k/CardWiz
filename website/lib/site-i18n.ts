@@ -213,6 +213,9 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
     pay_check: "I've paid — check status",
     pay_waiting: "Finish payment in the Razorpay tab — we'll detect it automatically.",
     pay_done: "Premium active!",
+    pay_get_started: "Get started — Free",
+    pay_current_plan: "✓ Your current plan",
+    cta_pro_wait: "🔔 Get notified about Pro",
     pay_refresh: "Refresh",
     plan_note:
       "Premium is live — pay securely via Razorpay (UPI / cards / netbanking). Pro launching soon. Prices in INR.",
@@ -531,6 +534,9 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
     pay_check: "Maine pay kiya — status check karo",
     pay_waiting: "Razorpay tab mein payment complete karo — hum khud detect kar lenge.",
     pay_done: "Premium active ho gaya!",
+    pay_get_started: "Free mein shuru karo",
+    pay_current_plan: "✓ Aapka current plan",
+    cta_pro_wait: "🔔 Pro ke liye notify karo",
     pay_refresh: "Refresh",
     plan_note:
       "Premium live hai — Razorpay se secure pay karo (UPI / cards / netbanking). Pro jald aa raha. Prices INR mein.",
@@ -849,6 +855,9 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
     pay_check: "मैंने pay किया — status check करें",
     pay_waiting: "Razorpay tab में payment complete करें — हम खुद detect कर लेंगे।",
     pay_done: "Premium active हो गया!",
+    pay_get_started: "Free में शुरू करें",
+    pay_current_plan: "✓ आपका current plan",
+    cta_pro_wait: "🔔 Pro के लिए notify करें",
     pay_refresh: "Refresh",
     plan_note:
       "Premium live है — Razorpay से secure pay करें (UPI / cards / netbanking)। Pro जल्द आ रहा। कीमतें INR में।",

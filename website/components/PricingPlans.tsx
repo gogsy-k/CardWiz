@@ -1,16 +1,38 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { motion } from "motion/react";
 import { PLANS, priceFor, yearlySaving, type BillingPeriod } from "@/lib/plans";
 import { useLang } from "@/contexts/LangContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { NOTIFY_EMAIL } from "@/lib/constants";
-import NotifyCTA from "@/components/NotifyCTA";
 import UpgradeButton from "@/components/UpgradeButton";
 import Reveal from "@/components/motion/Reveal";
 import AnimatedNumber from "@/components/motion/AnimatedNumber";
 
 const fmtPrice = (n: number) => "₹" + Math.round(n).toLocaleString("en-IN");
+
+// Free plan: available now (no "coming soon"). Signed-in free user → current-plan pill.
+function FreePlanCta() {
+  const { user, loading } = useAuth();
+  const { t } = useLang();
+  if (!loading && user?.plan === "free") {
+    return (
+      <div className="mt-6 block w-full rounded-xl border border-green/40 bg-green/10 px-5 py-3 text-center text-sm font-bold text-green">
+        {t("pay_current_plan")}
+      </div>
+    );
+  }
+  return (
+    <Link
+      href="/cards"
+      className="mt-6 block w-full rounded-xl bg-accent px-5 py-3 text-center text-sm font-bold text-onaccent transition-colors hover:bg-blue"
+    >
+      {t("pay_get_started")}
+    </Link>
+  );
+}
 
 // Feature × plan matrix for the expandable comparison (mirrors plan pros).
 // Value: true = included, false = not, string = qualifier.
@@ -126,26 +148,22 @@ export default function PricingPlans() {
 
               {/* CTA */}
               {plan.cta === "install" ? (
-                <div className="mt-6">
-                  <NotifyCTA variant="primary" className="w-full" />
-                </div>
+                // Free — available now (browse free / current-plan pill), no "coming soon".
+                <FreePlanCta />
               ) : plan.id === "premium" ? (
-                // Live Razorpay subscription (Premium). Pro stays "notify" until backend supports it.
+                // Live Razorpay subscription (Premium).
                 <UpgradeButton period={period} className="mt-6" />
               ) : (
+                // Pro — not a separate tier in the backend yet → waitlist (not "coming soon").
                 <a
                   href={`mailto:${NOTIFY_EMAIL}?subject=${encodeURIComponent(
                     `CardWiz ${plan.name} — notify me`
                   )}&body=${encodeURIComponent(
                     `Mujhe CardWiz ${plan.name} plan live hone par batana.`
                   )}`}
-                  className={`mt-6 rounded-xl px-5 py-3 text-center text-sm font-bold transition-colors ${
-                    plan.highlighted
-                      ? "bg-accent text-onaccent hover:bg-blue"
-                      : "border border-border text-accent hover:border-accent"
-                  }`}
+                  className="mt-6 rounded-xl border border-border px-5 py-3 text-center text-sm font-bold text-accent transition-colors hover:border-accent"
                 >
-                  {t("cta_notify")}
+                  {t("cta_pro_wait")}
                 </a>
               )}
 
