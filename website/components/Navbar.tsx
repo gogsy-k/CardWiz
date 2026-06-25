@@ -35,7 +35,7 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur-md">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3.5">
+      <nav className="flex w-full items-center justify-between px-5 py-3.5 sm:px-8">
         <Link href="/" className="text-xl font-extrabold tracking-tight text-accent">
           💳 CardWiz
         </Link>
