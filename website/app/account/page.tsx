@@ -26,15 +26,16 @@ const LIVE_FEATURES = [
     desc: "Import transactions from a PDF bank statement automatically. Premium only.",
     href: "/account/upload",
   },
-];
-
-const COMING_SOON = [
   {
     emoji: "⭐",
     title: "Card Reviews",
-    desc: "Rate and review cards you actually own. Your reviews help other CardWiz users pick better.",
+    desc: "Rate & review cards you own — your reviews help other CardWiz users pick better.",
+    href: "/cards",
   },
 ];
+
+// Card Reviews shipped — nothing pending here right now.
+const COMING_SOON: { emoji: string; title: string; desc: string }[] = [];
 
 // ── Email Prefs Toggle ───────────────────────────────────────────────────────
 function EmailPrefsToggle({ isPremium }: { isPremium: boolean }) {
@@ -208,30 +209,32 @@ export default function AccountPage() {
       {/* ── Email report prefs ── */}
       <EmailPrefsToggle isPremium={isPremium} />
 
-      {/* ── Coming soon features ── */}
-      <div>
-        <h2 className="mb-1 text-lg font-black">Coming soon</h2>
-        <p className="mb-5 text-sm text-muted">These features are being built — check back soon.</p>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-          {COMING_SOON.map((f) => (
-            <div
-              key={f.title}
-              className="flex gap-3 rounded-xl border border-border bg-surface2 p-4"
-            >
-              <span className="mt-0.5 text-2xl leading-none">{f.emoji}</span>
-              <div className="min-w-0">
-                <div className="flex items-center gap-2 text-sm font-bold">
-                  {f.title}
-                  <span className="rounded-full border border-border px-2 py-0.5 text-[10px] font-bold text-muted">
-                    Soon
-                  </span>
+      {/* ── Coming soon features (hidden when nothing is pending) ── */}
+      {COMING_SOON.length > 0 && (
+        <div>
+          <h2 className="mb-1 text-lg font-black">Coming soon</h2>
+          <p className="mb-5 text-sm text-muted">These features are being built — check back soon.</p>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {COMING_SOON.map((f) => (
+              <div
+                key={f.title}
+                className="flex gap-3 rounded-xl border border-border bg-surface2 p-4"
+              >
+                <span className="mt-0.5 text-2xl leading-none">{f.emoji}</span>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 text-sm font-bold">
+                    {f.title}
+                    <span className="rounded-full border border-border px-2 py-0.5 text-[10px] font-bold text-muted">
+                      Soon
+                    </span>
+                  </div>
+                  <p className="mt-1 text-xs leading-relaxed text-muted">{f.desc}</p>
                 </div>
-                <p className="mt-1 text-xs leading-relaxed text-muted">{f.desc}</p>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
     </div>
   );
