@@ -32,6 +32,7 @@ async function init(databaseUrl) {
       updated_at  TIMESTAMPTZ NOT NULL DEFAULT now()
     );
     ALTER TABLE users ADD COLUMN IF NOT EXISTS email_reports BOOLEAN NOT NULL DEFAULT false;
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS plan_until TIMESTAMPTZ;
   `);
 
   // Cards table — synced wallet entries. NOTE: sirf last4, NEVER full PAN/CVV.
@@ -262,13 +263,18 @@ async function init(databaseUrl) {
 // DB row -> humara user shape (camelCase, consistent JSON store ke saath).
 function rowToUser(r) {
   if (!r) return null;
+  // Points-granted Premium has plan_until set and expires; subscription/free keep
+  // plan_until = NULL (no expiry). Effective plan downgrades to free once expired.
+  const planUntil = r.plan_until || null;
+  const expired = planUntil && new Date(planUntil) < new Date();
   return {
     id: r.id,
     googleId: r.google_id,
     email: r.email,
     name: r.name,
     picture: r.picture,
-    plan: r.plan,
+    plan: expired ? 'free' : r.plan,
+    planUntil: expired ? null : planUntil,
     emailReports: !!r.email_reports,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
@@ -299,6 +305,20 @@ async function updatePlan(id, plan) {
   const res = await pool.query(
     'UPDATE users SET plan = $2, updated_at = now() WHERE id = $1 RETURNING *',
     [id, plan]
+  );
+  return rowToUser(res.rows[0]);
+}
+
+// Grant N days of a plan via points redemption. Stacks: extends from the later of the
+// current expiry or now. plan_until set => this grant expires (unlike subscriptions).
+async function redeemPlanDays(id, plan, days) {
+  const res = await pool.query(
+    `UPDATE users
+        SET plan = $2,
+            plan_until = GREATEST(COALESCE(plan_until, now()), now()) + ($3 || ' days')::interval,
+            updated_at = now()
+      WHERE id = $1 RETURNING *`,
+    [id, plan, String(Number(days))]
   );
   return rowToUser(res.rows[0]);
 }
@@ -685,6 +705,15 @@ async function pointsHistory(userId, limit = 30) {
   return res.rows.map((r) => ({ delta: r.delta, reason: r.reason, refId: r.ref_id, createdAt: r.created_at }));
 }
 
+// Distinct check-in dates (ref_id = 'YYYY-MM-DD') for streak computation.
+async function pointsCheckinDates(userId) {
+  const res = await pool.query(
+    "SELECT ref_id FROM points_ledger WHERE user_id=$1 AND reason='checkin' ORDER BY ref_id DESC LIMIT 90",
+    [userId]
+  );
+  return res.rows.map((r) => r.ref_id);
+}
+
 // ---- Transactions ----
 function rowToTxn(r) {
   return {
@@ -853,14 +882,14 @@ async function countLaunchSubscribers() {
 }
 
 module.exports = {
-  kind: 'postgres', init, upsertByGoogleId, findById, updatePlan, updateEmailPrefs, listPremiumEmailUsers, listCards, replaceCards,
+  kind: 'postgres', init, upsertByGoogleId, findById, updatePlan, redeemPlanDays, updateEmailPrefs, listPremiumEmailUsers, listCards, replaceCards,
   createPayment, findPendingPayments, markPaymentPaid,
   createSubscription, findPendingSubscriptions, markSubscriptionActive,
   listCatalog, countCatalog, upsertCard, deleteNotInCatalog,
   listPublishedPosts, listAllPosts, getPostBySlug, getPostById, createPost, updatePost, deletePost, listTranslations,
   listAdmins, hasAdmin, addAdmin, removeAdmin,
   listReviewsForCard, listRecentReviews, upsertReview, removeReview,
-  awardPoints, pointsBalance, pointsHistory,
+  awardPoints, pointsBalance, pointsHistory, pointsCheckinDates,
   createTransaction, listTransactions, countTransactions, deleteTransaction,
   createOffer, listOffers, updateOfferStatus, countOffersByUser,
   addWatchword, removeWatchword, listWatchwords, countWatchwords, listAllWatchwords,

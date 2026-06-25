@@ -25,6 +25,7 @@ const users = {
   upsertByGoogleId:     (...a) => driver.upsertByGoogleId(...a),
   findById:             (...a) => driver.findById(...a),
   updatePlan:           (...a) => driver.updatePlan(...a),
+  redeemPlanDays:       (...a) => driver.redeemPlanDays(...a),
   updateEmailPrefs:     (...a) => driver.updateEmailPrefs(...a),
   listPremiumEmailUsers:(...a) => driver.listPremiumEmailUsers(...a),
 };
@@ -79,9 +80,10 @@ const reviews = {
 };
 
 const points = {
-  award:   (...a) => driver.awardPoints(...a),
-  balance: (...a) => driver.pointsBalance(...a),
-  history: (...a) => driver.pointsHistory(...a),
+  award:        (...a) => driver.awardPoints(...a),
+  balance:      (...a) => driver.pointsBalance(...a),
+  history:      (...a) => driver.pointsHistory(...a),
+  checkinDates: (...a) => driver.pointsCheckinDates(...a),
 };
 
 const transactions = {

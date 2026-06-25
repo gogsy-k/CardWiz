@@ -77,9 +77,16 @@ async function upsertByGoogleId({ googleId, email, name, picture }) {
   return u;
 }
 
+// Points-granted Premium (planUntil set) expires; subscription/free keep planUntil null.
+function applyPlanExpiry(u) {
+  if (!u) return u;
+  const expired = u.planUntil && new Date(u.planUntil) < new Date();
+  return expired ? { ...u, plan: 'free', planUntil: null } : u;
+}
+
 async function findById(id) {
   load();
-  return cache.users.find((x) => x.id === id) || null;
+  return applyPlanExpiry(cache.users.find((x) => x.id === id) || null);
 }
 
 // Phase 9 (payment) ke liye ready — plan free/premium toggle.
@@ -90,7 +97,21 @@ async function updatePlan(id, plan) {
   u.plan = plan;
   u.updatedAt = new Date().toISOString();
   persist();
-  return u;
+  return applyPlanExpiry(u);
+}
+
+// Grant N days of a plan via points redemption — stacks from the later of current expiry or now.
+async function redeemPlanDays(id, plan, days) {
+  load();
+  const u = cache.users.find((x) => x.id === id);
+  if (!u) return null;
+  const base = u.planUntil && new Date(u.planUntil) > new Date() ? new Date(u.planUntil) : new Date();
+  base.setDate(base.getDate() + Number(days));
+  u.plan = plan;
+  u.planUntil = base.toISOString();
+  u.updatedAt = new Date().toISOString();
+  persist();
+  return applyPlanExpiry(u);
 }
 
 async function updateEmailPrefs(id, enabled) {
@@ -386,6 +407,15 @@ async function pointsHistory(userId, limit = 30) {
     .slice(0, Math.min(Number(limit) || 30, 100));
 }
 
+async function pointsCheckinDates(userId) {
+  load();
+  return cache.pointsLedger
+    .filter((p) => p.userId === userId && p.reason === 'checkin')
+    .map((p) => p.refId)
+    .sort()
+    .reverse();
+}
+
 // ---- Transactions ----
 async function createTransaction({ userId, cardId, date, merchant, amount, category, source }) {
   load();
@@ -551,14 +581,14 @@ async function countLaunchSubscribers() {
 }
 
 module.exports = {
-  kind: 'json', init, upsertByGoogleId, findById, updatePlan, updateEmailPrefs, listPremiumEmailUsers, listCards, replaceCards,
+  kind: 'json', init, upsertByGoogleId, findById, updatePlan, redeemPlanDays, updateEmailPrefs, listPremiumEmailUsers, listCards, replaceCards,
   createPayment, findPendingPayments, markPaymentPaid,
   createSubscription, findPendingSubscriptions, markSubscriptionActive,
   listCatalog, countCatalog, upsertCard, deleteNotInCatalog,
   listPublishedPosts, listAllPosts, getPostBySlug, getPostById, createPost, updatePost, deletePost, listTranslations,
   listAdmins, hasAdmin, addAdmin, removeAdmin,
   listReviewsForCard, listRecentReviews, upsertReview, removeReview,
-  awardPoints, pointsBalance, pointsHistory,
+  awardPoints, pointsBalance, pointsHistory, pointsCheckinDates,
   createTransaction, listTransactions, countTransactions, deleteTransaction,
   createOffer, listOffers, updateOfferStatus, countOffersByUser,
   addWatchword, removeWatchword, listWatchwords, countWatchwords, listAllWatchwords,

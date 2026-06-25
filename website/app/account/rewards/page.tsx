@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLang } from "@/contexts/LangContext";
-import { getRewards, type RewardsResponse } from "@/lib/rewards-api";
+import { getRewards, checkin, redeem, type RewardsResponse, type RedeemOption } from "@/lib/rewards-api";
 
 const EARN = [
   { icon: "⭐", key: "rw_earn_review", reason: "review", href: "/cards" },
@@ -17,15 +17,53 @@ export default function RewardsPage() {
   const { t } = useLang();
   const [data, setData] = useState<RewardsResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState<string | null>(null);
+  const [toast, setToast] = useState<{ text: string; ok: boolean } | null>(null);
 
   useEffect(() => {
-    getRewards()
-      .then(setData)
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    getRewards().then(setData).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
   if (!user) return null; // layout handles the auth guard
+
+  async function doCheckin() {
+    if (!data || data.checkedInToday || busy) return;
+    setBusy("checkin");
+    try {
+      const r = await checkin();
+      setToast({
+        text: r.gotBonus ? t("rw_bonus_toast", { n: 25 }) : t("rw_checkin_toast", { n: data.earnRates.checkin ?? 5 }),
+        ok: true,
+      });
+      const fresh = await getRewards();
+      setData(fresh);
+    } catch {
+      setToast({ text: "⚠️", ok: false });
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function doRedeem(opt: RedeemOption) {
+    if (busy) return;
+    setBusy(opt.id);
+    try {
+      await redeem(opt.id);
+      setToast({ text: t("rw_redeem_ok"), ok: true });
+      const fresh = await getRewards();
+      setData(fresh);
+    } catch (e) {
+      const code = e instanceof Error ? e.message : "";
+      setToast({ text: code === "active_plan" ? t("rw_redeem_active") : "⚠️", ok: false });
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  const points = data?.points ?? 0;
+  const hasActiveSub = !!data && data.plan !== "free" && !data.planUntil;
+  const fmtDate = (iso: string) =>
+    new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
 
   return (
     <div className="mx-auto max-w-3xl space-y-6 px-5 py-10">
@@ -36,16 +74,79 @@ export default function RewardsPage() {
         <p className="mt-0.5 text-sm text-muted">{t("rw_sub")}</p>
       </div>
 
+      {/* Toast */}
+      {toast && (
+        <div
+          className={`rounded-xl border px-4 py-2.5 text-sm font-semibold ${
+            toast.ok ? "border-green/40 bg-green/10 text-green" : "border-pink/40 bg-pink/10 text-pink"
+          }`}
+        >
+          {toast.text}
+        </div>
+      )}
+
       {/* Balance */}
       <div className="rounded-2xl border border-accent/30 bg-gradient-to-br from-accent/10 to-surface2 p-6 text-center">
         <div className="text-5xl font-black tabular-nums text-accent [text-shadow:0_0_24px_rgba(99,102,241,0.4)]">
-          {loading ? "…" : (data?.points ?? 0).toLocaleString("en-IN")}
+          {loading ? "…" : points.toLocaleString("en-IN")}
         </div>
         <div className="mt-1 text-xs font-bold uppercase tracking-wide text-subtle">{t("rw_points")}</div>
-        <div className="mt-4 inline-block rounded-full border border-border bg-surface px-4 py-1.5 text-xs font-semibold text-muted">
-          {t("rw_redeem_soon")}
-        </div>
+        {data?.planUntil && (
+          <div className="mt-4 inline-block rounded-full border border-green/40 bg-green/10 px-4 py-1.5 text-xs font-bold text-green">
+            {t("rw_prem_until", { date: fmtDate(data.planUntil) })}
+          </div>
+        )}
       </div>
+
+      {/* Daily check-in + streak */}
+      <div className="flex items-center gap-4 rounded-2xl border border-border bg-surface2 p-4">
+        <div className="text-4xl">🔥</div>
+        <div className="min-w-0 flex-1">
+          <div className="text-base font-black">
+            {data && data.streak > 0 ? t("rw_streak", { n: data.streak }) : t("rw_streak0")}
+          </div>
+        </div>
+        <button
+          onClick={doCheckin}
+          disabled={loading || !data || data.checkedInToday || busy === "checkin"}
+          className={`shrink-0 rounded-full px-4 py-2 text-sm font-bold transition-colors ${
+            data?.checkedInToday
+              ? "cursor-default border border-border text-muted"
+              : "bg-accent text-onaccent hover:bg-blue disabled:opacity-60"
+          }`}
+        >
+          {data?.checkedInToday ? t("rw_checkin_done") : t("rw_checkin", { n: data?.earnRates.checkin ?? 5 })}
+        </button>
+      </div>
+
+      {/* Redeem */}
+      {!hasActiveSub && (
+        <div>
+          <h2 className="mb-3 text-lg font-black">{t("rw_redeem_h")}</h2>
+          <div className="grid gap-2.5 sm:grid-cols-2">
+            {(data?.redeemOptions ?? []).map((opt) => {
+              const affordable = points >= opt.cost;
+              return (
+                <div key={opt.id} className="flex items-center justify-between gap-3 rounded-xl border border-border bg-surface2 p-4">
+                  <div className="min-w-0">
+                    <div className="text-sm font-bold">{t("rw_redeem_days", { n: opt.days })}</div>
+                    <div className="text-xs font-semibold tabular-nums text-accent">{opt.cost.toLocaleString("en-IN")} pts</div>
+                  </div>
+                  <button
+                    onClick={() => doRedeem(opt)}
+                    disabled={!affordable || busy === opt.id}
+                    className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-bold transition-colors ${
+                      affordable ? "bg-accent text-onaccent hover:bg-blue disabled:opacity-60" : "cursor-default border border-border text-muted"
+                    }`}
+                  >
+                    {affordable ? t("rw_redeem_btn") : t("rw_redeem_need", { n: (opt.cost - points).toLocaleString("en-IN") })}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* How to earn */}
       <div>
@@ -83,11 +184,9 @@ export default function RewardsPage() {
               <div key={i} className="flex items-center justify-between gap-3 px-4 py-3">
                 <div className="min-w-0">
                   <div className="text-sm font-semibold">{t(`rw_reason_${h.reason}`)}</div>
-                  <div className="text-xs text-muted">
-                    {new Date(h.createdAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
-                  </div>
+                  <div className="text-xs text-muted">{fmtDate(h.createdAt)}</div>
                 </div>
-                <div className={`shrink-0 text-sm font-black tabular-nums ${h.delta >= 0 ? "text-green" : "text-red-400"}`}>
+                <div className={`shrink-0 text-sm font-black tabular-nums ${h.delta >= 0 ? "text-green" : "text-pink"}`}>
                   {h.delta >= 0 ? "+" : ""}
                   {h.delta}
                 </div>
