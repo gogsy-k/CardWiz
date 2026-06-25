@@ -38,6 +38,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // On mount: optimistic from localStorage, then validate/refresh via /auth/me.
   useEffect(() => {
+    // Capture a referral code from ?ref= so it survives until the user signs in.
+    try {
+      const ref = new URLSearchParams(window.location.search).get("ref");
+      if (ref) localStorage.setItem("cwRef", ref.trim().toUpperCase());
+    } catch { /* ignore */ }
+
     const stored = getStoredAuth();
     if (!stored) {
       setLoading(false);

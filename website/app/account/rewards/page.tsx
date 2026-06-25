@@ -4,7 +4,10 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLang } from "@/contexts/LangContext";
-import { getRewards, checkin, redeem, type RewardsResponse, type RedeemOption } from "@/lib/rewards-api";
+import {
+  getRewards, checkin, redeem, getLeaderboard,
+  type RewardsResponse, type RedeemOption, type LeaderboardResponse,
+} from "@/lib/rewards-api";
 
 const EARN = [
   { icon: "⭐", key: "rw_earn_review", reason: "review", href: "/cards" },
@@ -16,12 +19,14 @@ export default function RewardsPage() {
   const { user } = useAuth();
   const { t } = useLang();
   const [data, setData] = useState<RewardsResponse | null>(null);
+  const [lb, setLb] = useState<LeaderboardResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState<string | null>(null);
   const [toast, setToast] = useState<{ text: string; ok: boolean } | null>(null);
 
   useEffect(() => {
     getRewards().then(setData).catch(() => {}).finally(() => setLoading(false));
+    getLeaderboard().then(setLb).catch(() => {});
   }, []);
 
   if (!user) return null; // layout handles the auth guard
@@ -57,6 +62,16 @@ export default function RewardsPage() {
       setToast({ text: code === "active_plan" ? t("rw_redeem_active") : "⚠️", ok: false });
     } finally {
       setBusy(null);
+    }
+  }
+
+  async function copyRefLink() {
+    const link = `https://cardwiz.in/?ref=${user?.referralCode ?? ""}`;
+    try {
+      await navigator.clipboard.writeText(link);
+      setToast({ text: t("rw_ref_copied"), ok: true });
+    } catch {
+      /* clipboard blocked — ignore */
     }
   }
 
@@ -147,6 +162,63 @@ export default function RewardsPage() {
           </div>
         </div>
       )}
+
+      {/* Refer friends */}
+      <div className="rounded-2xl border border-pink/30 bg-gradient-to-br from-pink/10 to-surface2 p-5">
+        <h2 className="text-base font-black">{t("rw_ref_h", { n: 100 })}</h2>
+        <p className="mt-0.5 text-xs text-muted">{t("rw_ref_sub", { n: 100 })}</p>
+        <div className="mt-3 flex items-center gap-2">
+          <code className="min-w-0 flex-1 truncate rounded-lg border border-border bg-bg px-3 py-2 text-xs text-subtle">
+            cardwiz.in/?ref={user.referralCode ?? "…"}
+          </code>
+          <button
+            onClick={copyRefLink}
+            className="shrink-0 rounded-lg bg-pink px-3.5 py-2 text-xs font-bold text-white transition-opacity hover:opacity-90"
+          >
+            {t("rw_ref_copy")}
+          </button>
+        </div>
+      </div>
+
+      {/* Leaderboard */}
+      <div>
+        <h2 className="text-lg font-black">{t("rw_lb_h")}</h2>
+        <p className="mb-3 text-xs text-muted">{t("rw_lb_sub")}</p>
+        {!lb || lb.top.length === 0 ? (
+          <p className="rounded-xl border border-dashed border-border py-6 text-center text-sm text-muted">{t("rw_lb_empty")}</p>
+        ) : (
+          <>
+            <div className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-surface2">
+              {lb.top.map((row, i) => {
+                const isMe = row.id === lb.me.id;
+                return (
+                  <div key={row.id} className={`flex items-center gap-3 px-4 py-2.5 ${isMe ? "bg-accent/10" : ""}`}>
+                    <span className={`w-6 shrink-0 text-center text-sm font-black tabular-nums ${i < 3 ? "text-accent" : "text-muted"}`}>
+                      {i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : i + 1}
+                    </span>
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent/20 text-xs font-bold text-accent">
+                      {row.picture ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={row.picture} alt="" width={28} height={28} referrerPolicy="no-referrer" className="h-7 w-7 rounded-full" />
+                      ) : (
+                        (row.name || "?").charAt(0).toUpperCase()
+                      )}
+                    </span>
+                    <span className="min-w-0 flex-1 truncate text-sm font-semibold">
+                      {row.name}
+                      {isMe && <span className="ml-1.5 rounded-full bg-accent px-1.5 py-0.5 text-[10px] font-bold text-onaccent">{t("rw_lb_you")}</span>}
+                    </span>
+                    <span className="shrink-0 text-sm font-black tabular-nums text-accent">{row.earned.toLocaleString("en-IN")}</span>
+                  </div>
+                );
+              })}
+            </div>
+            {!lb.top.some((r) => r.id === lb.me.id) && lb.me.earned > 0 && (
+              <p className="mt-2 text-center text-xs font-semibold text-subtle">{t("rw_lb_rank", { n: lb.me.rank })}</p>
+            )}
+          </>
+        )}
+      </div>
 
       {/* How to earn */}
       <div>

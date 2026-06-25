@@ -55,6 +55,7 @@ async function upsertByGoogleId({ googleId, email, name, picture }) {
   load();
   const now = new Date().toISOString();
   let u = cache.users.find((x) => x.googleId === googleId);
+  const existed = !!u;
   if (u) {
     u.email = email;
     u.name = name;
@@ -74,19 +75,34 @@ async function upsertByGoogleId({ googleId, email, name, picture }) {
     cache.users.push(u);
   }
   persist();
-  return u;
+  const out = applyPlanExpiry(u);
+  out.isNew = !existed;
+  return out;
+}
+
+function referralCodeOf(id) {
+  return id ? id.replace(/-/g, '').slice(0, 8).toUpperCase() : null;
 }
 
 // Points-granted Premium (planUntil set) expires; subscription/free keep planUntil null.
+// Always returns a copy with computed referralCode (callers don't mutate the read result).
 function applyPlanExpiry(u) {
   if (!u) return u;
-  const expired = u.planUntil && new Date(u.planUntil) < new Date();
-  return expired ? { ...u, plan: 'free', planUntil: null } : u;
+  const out = { ...u, referralCode: referralCodeOf(u.id) };
+  const expired = out.planUntil && new Date(out.planUntil) < new Date();
+  return expired ? { ...out, plan: 'free', planUntil: null } : out;
 }
 
 async function findById(id) {
   load();
   return applyPlanExpiry(cache.users.find((x) => x.id === id) || null);
+}
+
+async function findByReferralCode(code) {
+  load();
+  if (!code) return null;
+  const c = String(code).toUpperCase();
+  return applyPlanExpiry(cache.users.find((x) => referralCodeOf(x.id) === c) || null);
 }
 
 // Phase 9 (payment) ke liye ready — plan free/premium toggle.
@@ -416,6 +432,32 @@ async function pointsCheckinDates(userId) {
     .reverse();
 }
 
+function earnedByUserMap() {
+  const m = {};
+  for (const p of cache.pointsLedger) if (p.delta > 0) m[p.userId] = (m[p.userId] || 0) + p.delta;
+  return m;
+}
+
+async function pointsLeaderboard(limit = 10) {
+  load();
+  const earned = earnedByUserMap();
+  return Object.entries(earned)
+    .map(([id, e]) => {
+      const u = cache.users.find((x) => x.id === id) || {};
+      return { id, name: (u.name || 'CardWiz user').split(' ')[0], picture: u.picture, plan: u.plan, earned: e };
+    })
+    .sort((a, b) => b.earned - a.earned)
+    .slice(0, Math.min(Number(limit) || 10, 50));
+}
+
+async function pointsRank(userId) {
+  load();
+  const earned = earnedByUserMap();
+  const mine = earned[userId] || 0;
+  const rank = Object.values(earned).filter((e) => e > mine).length + 1;
+  return { rank, earned: mine };
+}
+
 // ---- Transactions ----
 async function createTransaction({ userId, cardId, date, merchant, amount, category, source }) {
   load();
@@ -581,14 +623,14 @@ async function countLaunchSubscribers() {
 }
 
 module.exports = {
-  kind: 'json', init, upsertByGoogleId, findById, updatePlan, redeemPlanDays, updateEmailPrefs, listPremiumEmailUsers, listCards, replaceCards,
+  kind: 'json', init, upsertByGoogleId, findById, findByReferralCode, updatePlan, redeemPlanDays, updateEmailPrefs, listPremiumEmailUsers, listCards, replaceCards,
   createPayment, findPendingPayments, markPaymentPaid,
   createSubscription, findPendingSubscriptions, markSubscriptionActive,
   listCatalog, countCatalog, upsertCard, deleteNotInCatalog,
   listPublishedPosts, listAllPosts, getPostBySlug, getPostById, createPost, updatePost, deletePost, listTranslations,
   listAdmins, hasAdmin, addAdmin, removeAdmin,
   listReviewsForCard, listRecentReviews, upsertReview, removeReview,
-  awardPoints, pointsBalance, pointsHistory, pointsCheckinDates,
+  awardPoints, pointsBalance, pointsHistory, pointsCheckinDates, pointsLeaderboard, pointsRank,
   createTransaction, listTransactions, countTransactions, deleteTransaction,
   createOffer, listOffers, updateOfferStatus, countOffersByUser,
   addWatchword, removeWatchword, listWatchwords, countWatchwords, listAllWatchwords,

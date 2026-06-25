@@ -24,6 +24,7 @@ async function init() {
 const users = {
   upsertByGoogleId:     (...a) => driver.upsertByGoogleId(...a),
   findById:             (...a) => driver.findById(...a),
+  findByReferralCode:   (...a) => driver.findByReferralCode(...a),
   updatePlan:           (...a) => driver.updatePlan(...a),
   redeemPlanDays:       (...a) => driver.redeemPlanDays(...a),
   updateEmailPrefs:     (...a) => driver.updateEmailPrefs(...a),
@@ -84,6 +85,8 @@ const points = {
   balance:      (...a) => driver.pointsBalance(...a),
   history:      (...a) => driver.pointsHistory(...a),
   checkinDates: (...a) => driver.pointsCheckinDates(...a),
+  leaderboard:  (...a) => driver.pointsLeaderboard(...a),
+  rank:         (...a) => driver.pointsRank(...a),
 };
 
 const transactions = {

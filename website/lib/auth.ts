@@ -13,6 +13,8 @@ export type AuthUser = {
   name: string;
   picture: string;
   plan: "free" | "premium" | "pro";
+  planUntil?: string | null;
+  referralCode?: string | null;
   emailReports?: boolean;
   isAdmin?: boolean;
 };
@@ -52,13 +54,17 @@ export function clearStoredAuth(): void {
 // Exchange a Google ID token for our session JWT + user (creates/updates the
 // shared user row by google_id on the backend).
 export async function googleLogin(idToken: string): Promise<StoredAuth> {
+  // Attach a pending referral code (captured from ?ref=) so the referrer gets credited.
+  let ref: string | null = null;
+  try { ref = localStorage.getItem("cwRef"); } catch { /* ignore */ }
   const res = await fetch(`${BACKEND_URL}/auth/google`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ idToken }),
+    body: JSON.stringify(ref ? { idToken, ref } : { idToken }),
   });
   if (!res.ok) throw new Error(`Sign-in failed (${res.status})`);
   const data = (await res.json()) as StoredAuth; // { token, user }
+  try { localStorage.removeItem("cwRef"); } catch { /* ignore */ }
   return data;
 }
 

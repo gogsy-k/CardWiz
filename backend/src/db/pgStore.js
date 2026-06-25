@@ -275,6 +275,7 @@ function rowToUser(r) {
     picture: r.picture,
     plan: expired ? 'free' : r.plan,
     planUntil: expired ? null : planUntil,
+    referralCode: r.id ? r.id.replace(/-/g, '').slice(0, 8).toUpperCase() : null,
     emailReports: !!r.email_reports,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
@@ -290,8 +291,20 @@ async function upsertByGoogleId({ googleId, email, name, picture }) {
            name = EXCLUDED.name,
            picture = EXCLUDED.picture,
            updated_at = now()
-     RETURNING *`,
+     RETURNING *, (xmax = 0) AS is_new`,
     [googleId, email, name, picture]
+  );
+  const user = rowToUser(res.rows[0]);
+  user.isNew = res.rows[0].is_new === true; // xmax=0 => freshly INSERTed (not an UPDATE)
+  return user;
+}
+
+// Look up a user by their (computed) 8-char referral code.
+async function findByReferralCode(code) {
+  if (!code) return null;
+  const res = await pool.query(
+    `SELECT * FROM users WHERE substr(upper(replace(id::text, '-', '')), 1, 8) = $1 LIMIT 1`,
+    [String(code).toUpperCase()]
   );
   return rowToUser(res.rows[0]);
 }
@@ -714,6 +727,38 @@ async function pointsCheckinDates(userId) {
   return res.rows.map((r) => r.ref_id);
 }
 
+// Top earners — ranked by lifetime EARNED points (redeems don't lower your rank).
+async function pointsLeaderboard(limit = 10) {
+  const res = await pool.query(
+    `SELECT u.id, u.name, u.picture, u.plan,
+            COALESCE(SUM(p.delta) FILTER (WHERE p.delta > 0), 0)::int AS earned
+       FROM points_ledger p JOIN users u ON u.id = p.user_id
+      GROUP BY u.id
+      ORDER BY earned DESC, u.created_at ASC
+      LIMIT $1`,
+    [Math.min(Number(limit) || 10, 50)]
+  );
+  return res.rows.map((r) => ({
+    id: r.id,
+    name: (r.name || 'CardWiz user').split(' ')[0],
+    picture: r.picture,
+    plan: r.plan,
+    earned: r.earned,
+  }));
+}
+
+async function pointsRank(userId) {
+  const res = await pool.query(
+    `WITH earned AS (
+       SELECT user_id, SUM(delta) FILTER (WHERE delta > 0) AS e FROM points_ledger GROUP BY user_id
+     )
+     SELECT COALESCE((SELECT e FROM earned WHERE user_id = $1), 0)::int AS earned,
+            ((SELECT COUNT(*) FROM earned WHERE e > COALESCE((SELECT e FROM earned WHERE user_id = $1), 0)) + 1)::int AS rank`,
+    [userId]
+  );
+  return { rank: res.rows[0].rank, earned: res.rows[0].earned };
+}
+
 // ---- Transactions ----
 function rowToTxn(r) {
   return {
@@ -882,14 +927,14 @@ async function countLaunchSubscribers() {
 }
 
 module.exports = {
-  kind: 'postgres', init, upsertByGoogleId, findById, updatePlan, redeemPlanDays, updateEmailPrefs, listPremiumEmailUsers, listCards, replaceCards,
+  kind: 'postgres', init, upsertByGoogleId, findById, findByReferralCode, updatePlan, redeemPlanDays, updateEmailPrefs, listPremiumEmailUsers, listCards, replaceCards,
   createPayment, findPendingPayments, markPaymentPaid,
   createSubscription, findPendingSubscriptions, markSubscriptionActive,
   listCatalog, countCatalog, upsertCard, deleteNotInCatalog,
   listPublishedPosts, listAllPosts, getPostBySlug, getPostById, createPost, updatePost, deletePost, listTranslations,
   listAdmins, hasAdmin, addAdmin, removeAdmin,
   listReviewsForCard, listRecentReviews, upsertReview, removeReview,
-  awardPoints, pointsBalance, pointsHistory, pointsCheckinDates,
+  awardPoints, pointsBalance, pointsHistory, pointsCheckinDates, pointsLeaderboard, pointsRank,
   createTransaction, listTransactions, countTransactions, deleteTransaction,
   createOffer, listOffers, updateOfferStatus, countOffersByUser,
   addWatchword, removeWatchword, listWatchwords, countWatchwords, listAllWatchwords,

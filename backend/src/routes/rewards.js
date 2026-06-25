@@ -38,6 +38,20 @@ router.get('/', requireAuth, async (req, res) => {
   }
 });
 
+// Leaderboard — top earners + the caller's own rank.
+router.get('/leaderboard', requireAuth, async (req, res) => {
+  try {
+    const [top, me] = await Promise.all([
+      db.points.leaderboard(10),
+      db.points.rank(req.user.id),
+    ]);
+    res.json({ top, me: { ...me, id: req.user.id } });
+  } catch (err) {
+    console.error('[rewards/leaderboard]', err.message);
+    res.status(502).json({ error: 'Leaderboard fail' });
+  }
+});
+
 // Daily check-in: +points once per IST day; 7-day streak milestone gives a bonus.
 router.post('/checkin', requireAuth, async (req, res) => {
   try {

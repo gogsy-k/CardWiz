@@ -17,6 +17,7 @@ const { signSession } = require('../services/jwt');
 const { requireAuth } = require('../middleware/auth');
 const { isAdminEmail } = require('../services/admin');
 const db = require('../db');
+const rewards = require('../lib/rewards');
 
 const router = express.Router();
 
@@ -24,6 +25,8 @@ const router = express.Router();
 async function publicUser(u) {
   return {
     id: u.id, email: u.email, name: u.name, picture: u.picture, plan: u.plan,
+    planUntil: u.planUntil || null,
+    referralCode: u.referralCode || null,
     isAdmin: await isAdminEmail(u.email),
   };
 }
@@ -31,9 +34,20 @@ async function publicUser(u) {
 // --- Sign in / sign up (ek hi flow) ---
 router.post('/google', async (req, res) => {
   try {
-    const { idToken } = req.body || {};
+    const { idToken, ref } = req.body || {};
     const profile = await verifyGoogleIdToken(idToken); // throws if invalid
     const user = await db.users.upsertByGoogleId(profile);
+    // Referral: reward the referrer (+100) once, only for a brand-new signup.
+    if (user.isNew && ref) {
+      try {
+        const referrer = await db.users.findByReferralCode(ref);
+        if (referrer && referrer.id !== user.id) {
+          await rewards.award(referrer.id, 'referral', user.id); // refId = referee => once per friend
+        }
+      } catch (e) {
+        console.error('[auth/referral]', e.message);
+      }
+    }
     const token = signSession(user.id);
     res.json({ token, user: await publicUser(user) });
   } catch (err) {
