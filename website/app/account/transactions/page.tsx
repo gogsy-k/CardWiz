@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLang } from "@/contexts/LangContext";
 import { authedFetch, isPaid } from "@/lib/auth";
 import {
   listTransactions,
@@ -40,6 +41,7 @@ function AddForm({
   onAdded: (txn: Transaction) => void;
   onCancel: () => void;
 }) {
+  const { t } = useLang();
   const [date, setDate] = useState(today());
   const [merchant, setMerchant] = useState("");
   const [amount, setAmount] = useState("");
@@ -51,7 +53,7 @@ function AddForm({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const amt = Number(amount);
-    if (!amount || isNaN(amt) || amt <= 0) { setError("Enter a valid amount."); return; }
+    if (!amount || isNaN(amt) || amt <= 0) { setError(t("txn_err_amount")); return; }
     setSubmitting(true);
     setError("");
     try {
@@ -59,7 +61,7 @@ function AddForm({
       onAdded(txn);
     } catch (err) {
       if (err instanceof Error && err.message === "free_limit") {
-        setError("Free limit reached (3 transactions). Upgrade to Premium to add more.");
+        setError(t("txn_err_limit"));
       } else {
         setError(err instanceof Error ? err.message : "Failed to save.");
       }
@@ -70,12 +72,12 @@ function AddForm({
 
   return (
     <form onSubmit={handleSubmit} className="rounded-2xl border border-border bg-surface2 p-5 space-y-4">
-      <div className="text-sm font-black">Add Transaction</div>
+      <div className="text-sm font-black">{t("txn_add_h")}</div>
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {/* Date */}
         <div className="col-span-2 sm:col-span-1">
-          <label className="block text-xs text-muted mb-1">Date *</label>
+          <label className="block text-xs text-muted mb-1">{t("txn_date")}</label>
           <input
             type="date"
             value={date}
@@ -88,10 +90,10 @@ function AddForm({
 
         {/* Amount */}
         <div className="col-span-2 sm:col-span-1">
-          <label className="block text-xs text-muted mb-1">Amount (₹) *</label>
+          <label className="block text-xs text-muted mb-1">{t("txn_amount")}</label>
           <input
             type="number"
-            placeholder="e.g. 1500"
+            placeholder={t("txn_amount_ph")}
             min="1"
             step="0.01"
             value={amount}
@@ -103,7 +105,7 @@ function AddForm({
 
         {/* Category */}
         <div className="col-span-2">
-          <label className="block text-xs text-muted mb-1">Category *</label>
+          <label className="block text-xs text-muted mb-1">{t("txn_cat")}</label>
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
@@ -119,10 +121,10 @@ function AddForm({
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {/* Merchant */}
         <div>
-          <label className="block text-xs text-muted mb-1">Merchant (optional)</label>
+          <label className="block text-xs text-muted mb-1">{t("txn_merchant")}</label>
           <input
             type="text"
-            placeholder="e.g. Amazon, Swiggy…"
+            placeholder={t("txn_merchant_ph")}
             maxLength={200}
             value={merchant}
             onChange={(e) => setMerchant(e.target.value)}
@@ -132,13 +134,13 @@ function AddForm({
 
         {/* Card used */}
         <div>
-          <label className="block text-xs text-muted mb-1">Card used (optional)</label>
+          <label className="block text-xs text-muted mb-1">{t("txn_card")}</label>
           <select
             value={cardId}
             onChange={(e) => setCardId(e.target.value)}
             className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-accent"
           >
-            <option value="">— Not sure —</option>
+            <option value="">{t("txn_notsure")}</option>
             {wallet.map((w) => (
               <option key={w.id} value={w.cardId}>
                 {w.nickname || w.cardId}{w.last4 ? ` (••${w.last4})` : ""}
@@ -156,10 +158,10 @@ function AddForm({
           disabled={submitting}
           className="rounded-lg bg-accent px-5 py-2 text-sm font-bold text-onaccent transition-opacity disabled:opacity-50"
         >
-          {submitting ? "Saving…" : "Add"}
+          {submitting ? t("txn_saving") : t("txn_add_btn")}
         </button>
         <button type="button" onClick={onCancel} className="text-sm text-muted hover:text-text">
-          Cancel
+          {t("txn_cancel")}
         </button>
       </div>
     </form>
@@ -176,6 +178,7 @@ function TxnRow({
   wallet: WalletEntry[];
   onDelete: (id: string) => void;
 }) {
+  const { t } = useLang();
   const [deleting, setDeleting] = useState(false);
   const cardEntry = wallet.find((w) => w.cardId === txn.cardId);
   const cardLabel = cardEntry
@@ -183,7 +186,7 @@ function TxnRow({
     : txn.cardId || "—";
 
   async function handleDelete() {
-    if (!confirm("Delete this transaction?")) return;
+    if (!confirm(t("txn_confirm_del"))) return;
     setDeleting(true);
     try {
       await deleteTransaction(txn.id);
@@ -206,7 +209,7 @@ function TxnRow({
         onClick={handleDelete}
         disabled={deleting}
         className="shrink-0 text-xs text-muted hover:text-red-400 disabled:opacity-40 transition-colors"
-        title="Delete"
+        title={t("txn_delete")}
       >
         ✕
       </button>
@@ -217,6 +220,7 @@ function TxnRow({
 // ── Main Page ────────────────────────────────────────────────────────────────
 export default function TransactionsPage() {
   const { user } = useAuth();
+  const { t } = useLang();
   const isPremium = isPaid(user?.plan);
 
   const [txns, setTxns] = useState<Transaction[]>([]);
@@ -269,14 +273,14 @@ export default function TransactionsPage() {
       <div className="flex items-center justify-between gap-4">
         <div>
           <Link href="/account" className="text-xs text-muted hover:text-subtle">← Account</Link>
-          <h1 className="mt-1 text-2xl font-black">My Transactions</h1>
+          <h1 className="mt-1 text-2xl font-black">{t("acc_feat_txn_t")}</h1>
           <p className="text-sm text-muted mt-0.5">
-            Log spends to power the Missed Savings Report.
+            {t("txn_sub")}
             {!isPremium && (
               <span className="ml-1">
-                {count}/{freeLimit} free entries used.{" "}
-                <Link href="/pricing" className="text-accent hover:underline">Upgrade</Link>
-                {" "}for unlimited.
+                {t("txn_free_used", { n: count, max: freeLimit })}{" "}
+                <Link href="/pricing" className="text-accent hover:underline">{t("txn_upgrade")}</Link>
+                {" "}{t("txn_for_unlimited")}
               </span>
             )}
           </p>
@@ -285,14 +289,14 @@ export default function TransactionsPage() {
           <div className="flex gap-2">
             {isPremium && (
               <Link href="/account/upload" className="shrink-0 rounded-xl border border-border px-4 py-2 text-sm font-bold hover:border-accent">
-                📄 Upload PDF
+                {t("txn_upload_pdf")}
               </Link>
             )}
             <button
               onClick={() => setShowForm(true)}
               className="shrink-0 rounded-xl bg-accent px-4 py-2 text-sm font-bold text-onaccent"
             >
-              + Add
+              {t("txn_add_plus")}
             </button>
           </div>
         )}
@@ -302,16 +306,15 @@ export default function TransactionsPage() {
       {atFreeLimit && (
         <div className="rounded-2xl border border-accent/30 bg-accent/5 p-6 text-center">
           <div className="text-3xl mb-2">💎</div>
-          <div className="font-bold mb-1">Free limit reached</div>
+          <div className="font-bold mb-1">{t("txn_wall_h")}</div>
           <p className="text-sm text-muted mb-5 max-w-sm mx-auto leading-relaxed">
-            You&apos;ve used all {freeLimit} free transaction entries. Upgrade to Premium for unlimited
-            transactions and the full Missed Savings Report.
+            {t("txn_wall_p", { max: freeLimit })}
           </p>
           <Link
             href="/pricing"
             className="inline-block rounded-xl bg-accent px-6 py-2.5 text-sm font-bold text-onaccent"
           >
-            Upgrade to Premium →
+            {t("sav_gate_cta")}
           </Link>
         </div>
       )}
@@ -327,17 +330,17 @@ export default function TransactionsPage() {
 
       {/* Transactions list */}
       {loading ? (
-        <div className="py-12 text-center text-sm text-muted animate-pulse">Loading…</div>
+        <div className="py-12 text-center text-sm text-muted animate-pulse">{t("txn_loading")}</div>
       ) : txns.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border p-10 text-center text-muted">
           <div className="text-4xl mb-3">📋</div>
-          <div className="text-sm">No transactions yet.</div>
+          <div className="text-sm">{t("txn_empty")}</div>
           {canAdd && (
             <button
               onClick={() => setShowForm(true)}
               className="mt-4 text-sm text-accent hover:underline"
             >
-              Add your first transaction →
+              {t("txn_add_first")}
             </button>
           )}
         </div>
@@ -345,7 +348,7 @@ export default function TransactionsPage() {
         <div className="rounded-2xl border border-border bg-surface2 overflow-hidden">
           <div className="flex items-center justify-between px-4 py-3 border-b border-border">
             <span className="text-xs font-bold text-muted uppercase tracking-wide">
-              {count} transaction{count !== 1 ? "s" : ""}
+              {t("txn_count", { n: count })}
             </span>
           </div>
           {txns.map((txn) => (
@@ -358,16 +361,16 @@ export default function TransactionsPage() {
       <div className="rounded-2xl border border-border bg-surface2 p-5 flex items-center gap-4">
         <span className="text-3xl shrink-0">💸</span>
         <div className="min-w-0 flex-1">
-          <div className="text-sm font-bold">Missed Savings Report</div>
+          <div className="text-sm font-bold">{t("txn_ms_h")}</div>
           <p className="text-xs text-muted mt-0.5 leading-relaxed">
-            See exactly how much you left on the table — and which card to use instead.
+            {t("txn_ms_p")}
           </p>
         </div>
         <Link
           href="/account/savings"
           className="shrink-0 rounded-lg bg-accent px-3 py-1.5 text-xs font-bold text-onaccent"
         >
-          View →
+          {t("sav_view")}
         </Link>
       </div>
 

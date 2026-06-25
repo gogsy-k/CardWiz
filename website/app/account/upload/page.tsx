@@ -4,6 +4,7 @@ import { useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLang } from "@/contexts/LangContext";
 import { authedFetch, isPaid } from "@/lib/auth";
 import { uploadStatement, bulkImport, type ParsedTransaction } from "@/lib/upload-api";
 import { CATEGORY_LABEL } from "@/lib/cards";
@@ -21,6 +22,7 @@ function fmtINR(n: number) {
 
 // ── Drop zone ─────────────────────────────────────────────────────────────────
 function DropZone({ onFile }: { onFile: (f: File) => void }) {
+  const { t } = useLang();
   const [dragging, setDragging] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -39,10 +41,10 @@ function DropZone({ onFile }: { onFile: (f: File) => void }) {
       }`}
     >
       <div className="text-4xl mb-3">📄</div>
-      <div className="font-bold mb-1">Drop your bank statement here</div>
-      <p className="text-sm text-muted mb-4">or click to select a PDF file (max 15 MB)</p>
+      <div className="font-bold mb-1">{t("up_drop")}</div>
+      <p className="text-sm text-muted mb-4">{t("up_drop_sub")}</p>
       <span className="inline-block rounded-lg border border-border px-4 py-2 text-sm font-bold hover:border-accent">
-        Choose PDF
+        {t("up_choose")}
       </span>
       <input
         ref={inputRef}
@@ -51,9 +53,7 @@ function DropZone({ onFile }: { onFile: (f: File) => void }) {
         className="hidden"
         onChange={(e) => handle(e.target.files?.[0] ?? null)}
       />
-      <p className="mt-4 text-xs text-muted">
-        🔒 Your PDF is <strong>never stored</strong>. Only extracted transaction data is saved.
-      </p>
+      <p className="mt-4 text-xs text-muted">{t("up_privacy")}</p>
     </div>
   );
 }
@@ -66,6 +66,7 @@ function ReviewTable({
   rows: RowState[];
   onChange: (idx: number, patch: Partial<RowState>) => void;
 }) {
+  const { t } = useLang();
   const allSelected = rows.every((r) => r.selected);
 
   return (
@@ -78,7 +79,7 @@ function ReviewTable({
           className="h-4 w-4 accent-accent"
         />
         <span className="text-xs font-bold text-muted uppercase tracking-wide">
-          {rows.filter((r) => r.selected).length} / {rows.length} selected
+          {t("up_selected", { sel: rows.filter((r) => r.selected).length, total: rows.length })}
         </span>
       </div>
 
@@ -109,7 +110,7 @@ function ReviewTable({
                 !row.category ? "border-yellow-500 text-yellow-400" : "border-border"
               }`}
             >
-              <option value="">— Set category —</option>
+              <option value="">{t("up_set_cat")}</option>
               {CATEGORIES.map(([id, label]) => (
                 <option key={id} value={id}>{label}</option>
               ))}
@@ -124,6 +125,7 @@ function ReviewTable({
 // ── Main page ─────────────────────────────────────────────────────────────────
 export default function UploadPage() {
   const { user } = useAuth();
+  const { t } = useLang();
   const router = useRouter();
   const isPremium = isPaid(user?.plan);
 
@@ -171,7 +173,7 @@ export default function UploadPage() {
 
   async function handleImport() {
     const selected = rows.filter((r) => r.selected && r.category);
-    if (!selected.length) { setError("No transactions selected (or missing category)."); return; }
+    if (!selected.length) { setError(t("up_err_none")); return; }
     setSubmitting(true);
     setError("");
     try {
@@ -199,17 +201,16 @@ export default function UploadPage() {
       <div className="mx-auto max-w-3xl px-5 py-10 space-y-6">
         <div>
           <Link href="/account" className="text-xs text-muted hover:text-subtle">← Account</Link>
-          <h1 className="mt-1 text-2xl font-black">Upload Statement</h1>
+          <h1 className="mt-1 text-2xl font-black">{t("acc_feat_upload_t")}</h1>
         </div>
         <div className="rounded-2xl border border-accent/30 bg-accent/5 p-8 text-center">
           <div className="text-4xl mb-3">💎</div>
-          <div className="text-lg font-black mb-2">Premium feature</div>
+          <div className="text-lg font-black mb-2">{t("up_premium_h")}</div>
           <p className="text-sm text-muted mb-5 max-w-sm mx-auto leading-relaxed">
-            PDF statement upload requires CardWiz Premium. Upgrade to automatically
-            import your transactions and unlock the full Missed Savings Report.
+            {t("up_premium_p")}
           </p>
           <Link href="/pricing" className="inline-block rounded-xl bg-accent px-6 py-2.5 text-sm font-bold text-onaccent">
-            Upgrade to Premium →
+            {t("sav_gate_cta")}
           </Link>
         </div>
       </div>
@@ -224,33 +225,29 @@ export default function UploadPage() {
         <Link href="/account/transactions" className="text-xs text-muted hover:text-subtle">
           ← My Transactions
         </Link>
-        <h1 className="mt-1 text-2xl font-black">Upload Statement</h1>
-        <p className="text-sm text-muted mt-0.5">
-          Import transactions from a PDF bank statement. Supports HDFC, SBI, ICICI, Axis and more.
-        </p>
+        <h1 className="mt-1 text-2xl font-black">{t("acc_feat_upload_t")}</h1>
+        <p className="text-sm text-muted mt-0.5">{t("up_sub")}</p>
       </div>
 
       {/* Done */}
       {stage === "done" && (
         <div className="rounded-2xl border border-green-400/30 bg-green-400/5 p-8 text-center">
           <div className="text-4xl mb-3">✅</div>
-          <div className="text-lg font-bold mb-1">{importedCount} transactions imported!</div>
-          <p className="text-sm text-muted mb-5">
-            Your Missed Savings report has been updated.
-          </p>
+          <div className="text-lg font-bold mb-1">{t("up_done", { n: importedCount })}</div>
+          <p className="text-sm text-muted mb-5">{t("up_done_p")}</p>
           <div className="flex flex-wrap justify-center gap-3">
             <Link href="/account/transactions" className="rounded-xl bg-accent px-5 py-2.5 text-sm font-bold text-onaccent">
-              View transactions →
+              {t("up_view_txns")}
             </Link>
             <Link href="/account/savings" className="rounded-xl border border-border px-5 py-2.5 text-sm font-bold hover:border-accent">
-              See savings report →
+              {t("up_view_savings")}
             </Link>
           </div>
           <button
             onClick={() => { setStage("pick"); setRows([]); setWarnings([]); setError(""); }}
             className="mt-4 text-xs text-muted hover:underline"
           >
-            Upload another statement
+            {t("up_again")}
           </button>
         </div>
       )}
@@ -259,8 +256,8 @@ export default function UploadPage() {
       {stage === "parsing" && (
         <div className="rounded-2xl border border-border bg-surface2 p-10 text-center">
           <div className="inline-block h-10 w-10 animate-spin rounded-full border-4 border-border border-t-accent mb-4" />
-          <div className="font-bold">Parsing your statement…</div>
-          <p className="text-sm text-muted mt-1">This takes a few seconds.</p>
+          <div className="font-bold">{t("up_parsing")}</div>
+          <p className="text-sm text-muted mt-1">{t("up_parsing_sub")}</p>
         </div>
       )}
 
@@ -292,22 +289,20 @@ export default function UploadPage() {
         <>
           {/* Card selector */}
           <div className="rounded-xl border border-border bg-surface2 p-4 flex flex-wrap items-center gap-3">
-            <label className="text-sm font-bold shrink-0">Card used for all these spends (optional):</label>
+            <label className="text-sm font-bold shrink-0">{t("up_card_label")}</label>
             <select
               value={cardId}
               onChange={(e) => setCardId(e.target.value)}
               className="rounded-lg border border-border bg-bg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-accent"
             >
-              <option value="">— Select card —</option>
+              <option value="">{t("up_select_card")}</option>
               {wallet.map((w) => (
                 <option key={w.id} value={w.cardId}>
                   {w.nickname || w.cardId}{w.last4 ? ` (••${w.last4})` : ""}
                 </option>
               ))}
             </select>
-            <p className="text-xs text-muted">
-              Used to calculate exact reward rates in your Missed Savings report.
-            </p>
+            <p className="text-xs text-muted">{t("up_card_hint")}</p>
           </div>
 
           <ReviewTable rows={rows} onChange={patchRow} />
@@ -319,18 +314,16 @@ export default function UploadPage() {
               className="rounded-xl bg-accent px-6 py-2.5 text-sm font-bold text-onaccent disabled:opacity-50"
             >
               {submitting
-                ? "Importing…"
-                : `Import ${rows.filter((r) => r.selected).length} transactions`}
+                ? t("up_importing")
+                : t("up_import", { n: rows.filter((r) => r.selected).length })}
             </button>
             <button
               onClick={() => { setStage("pick"); setRows([]); setWarnings([]); setError(""); }}
               className="text-sm text-muted hover:text-text"
             >
-              Start over
+              {t("up_startover")}
             </button>
-            <p className="text-xs text-muted">
-              Only selected rows with a category will be imported.
-            </p>
+            <p className="text-xs text-muted">{t("up_import_hint")}</p>
           </div>
         </>
       )}
@@ -338,19 +331,17 @@ export default function UploadPage() {
       {stage === "review" && rows.length === 0 && (
         <div className="rounded-2xl border border-dashed border-border p-10 text-center">
           <div className="text-4xl mb-3">🔍</div>
-          <div className="font-bold">No debit transactions found</div>
-          <p className="text-sm text-muted mt-1 mb-4">
-            This PDF format may not be supported yet. Try a different statement or add transactions manually.
-          </p>
+          <div className="font-bold">{t("up_none_h")}</div>
+          <p className="text-sm text-muted mt-1 mb-4">{t("up_none_p")}</p>
           <div className="flex flex-wrap justify-center gap-3">
             <button
               onClick={() => { setStage("pick"); setRows([]); }}
               className="rounded-xl border border-border px-5 py-2.5 text-sm font-bold"
             >
-              Try another file
+              {t("up_try_another")}
             </button>
             <Link href="/account/transactions" className="rounded-xl bg-accent px-5 py-2.5 text-sm font-bold text-onaccent">
-              Add manually →
+              {t("up_add_manual")}
             </Link>
           </div>
         </div>
