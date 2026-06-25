@@ -247,7 +247,7 @@ export default function CardReviews({ cardId }: { cardId: string }) {
             </div>
           ))}
         </div>
-      ) : data && data.count > 0 ? (
+      ) : data && data.reviews.filter((r) => r.userId !== user?.id).length > 0 ? (
         <div className="space-y-3">
           {data.reviews
             .filter((r) => r.userId !== user?.id)
@@ -255,8 +255,11 @@ export default function CardReviews({ cardId }: { cardId: string }) {
               <ReviewCard key={r.id} review={r} />
             ))}
         </div>
-      ) : !user ? null : (
-        <p className="text-sm text-muted py-2">No reviews yet — be the first!</p>
+      ) : (
+        // Always show an empty state (incl. logged-out) so the section never looks missing.
+        <p className="rounded-xl border border-dashed border-border py-6 text-center text-sm text-muted">
+          ⭐ No reviews yet — be the first to review this card!
+        </p>
       )}
     </section>
   );
