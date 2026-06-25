@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLang } from "@/contexts/LangContext";
 import { getReviews, postReview, deleteReview, type Review, type ReviewsResponse } from "@/lib/reviews-api";
 import Link from "next/link";
 import Skeleton from "@/components/Skeleton";
@@ -41,14 +42,15 @@ function StarPicker({
 }
 
 function ReviewCard({ review, onDelete }: { review: Review; onDelete?: () => void }) {
+  const { t } = useLang();
   const ago = (() => {
     const ms = Date.now() - new Date(review.createdAt).getTime();
     const days = Math.floor(ms / 86400000);
-    if (days === 0) return "Today";
-    if (days === 1) return "Yesterday";
-    if (days < 30) return `${days}d ago`;
-    if (days < 365) return `${Math.floor(days / 30)}mo ago`;
-    return `${Math.floor(days / 365)}y ago`;
+    if (days === 0) return t("rev_ago_today");
+    if (days === 1) return t("rev_ago_yest");
+    if (days < 30) return t("rev_ago_d", { n: days });
+    if (days < 365) return t("rev_ago_mo", { n: Math.floor(days / 30) });
+    return t("rev_ago_y", { n: Math.floor(days / 365) });
   })();
 
   return (
@@ -81,7 +83,7 @@ function ReviewCard({ review, onDelete }: { review: Review; onDelete?: () => voi
           onClick={onDelete}
           className="text-xs text-red-400 hover:underline pt-1"
         >
-          Delete my review
+          {t("rev_delete")}
         </button>
       )}
     </div>
@@ -97,6 +99,7 @@ function WriteReviewForm({
   existingReview: Review | null;
   onSaved: (r: Review) => void;
 }) {
+  const { t } = useLang();
   const [rating, setRating] = useState(existingReview?.rating ?? 0);
   const [title, setTitle] = useState(existingReview?.title ?? "");
   const [body, setBody] = useState(existingReview?.body ?? "");
@@ -105,7 +108,7 @@ function WriteReviewForm({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!rating) { setError("Please select a star rating."); return; }
+    if (!rating) { setError(t("rev_err_rating")); return; }
     setSubmitting(true);
     setError("");
     try {
@@ -120,16 +123,16 @@ function WriteReviewForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3 rounded-xl border border-border bg-surface2 p-4">
-      <div className="text-sm font-bold">{existingReview ? "Edit your review" : "Write a review"}</div>
+      <div className="text-sm font-bold">{existingReview ? t("rev_edit") : t("rev_write")}</div>
 
       <div>
-        <div className="mb-1 text-xs text-muted">Rating *</div>
+        <div className="mb-1 text-xs text-muted">{t("rev_rating")}</div>
         <StarPicker value={rating} onChange={setRating} size="text-2xl" />
       </div>
 
       <input
         className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent"
-        placeholder="Title (optional)"
+        placeholder={t("rev_title_ph")}
         value={title}
         maxLength={120}
         onChange={(e) => setTitle(e.target.value)}
@@ -137,7 +140,7 @@ function WriteReviewForm({
 
       <textarea
         className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-accent min-h-[80px] resize-y"
-        placeholder="Your experience with this card... (optional)"
+        placeholder={t("rev_body_ph")}
         value={body}
         maxLength={1000}
         onChange={(e) => setBody(e.target.value)}
@@ -150,7 +153,7 @@ function WriteReviewForm({
         disabled={submitting}
         className="rounded-lg bg-accent px-4 py-2 text-sm font-bold text-onaccent transition-opacity disabled:opacity-50"
       >
-        {submitting ? "Saving…" : existingReview ? "Update review" : "Post review"}
+        {submitting ? t("rev_saving") : existingReview ? t("rev_update") : t("rev_post")}
       </button>
     </form>
   );
@@ -158,6 +161,7 @@ function WriteReviewForm({
 
 export default function CardReviews({ cardId }: { cardId: string }) {
   const { user } = useAuth();
+  const { t } = useLang();
   const [data, setData] = useState<ReviewsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -176,7 +180,7 @@ export default function CardReviews({ cardId }: { cardId: string }) {
   const myReview = data?.reviews.find((r) => r.userId === user?.id) ?? null;
 
   async function handleDelete() {
-    if (!confirm("Delete your review?")) return;
+    if (!confirm(t("rev_confirm_del"))) return;
     try {
       await deleteReview(cardId);
       await load();
@@ -200,7 +204,7 @@ export default function CardReviews({ cardId }: { cardId: string }) {
     <section className="space-y-4">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <h2 className="text-lg font-black">User Reviews</h2>
+        <h2 className="text-lg font-black">{t("rev_h")}</h2>
         {data && data.count > 0 && (
           <div className="flex items-center gap-1.5 text-sm text-muted">
             <StarPicker value={Math.round(data.avgRating ?? 0)} readOnly size="text-sm" />
@@ -219,7 +223,7 @@ export default function CardReviews({ cardId }: { cardId: string }) {
               onClick={() => setShowForm(true)}
               className="text-sm text-accent hover:underline"
             >
-              Edit your review
+              {t("rev_edit")}
             </button>
           </div>
         ) : showForm || !myReview ? (
@@ -231,8 +235,8 @@ export default function CardReviews({ cardId }: { cardId: string }) {
         ) : null
       ) : (
         <p className="text-sm text-muted">
-          <Link href="/sign-in" className="text-accent hover:underline font-medium">Sign in</Link>
-          {" "}to leave a review.
+          <Link href="/sign-in" className="text-accent hover:underline font-medium">{t("rev_signin")}</Link>
+          {" "}{t("rev_signin_2")}
         </p>
       )}
 
@@ -258,7 +262,7 @@ export default function CardReviews({ cardId }: { cardId: string }) {
       ) : (
         // Always show an empty state (incl. logged-out) so the section never looks missing.
         <p className="rounded-xl border border-dashed border-border py-6 text-center text-sm text-muted">
-          ⭐ No reviews yet — be the first to review this card!
+          {t("rev_empty")}
         </p>
       )}
     </section>

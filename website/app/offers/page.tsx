@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { track } from "@vercel/analytics";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLang } from "@/contexts/LangContext";
 import { getOffers, submitOffer, type Offer, type SubmitOfferPayload } from "@/lib/offers-api";
 
 const BANKS = [
@@ -17,6 +18,7 @@ function fmtDate(d: string) {
 }
 
 function OfferCard({ offer }: { offer: Offer }) {
+  const { t } = useLang();
   const expired = offer.validUntil && new Date(offer.validUntil) < new Date();
   return (
     <div className={`rounded-xl border bg-surface2 p-4 space-y-1.5 ${expired ? "opacity-50" : "border-border"}`}>
@@ -26,7 +28,7 @@ function OfferCard({ offer }: { offer: Offer }) {
           <div className="text-xs text-accent font-semibold mt-0.5">{offer.discountText}</div>
         </div>
         {expired && (
-          <span className="shrink-0 text-[10px] font-bold rounded-full bg-red-400/15 text-red-400 px-2 py-0.5">Expired</span>
+          <span className="shrink-0 text-[10px] font-bold rounded-full bg-red-400/15 text-red-400 px-2 py-0.5">{t("off_expired")}</span>
         )}
       </div>
       <div className="flex flex-wrap gap-2 text-xs text-muted">
@@ -34,16 +36,17 @@ function OfferCard({ offer }: { offer: Offer }) {
         {offer.bank && <span>🏦 {offer.bank}</span>}
         {offer.cardId && (
           <Link href={`/cards/${offer.cardId}`} className="text-accent hover:underline">
-            💳 View card →
+            {t("off_view_card")}
           </Link>
         )}
-        {offer.validUntil && <span>📅 Valid till {fmtDate(offer.validUntil)}</span>}
+        {offer.validUntil && <span>{t("off_valid", { date: fmtDate(offer.validUntil) })}</span>}
       </div>
     </div>
   );
 }
 
 function SubmitForm({ onSubmitted }: { onSubmitted: (o: Offer) => void }) {
+  const { t } = useLang();
   const [form, setForm] = useState<SubmitOfferPayload>({
     merchant: "", bank: "", title: "", discountText: "", validUntil: "",
   });
@@ -72,7 +75,7 @@ function SubmitForm({ onSubmitted }: { onSubmitted: (o: Offer) => void }) {
       onSubmitted(offer);
     } catch (err) {
       if (err instanceof Error && err.message === "daily_limit") {
-        setError("Aaj ka limit ho gaya (3 submissions/day). Kal dobara try karo.");
+        setError(t("off_err_limit"));
       } else {
         setError(err instanceof Error ? err.message : "Submit failed.");
       }
@@ -85,11 +88,11 @@ function SubmitForm({ onSubmitted }: { onSubmitted: (o: Offer) => void }) {
     return (
       <div className="rounded-xl border border-green-400/30 bg-green-400/5 p-5 text-center">
         <div className="text-2xl mb-2">✅</div>
-        <div className="font-bold text-sm">Offer submit ho gaya!</div>
-        <p className="text-xs text-subtle mt-1">Admin review ke baad live hoga (usually 24h).</p>
+        <div className="font-bold text-sm">{t("off_done_h")}</div>
+        <p className="text-xs text-subtle mt-1">{t("off_done_p")}</p>
         <button onClick={() => { setDone(false); setForm({ merchant: "", bank: "", title: "", discountText: "", validUntil: "" }); }}
           className="mt-3 text-xs text-accent hover:underline">
-          Submit another →
+          {t("off_submit_another")}
         </button>
       </div>
     );
@@ -97,38 +100,38 @@ function SubmitForm({ onSubmitted }: { onSubmitted: (o: Offer) => void }) {
 
   return (
     <form onSubmit={handleSubmit} className="rounded-xl border border-border bg-surface2 p-5 space-y-3">
-      <div className="text-sm font-black">Submit a Bank Offer</div>
-      <p className="text-xs text-subtle">Koi achha bank offer pata hai? Share karo — review ke baad live karenge.</p>
+      <div className="text-sm font-black">{t("off_submit_h")}</div>
+      <p className="text-xs text-subtle">{t("off_submit_sub")}</p>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs text-muted mb-1">Merchant *</label>
+          <label className="block text-xs text-muted mb-1">{t("off_merchant")}</label>
           <input value={form.merchant} onChange={(e) => set("merchant", e.target.value)} required
-            placeholder="e.g. Amazon, Swiggy" maxLength={100}
+            placeholder={t("off_merchant_ph")} maxLength={100}
             className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
         </div>
         <div>
-          <label className="block text-xs text-muted mb-1">Bank</label>
+          <label className="block text-xs text-muted mb-1">{t("off_bank")}</label>
           <select value={form.bank} onChange={(e) => set("bank", e.target.value)}
             className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-accent">
-            <option value="">— Select bank —</option>
+            <option value="">{t("off_select_bank")}</option>
             {BANKS.map((b) => <option key={b} value={b}>{b}</option>)}
           </select>
         </div>
         <div className="sm:col-span-2">
-          <label className="block text-xs text-muted mb-1">Offer title *</label>
+          <label className="block text-xs text-muted mb-1">{t("off_title")}</label>
           <input value={form.title} onChange={(e) => set("title", e.target.value)} required
-            placeholder="e.g. 10% off on Amazon with HDFC Credit Cards" maxLength={120}
+            placeholder={t("off_title_ph")} maxLength={120}
             className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
         </div>
         <div>
-          <label className="block text-xs text-muted mb-1">Discount details *</label>
+          <label className="block text-xs text-muted mb-1">{t("off_discount")}</label>
           <input value={form.discountText} onChange={(e) => set("discountText", e.target.value)} required
-            placeholder="e.g. 10% off up to ₹500, min ₹1500" maxLength={200}
+            placeholder={t("off_discount_ph")} maxLength={200}
             className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
         </div>
         <div>
-          <label className="block text-xs text-muted mb-1">Valid until</label>
+          <label className="block text-xs text-muted mb-1">{t("off_valid_until")}</label>
           <input type="date" value={form.validUntil} onChange={(e) => set("validUntil", e.target.value)}
             className="w-full rounded-lg border border-border bg-bg px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-accent" />
         </div>
@@ -138,7 +141,7 @@ function SubmitForm({ onSubmitted }: { onSubmitted: (o: Offer) => void }) {
 
       <button type="submit" disabled={submitting}
         className="rounded-lg bg-accent px-5 py-2 text-sm font-bold text-onaccent disabled:opacity-50">
-        {submitting ? "Submitting…" : "Submit Offer"}
+        {submitting ? t("off_submitting") : t("off_submit_btn")}
       </button>
     </form>
   );
@@ -146,6 +149,7 @@ function SubmitForm({ onSubmitted }: { onSubmitted: (o: Offer) => void }) {
 
 export default function OffersPage() {
   const { user } = useAuth();
+  const { t } = useLang();
   const [offers, setOffers] = useState<Offer[]>([]);
   const [bank, setBank] = useState("");
   const [loading, setLoading] = useState(true);
@@ -163,15 +167,15 @@ export default function OffersPage() {
     <div className="mx-auto max-w-3xl px-5 py-10 space-y-8">
 
       <div>
-        <h1 className="text-2xl font-black">Bank Offers</h1>
-        <p className="text-sm text-subtle mt-0.5">Community-submitted credit card offers — verified by CardWiz.</p>
+        <h1 className="text-2xl font-black">{t("off_h")}</h1>
+        <p className="text-sm text-subtle mt-0.5">{t("off_sub")}</p>
       </div>
 
       {/* Bank filter */}
       <div className="flex flex-wrap gap-2">
         <button onClick={() => setBank("")}
           className={`rounded-full px-3 py-1.5 text-xs font-bold border transition-colors ${!bank ? "bg-accent text-onaccent border-accent" : "border-border hover:border-accent"}`}>
-          All
+          {t("off_all")}
         </button>
         {BANKS.slice(0, 8).map((b) => (
           <button key={b} onClick={() => setBank(b === bank ? "" : b)}
@@ -183,11 +187,11 @@ export default function OffersPage() {
 
       {/* Offers list */}
       {loading ? (
-        <div className="text-sm text-muted animate-pulse py-8 text-center">Loading…</div>
+        <div className="text-sm text-muted animate-pulse py-8 text-center">{t("txn_loading")}</div>
       ) : offers.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-border p-10 text-center text-subtle">
           <div className="text-3xl mb-3">🏷️</div>
-          <div className="text-sm">{bank ? `${bank} ke liye koi offer nahi abhi.` : "Koi offer nahi abhi — pehla submit karo!"}</div>
+          <div className="text-sm">{bank ? t("off_empty_bank", { bank }) : t("off_empty")}</div>
         </div>
       ) : (
         <div className="space-y-3">
@@ -201,10 +205,10 @@ export default function OffersPage() {
           <SubmitForm onSubmitted={(o) => { if (o.status === 'approved') setOffers((prev) => [o, ...prev]); }} />
         ) : (
           <div className="rounded-xl border border-border bg-surface2 p-5 text-center">
-            <div className="font-bold text-sm mb-1">Offer share karna hai?</div>
-            <p className="text-xs text-subtle mb-4">Koi achha bank offer pata hai? Sign in karke submit karo.</p>
+            <div className="font-bold text-sm mb-1">{t("off_signin_h")}</div>
+            <p className="text-xs text-subtle mb-4">{t("off_signin_p")}</p>
             <Link href="/sign-in" className="inline-block rounded-xl bg-accent px-5 py-2.5 text-sm font-bold text-onaccent">
-              Sign in to submit →
+              {t("off_signin_btn")}
             </Link>
           </div>
         )}
