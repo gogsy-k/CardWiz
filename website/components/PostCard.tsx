@@ -23,7 +23,7 @@ export default function PostCard({ post }: { post: Post }) {
       <div className="flex flex-1 flex-col p-5">
         <div className="mb-2 flex flex-wrap items-center gap-1.5">
           {post.category && (
-            <span className="w-fit rounded-full border border-border bg-surface px-2.5 py-0.5 text-[11px] font-semibold text-green">
+            <span className="w-fit rounded-full border border-border bg-surface px-2.5 py-0.5 text-[11px] font-semibold capitalize text-green">
               {post.category}
             </span>
           )}

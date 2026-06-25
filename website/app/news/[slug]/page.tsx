@@ -48,7 +48,7 @@ export default async function NewsDetail({ params }: Params) {
         ← All news
       </Link>
 
-      {post.category && <div className="mt-5 text-xs font-semibold text-green">{post.category}</div>}
+      {post.category && <div className="mt-5 text-xs font-semibold capitalize text-green">{post.category}</div>}
       <h1 className="mt-2 text-3xl font-black leading-tight sm:text-4xl">{post.title}</h1>
       <div className="mt-2 text-sm text-muted">
         {post.authorName && <>{post.authorName} · </>}
