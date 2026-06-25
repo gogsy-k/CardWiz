@@ -6,7 +6,6 @@ import { motion } from "motion/react";
 import { PLANS, priceFor, yearlySaving, type BillingPeriod } from "@/lib/plans";
 import { useLang } from "@/contexts/LangContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { NOTIFY_EMAIL } from "@/lib/constants";
 import UpgradeButton from "@/components/UpgradeButton";
 import Reveal from "@/components/motion/Reveal";
 import AnimatedNumber from "@/components/motion/AnimatedNumber";
@@ -150,21 +149,9 @@ export default function PricingPlans() {
               {plan.cta === "install" ? (
                 // Free — available now (browse free / current-plan pill), no "coming soon".
                 <FreePlanCta />
-              ) : plan.id === "premium" ? (
-                // Live Razorpay subscription (Premium).
-                <UpgradeButton period={period} className="mt-6" />
               ) : (
-                // Pro — not a separate tier in the backend yet → waitlist (not "coming soon").
-                <a
-                  href={`mailto:${NOTIFY_EMAIL}?subject=${encodeURIComponent(
-                    `CardWiz ${plan.name} — notify me`
-                  )}&body=${encodeURIComponent(
-                    `Mujhe CardWiz ${plan.name} plan live hone par batana.`
-                  )}`}
-                  className="mt-6 rounded-xl border border-border px-5 py-3 text-center text-sm font-bold text-accent transition-colors hover:border-accent"
-                >
-                  {t("cta_pro_wait")}
-                </a>
+                // Premium & Pro — live Razorpay subscription (tier = plan id).
+                <UpgradeButton tier={plan.id as "premium" | "pro"} period={period} className="mt-6" />
               )}
 
               {/* Pros */}

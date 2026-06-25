@@ -294,7 +294,7 @@ async function updateEmailPrefs(id, enabled) {
 
 async function listPremiumEmailUsers() {
   const res = await pool.query(
-    "SELECT * FROM users WHERE plan = 'premium' AND email_reports = true"
+    "SELECT * FROM users WHERE plan IN ('premium', 'pro') AND email_reports = true"
   );
   return res.rows.map(rowToUser);
 }

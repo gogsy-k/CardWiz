@@ -36,6 +36,8 @@ const config = {
   razorpayWebhookSecret: process.env.RAZORPAY_WEBHOOK_SECRET || '',
   premiumMonthlyInr: Number(process.env.PREMIUM_MONTHLY_INR) || 49,
   premiumYearlyInr:  Number(process.env.PREMIUM_YEARLY_INR)  || 399,
+  proMonthlyInr:     Number(process.env.PRO_MONTHLY_INR)     || 99,
+  proYearlyInr:      Number(process.env.PRO_YEARLY_INR)      || 799,
   premiumTrialDays:  Number(process.env.PREMIUM_TRIAL_DAYS)  || 30,
   // backward compat
   get premiumPriceInr() { return this.premiumMonthlyInr; },
@@ -45,6 +47,13 @@ const config = {
 // Razorpay keys set hain? (payment routes isse guard karte hain)
 function razorpayConfigured() {
   return !!(config.razorpayKeyId && config.razorpayKeySecret);
+}
+
+// Paid-tier check — Pro includes everything Premium does (pro ⊇ premium).
+// Har premium-gated route isse use kare, taaki Pro users ko bhi access mile.
+const PAID_PLANS = ['premium', 'pro'];
+function hasPremium(plan) {
+  return PAID_PLANS.includes(plan);
 }
 
 // Startup pe hi check — galat config silently chalne se accha hai abhi fail ho.
@@ -62,4 +71,4 @@ function validate() {
   return problems;
 }
 
-module.exports = { config, validate, razorpayConfigured };
+module.exports = { config, validate, razorpayConfigured, hasPremium, PAID_PLANS };

@@ -104,7 +104,7 @@ async function updateEmailPrefs(id, enabled) {
 
 async function listPremiumEmailUsers() {
   load();
-  return cache.users.filter((u) => u.plan === 'premium' && u.emailReports);
+  return cache.users.filter((u) => (u.plan === 'premium' || u.plan === 'pro') && u.emailReports);
 }
 
 // ---- Cards (synced wallet) ----

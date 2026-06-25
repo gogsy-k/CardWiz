@@ -11,7 +11,7 @@ export type Review = {
   userId: string;
   userName: string;
   userPicture: string;
-  userPlan: "free" | "premium";
+  userPlan: "free" | "premium" | "pro";
   rating: number;
   title: string;
   body: string;

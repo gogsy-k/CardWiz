@@ -77,16 +77,19 @@ router.post('/subscribe', requireAuth, async (req, res) => {
   if (!ensureConfigured(res)) return;
   const isYearly = req.body.plan === 'yearly';
   const planType = isYearly ? 'yearly' : 'monthly';
+  // Which paid tier? (Pro costs more; tier is carried in notes so verify sets the right plan.)
+  const tier = req.body.tier === 'pro' ? 'pro' : 'premium';
+  const tierName = tier === 'pro' ? 'Pro' : 'Premium';
   try {
-    const amount = isYearly
-      ? config.premiumYearlyInr * 100
-      : config.premiumMonthlyInr * 100;
+    const monthly = tier === 'pro' ? config.proMonthlyInr : config.premiumMonthlyInr;
+    const yearly = tier === 'pro' ? config.proYearlyInr : config.premiumYearlyInr;
+    const amount = (isYearly ? yearly : monthly) * 100;
 
     const rzpPlan = await rzp.createPlan({
       amount,
       period: planType,
       interval: 1,
-      name: `CardWiz Premium (${isYearly ? 'Yearly' : 'Monthly'})`,
+      name: `CardWiz ${tierName} (${isYearly ? 'Yearly' : 'Monthly'})`,
     });
 
     // Trial end = trialDays din baad (first charge date).
@@ -95,11 +98,11 @@ router.post('/subscribe', requireAuth, async (req, res) => {
       planId: rzpPlan.id,
       startAt,
       totalCount: isYearly ? 10 : 120, // 10 years either way
-      notes: { userId: req.user.id, plan: planType },
+      notes: { userId: req.user.id, plan: planType, tier },
     });
 
     await db.subscriptions.create(req.user.id, sub.id, planType);
-    res.json({ shortUrl: sub.short_url, plan: planType, trialDays: config.premiumTrialDays });
+    res.json({ shortUrl: sub.short_url, plan: planType, tier, trialDays: config.premiumTrialDays });
   } catch (err) {
     console.error('[payment/subscribe]', err.message);
     res.status(502).json({ error: 'Subscription nahi bana: ' + err.message });
@@ -118,7 +121,9 @@ router.post('/verify-subscription', requireAuth, async (req, res) => {
       // 'authenticated' = card saved (trial active); 'active' = charging has started.
       if (sub.status === 'authenticated' || sub.status === 'active') {
         await db.subscriptions.markActive(s.subId);
-        const user = await db.users.updatePlan(req.user.id, 'premium');
+        // Tier (premium/pro) was stored in the subscription notes at creation.
+        const tier = (sub.notes && sub.notes.tier) || 'premium';
+        const user = await db.users.updatePlan(req.user.id, tier);
         return res.json({ status: 'active', plan: user.plan });
       }
     }

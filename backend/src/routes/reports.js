@@ -18,6 +18,7 @@ const express = require('express');
 const { requireAuth } = require('../middleware/auth');
 const db = require('../db');
 const { computeMissedSavings } = require('../lib/missed-savings');
+const { hasPremium } = require('../config');
 
 const router = express.Router();
 
@@ -25,7 +26,7 @@ const router = express.Router();
 
 router.get('/missed-savings', requireAuth, async (req, res) => {
   const { from, to } = req.query;
-  const isPremium = req.user.plan === 'premium';
+  const isPremium = hasPremium(req.user.plan);
 
   try {
     const [walletEntries, catalogCards, txns] = await Promise.all([

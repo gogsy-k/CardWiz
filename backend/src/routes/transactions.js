@@ -13,6 +13,7 @@
 const express = require('express');
 const { requireAuth } = require('../middleware/auth');
 const db = require('../db');
+const { hasPremium } = require('../config');
 
 const router = express.Router();
 const FREE_LIMIT = 3;
@@ -42,7 +43,7 @@ router.post('/', requireAuth, async (req, res) => {
   }
 
   // Free plan limit check
-  if (req.user.plan !== 'premium') {
+  if (!hasPremium(req.user.plan)) {
     const count = await db.transactions.count(req.user.id);
     if (count >= FREE_LIMIT) {
       return res.status(403).json({ error: 'free_limit', limit: FREE_LIMIT, count });
@@ -68,7 +69,7 @@ router.post('/', requireAuth, async (req, res) => {
 
 // ── POST /transactions/bulk  (PDF import — premium only) ──
 router.post('/bulk', requireAuth, async (req, res) => {
-  if (req.user.plan !== 'premium') {
+  if (!hasPremium(req.user.plan)) {
     return res.status(403).json({ error: 'premium_required' });
   }
   const { transactions, cardId } = req.body || {};

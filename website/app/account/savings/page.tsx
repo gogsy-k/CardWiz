@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
+import { isPaid } from "@/lib/auth";
 import { getMissedSavings, type SavingsReport, type CategoryMiss } from "@/lib/savings-api";
 import { CATEGORY_LABEL } from "@/lib/cards";
 import ScorecardShare from "@/components/ScorecardShare";
@@ -87,7 +88,7 @@ function CategoryRow({ row, blurred }: { row: CategoryMiss; blurred: boolean }) 
 
 export default function SavingsPage() {
   const { user } = useAuth();
-  const isPremium = user?.plan === "premium";
+  const isPremium = isPaid(user?.plan);
 
   const PERIODS = buildPeriods();
   const [periodIdx, setPeriodIdx] = useState(0);

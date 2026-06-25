@@ -4,7 +4,7 @@ import { useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
-import { authedFetch } from "@/lib/auth";
+import { authedFetch, isPaid } from "@/lib/auth";
 import { uploadStatement, bulkImport, type ParsedTransaction } from "@/lib/upload-api";
 import { CATEGORY_LABEL } from "@/lib/cards";
 
@@ -125,7 +125,7 @@ function ReviewTable({
 export default function UploadPage() {
   const { user } = useAuth();
   const router = useRouter();
-  const isPremium = user?.plan === "premium";
+  const isPremium = isPaid(user?.plan);
 
   const [stage, setStage] = useState<"pick" | "parsing" | "review" | "done">("pick");
   const [submitting, setSubmitting] = useState(false);

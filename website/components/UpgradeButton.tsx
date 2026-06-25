@@ -16,12 +16,16 @@ type State = "idle" | "starting" | "waiting" | "done" | "error";
  */
 export default function UpgradeButton({
   period,
+  tier = "premium",
   className = "",
 }: {
   period: "monthly" | "yearly";
+  tier?: "premium" | "pro";
   className?: string;
 }) {
   const { user, loading } = useAuth();
+  // Pro includes Premium, so a Premium button is "owned" by a pro user too.
+  const owns = !!user && (user.plan === tier || (tier === "premium" && user.plan === "pro"));
   const { t } = useLang();
   const [state, setState] = useState<State>("idle");
   const [err, setErr] = useState("");
@@ -64,8 +68,8 @@ export default function UpgradeButton({
     // Open the tab synchronously (in the click) so popup blockers allow it.
     const win = window.open("", "_blank");
     try {
-      track("upgrade_click", { period });
-      const { shortUrl } = await startSubscription(period);
+      track("upgrade_click", { period, tier });
+      const { shortUrl } = await startSubscription(period, tier);
       if (win) win.location.href = shortUrl;
       else window.location.href = shortUrl;
       setState("waiting");
@@ -78,7 +82,7 @@ export default function UpgradeButton({
   }
 
   // --- render states ---
-  if (user?.plan === "premium") {
+  if (owns) {
     return (
       <div className={`${base} border border-green/40 bg-green/10 text-green ${className}`}>
         ✓ {t("pay_already")}
@@ -123,7 +127,7 @@ export default function UpgradeButton({
         disabled={state === "starting"}
         className={`${base} bg-accent text-onaccent hover:bg-blue disabled:opacity-60`}
       >
-        {state === "starting" ? t("pay_starting") : t("pay_upgrade")}
+        {state === "starting" ? t("pay_starting") : t(tier === "pro" ? "pay_upgrade_pro" : "pay_upgrade")}
       </button>
       {state === "error" && <p className="mt-1.5 text-center text-xs text-pink">{err}</p>}
     </div>

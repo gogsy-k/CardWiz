@@ -6,14 +6,18 @@
  */
 import { authedFetch } from "@/lib/auth";
 
-export type SubscribeResult = { shortUrl: string; plan: string; trialDays: number };
-export type VerifyResult = { status: "none" | "pending" | "active"; plan: "free" | "premium" };
+export type PaidTier = "premium" | "pro";
+export type SubscribeResult = { shortUrl: string; plan: string; tier: PaidTier; trialDays: number };
+export type VerifyResult = { status: "none" | "pending" | "active"; plan: "free" | "premium" | "pro" };
 
-/** Create a Razorpay subscription (monthly/yearly) and get the hosted pay URL. */
-export async function startSubscription(period: "monthly" | "yearly"): Promise<SubscribeResult> {
+/** Create a Razorpay subscription (monthly/yearly, premium/pro) and get the hosted pay URL. */
+export async function startSubscription(
+  period: "monthly" | "yearly",
+  tier: PaidTier = "premium",
+): Promise<SubscribeResult> {
   const res = await authedFetch("/payment/subscribe", {
     method: "POST",
-    body: JSON.stringify({ plan: period }),
+    body: JSON.stringify({ plan: period, tier }),
   });
   if (!res.ok) {
     const e = await res.json().catch(() => ({}));

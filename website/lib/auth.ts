@@ -12,12 +12,17 @@ export type AuthUser = {
   email: string;
   name: string;
   picture: string;
-  plan: "free" | "premium";
+  plan: "free" | "premium" | "pro";
   emailReports?: boolean;
   isAdmin?: boolean;
 };
 
 export type StoredAuth = { token: string; user: AuthUser };
+
+/** Paid tiers — Pro includes everything Premium does (pro ⊇ premium). */
+export function isPaid(plan: AuthUser["plan"] | undefined | null): boolean {
+  return plan === "premium" || plan === "pro";
+}
 
 const STORAGE_KEY = "cwAuth";
 

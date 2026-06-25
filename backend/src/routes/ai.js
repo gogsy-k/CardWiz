@@ -13,6 +13,7 @@ const express = require('express');
 const { optionalAuth } = require('../middleware/auth');
 const db = require('../db');
 const { chat, checkRateLimit } = require('../lib/ai-assistant');
+const { hasPremium } = require('../config');
 
 const router = express.Router();
 
@@ -24,7 +25,7 @@ router.post('/chat', optionalAuth, async (req, res) => {
   if (!query || query.length < 3) return res.status(400).json({ error: 'Query too short' });
   if (query.length > 500)          return res.status(400).json({ error: 'Query too long (max 500 chars)' });
 
-  const isPremium = req.user?.plan === 'premium';
+  const isPremium = hasPremium(req.user?.plan);
   const userId    = req.user?.id;
   let limitResult = { allowed: true, remaining: Infinity };
 

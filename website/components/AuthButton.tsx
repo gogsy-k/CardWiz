@@ -14,8 +14,8 @@ export default function AuthButton() {
     return <div className="h-8 w-8 animate-pulse rounded-full bg-surface2" aria-hidden />;
   }
 
-  const planLabel = (plan: "free" | "premium") =>
-    plan === "premium" ? t("auth_plan_premium") : t("auth_plan_free");
+  const planLabel = (plan: "free" | "premium" | "pro") =>
+    plan === "pro" ? "Pro" : plan === "premium" ? t("auth_plan_premium") : t("auth_plan_free");
 
   // ---- Signed in: avatar + name + plan, dropdown with sign out ----
   if (user) {
@@ -94,11 +94,11 @@ export default function AuthButton() {
   );
 }
 
-function PlanPill({ plan, label }: { plan: "free" | "premium"; label: string }) {
+function PlanPill({ plan, label }: { plan: "free" | "premium" | "pro"; label: string }) {
   return (
     <span
       className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-        plan === "premium" ? "bg-accent text-onaccent" : "border border-border text-subtle"
+        plan === "premium" || plan === "pro" ? "bg-accent text-onaccent" : "border border-border text-subtle"
       }`}
     >
       {label}

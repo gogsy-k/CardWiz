@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
-import { authedFetch } from "@/lib/auth";
+import { authedFetch, isPaid } from "@/lib/auth";
 import {
   listTransactions,
   addTransaction,
@@ -217,7 +217,7 @@ function TxnRow({
 // ── Main Page ────────────────────────────────────────────────────────────────
 export default function TransactionsPage() {
   const { user } = useAuth();
-  const isPremium = user?.plan === "premium";
+  const isPremium = isPaid(user?.plan);
 
   const [txns, setTxns] = useState<Transaction[]>([]);
   const [count, setCount] = useState(0);

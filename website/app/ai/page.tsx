@@ -6,6 +6,7 @@ import { track } from "@vercel/analytics";
 import { sendChatMessage, type TopCard } from "@/lib/ai-api";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLang } from "@/contexts/LangContext";
+import { isPaid } from "@/lib/auth";
 import Reveal from "@/components/motion/Reveal";
 
 const SUGGESTION_KEYS = ["ai_ex_1", "ai_ex_2", "ai_ex_3", "ai_ex_4", "ai_ex_5"];
@@ -64,7 +65,7 @@ function Bubble({ msg }: { msg: Msg }) {
 export default function AiPage() {
   const { user } = useAuth();
   const { t } = useLang();
-  const isPremium = user?.plan === "premium";
+  const isPremium = isPaid(user?.plan);
 
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");

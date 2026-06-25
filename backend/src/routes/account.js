@@ -9,6 +9,7 @@ const { requireAuth, requireAdmin } = require('../middleware/auth');
 const db = require('../db');
 const { computeMissedSavings } = require('../lib/missed-savings');
 const { sendMonthlyReport } = require('../lib/email');
+const { hasPremium } = require('../config');
 
 const router = express.Router();
 
@@ -25,7 +26,7 @@ router.get('/email-prefs', requireAuth, async (req, res) => {
 
 // POST /account/email-prefs  body: { enabled: boolean }
 router.post('/email-prefs', requireAuth, async (req, res) => {
-  if (req.user.plan !== 'premium') {
+  if (!hasPremium(req.user.plan)) {
     return res.status(403).json({ error: 'premium_required' });
   }
 

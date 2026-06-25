@@ -13,6 +13,7 @@ const express = require('express');
 const multer  = require('multer');
 const { requireAuth } = require('../middleware/auth');
 const { parseStatement } = require('../lib/pdf-parser');
+const { hasPremium } = require('../config');
 
 const router = express.Router();
 
@@ -29,7 +30,7 @@ const upload = multer({
 });
 
 router.post('/upload', requireAuth, (req, res, next) => {
-  if (req.user.plan !== 'premium') {
+  if (!hasPremium(req.user.plan)) {
     return res.status(403).json({ error: 'premium_required' });
   }
   next();

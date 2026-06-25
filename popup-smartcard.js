@@ -302,7 +302,7 @@ async function autoVerifyPayment() {
     const subRes = await CardWizAuth.authedFetch('/payment/verify-subscription', { method: 'POST' });
     if (subRes.ok) {
       const subData = await subRes.json();
-      if (subData.status === 'active' || subData.plan === 'premium') {
+      if (subData.status === 'active' || isPaidPlan(subData.plan)) {
         currentUser = await CardWizAuth.fetchMe();
         applyAuthToPremium();
         return;
@@ -312,7 +312,7 @@ async function autoVerifyPayment() {
     const res = await CardWizAuth.authedFetch('/payment/verify', { method: 'POST' });
     if (!res.ok) return;
     const data = await res.json();
-    if (data.status === 'paid' || data.plan === 'premium') {
+    if (data.status === 'paid' || isPaidPlan(data.plan)) {
       currentUser = await CardWizAuth.fetchMe();
       applyAuthToPremium();
     }
@@ -333,9 +333,12 @@ function loadAuth() {
   });
 }
 
+// Pro includes Premium — dono paid features unlock karte hain.
+function isPaidPlan(plan) { return plan === 'premium' || plan === 'pro'; }
+
 // Signed in -> plan backend se authoritative. Signed out -> local dev flag chalta hai.
 function applyAuthToPremium() {
-  if (currentUser) isPremium = currentUser.plan === 'premium';
+  if (currentUser) isPremium = isPaidPlan(currentUser.plan);
 }
 
 function renderAccount() {
@@ -357,7 +360,7 @@ function renderAccount() {
            <div class="acct-name">${escapeHtml(currentUser.name || 'User')}</div>
            <div class="acct-email">${escapeHtml(currentUser.email || '')}</div>
          </div>
-         <span class="pill ${isPremium ? 'pro' : 'free'}">${isPremium ? 'PREMIUM' : 'FREE'}</span>
+         <span class="pill ${isPremium ? 'pro' : 'free'}">${currentUser.plan === 'pro' ? 'PRO' : isPremium ? 'PREMIUM' : 'FREE'}</span>
        </div>
        <button class="ghost" id="signOutBtn" style="margin-top:10px;">${escapeHtml(CardWizI18n.t('acc_signout'))}</button>`;
     const b = $('signOutBtn');

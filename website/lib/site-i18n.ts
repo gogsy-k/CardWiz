@@ -215,6 +215,7 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
     pay_done: "Premium active!",
     pay_get_started: "Get started — Free",
     pay_current_plan: "✓ Your current plan",
+    pay_upgrade_pro: "🚀 Get Pro",
     cta_pro_wait: "🔔 Get notified about Pro",
     pay_refresh: "Refresh",
     plan_note:
@@ -536,6 +537,7 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
     pay_done: "Premium active ho gaya!",
     pay_get_started: "Free mein shuru karo",
     pay_current_plan: "✓ Aapka current plan",
+    pay_upgrade_pro: "🚀 Pro le lo",
     cta_pro_wait: "🔔 Pro ke liye notify karo",
     pay_refresh: "Refresh",
     plan_note:
@@ -857,6 +859,7 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
     pay_done: "Premium active हो गया!",
     pay_get_started: "Free में शुरू करें",
     pay_current_plan: "✓ आपका current plan",
+    pay_upgrade_pro: "🚀 Pro लें",
     cta_pro_wait: "🔔 Pro के लिए notify करें",
     pay_refresh: "Refresh",
     plan_note:

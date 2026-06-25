@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
+import { isPaid } from "@/lib/auth";
 import PortfolioScoreWidget from "@/components/PortfolioScoreWidget";
 import { getEmailPrefs, updateEmailPrefs } from "@/lib/account-api";
 
@@ -111,7 +112,7 @@ export default function AccountPage() {
   const { user } = useAuth();
   if (!user) return null; // layout handles the auth guard
 
-  const isPremium = user.plan === "premium";
+  const isPremium = isPaid(user.plan);
   const initial = (user.name || "?").charAt(0).toUpperCase();
 
   return (
