@@ -10,6 +10,15 @@ import { type Post, type PostLang, LANG_LABEL } from "@/lib/posts";
 const inputCls =
   "w-full rounded-xl border border-border bg-surface2 px-3.5 py-2.5 text-sm text-fg outline-none focus:border-accent";
 
+// ISO → value for <input type="datetime-local"> (local time, no seconds).
+function toLocalInput(iso?: string | null): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "";
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 export default function PostForm({ post }: { post?: Post }) {
   const router = useRouter();
   const editing = !!post;
@@ -21,6 +30,7 @@ export default function PostForm({ post }: { post?: Post }) {
   const [content, setContent] = useState(post?.content ?? "");
   const [lang, setLang] = useState<PostLang>(post?.lang ?? "hinglish");
   const [translationGroup, setTranslationGroup] = useState(post?.translationGroup ?? "");
+  const [publishAt, setPublishAt] = useState(toLocalInput(post?.publishedAt));
   const [busy, setBusy] = useState(false);
   const [coverUploading, setCoverUploading] = useState(false);
   const [err, setErr] = useState<string | null>(null);
@@ -35,6 +45,8 @@ export default function PostForm({ post }: { post?: Post }) {
     const input: AdminPostInput = {
       title, excerpt, category, coverImage, content, status,
       lang, translationGroup: translationGroup.trim() || undefined,
+      // Future time = scheduled; empty = publish now (when status=published).
+      publishedAt: publishAt ? new Date(publishAt).toISOString() : null,
     };
     try {
       if (editing) await adminUpdatePost(post.id, input);
@@ -143,6 +155,24 @@ export default function PostForm({ post }: { post?: Post }) {
       </div>
 
       <div>
+        <label className="mb-1 block text-xs font-semibold text-subtle">Publish at (schedule)</label>
+        <input
+          type="datetime-local"
+          className={`${inputCls} max-w-xs`}
+          value={publishAt}
+          onChange={(e) => setPublishAt(e.target.value)}
+        />
+        <p className="mt-1 text-[11px] text-muted">
+          Empty = publish now. A future time schedules it — the article auto-goes-live then (no manual step).
+          {publishAt && new Date(publishAt) > new Date() && (
+            <span className="ml-1 font-semibold text-accent">
+              Scheduled for {new Date(publishAt).toLocaleString("en-IN")}.
+            </span>
+          )}
+        </p>
+      </div>
+
+      <div>
         <label className="mb-1 block text-xs font-semibold text-subtle">Excerpt (short summary)</label>
         <textarea
           className={inputCls}
@@ -166,7 +196,9 @@ export default function PostForm({ post }: { post?: Post }) {
           disabled={busy}
           className="rounded-xl bg-accent px-5 py-2.5 text-sm font-bold text-onaccent transition-colors hover:bg-blue disabled:opacity-50"
         >
-          {editing ? "Update & Publish" : "Publish"}
+          {publishAt && new Date(publishAt) > new Date()
+            ? (editing ? "Update & Schedule" : "Schedule")
+            : (editing ? "Update & Publish" : "Publish")}
         </button>
         <button
           onClick={() => save("draft")}

@@ -496,7 +496,7 @@ function rowToPost(r) {
 async function listTranslations(translationGroup, excludeSlug) {
   if (!translationGroup) return [];
   const res = await pool.query(
-    "SELECT slug, title, lang FROM posts WHERE translation_group=$1 AND status='published' AND slug<>$2 ORDER BY lang",
+    "SELECT slug, title, lang FROM posts WHERE translation_group=$1 AND status='published' AND (published_at IS NULL OR published_at <= now()) AND slug<>$2 ORDER BY lang",
     [translationGroup, excludeSlug || '']
   );
   return res.rows.map((r) => ({ slug: r.slug, title: r.title, lang: r.lang }));
@@ -504,7 +504,7 @@ async function listTranslations(translationGroup, excludeSlug) {
 
 async function listPublishedPosts({ limit = 50, offset = 0 } = {}) {
   const res = await pool.query(
-    "SELECT * FROM posts WHERE status='published' ORDER BY published_at DESC NULLS LAST LIMIT $1 OFFSET $2",
+    "SELECT * FROM posts WHERE status='published' AND (published_at IS NULL OR published_at <= now()) ORDER BY published_at DESC NULLS LAST LIMIT $1 OFFSET $2",
     [limit, offset]
   );
   return res.rows.map(rowToPost);
@@ -526,7 +526,7 @@ async function getPostById(id) {
 }
 
 async function createPost(p) {
-  const publishedAt = p.status === 'published' ? new Date().toISOString() : null;
+  const publishedAt = p.publishedAt || (p.status === 'published' ? new Date().toISOString() : null);
   const res = await pool.query(
     `INSERT INTO posts (slug, title, excerpt, cover_image, content, category, author_id, author_name, status, lang, translation_group, published_at)
      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING *`,
@@ -541,8 +541,8 @@ async function updatePost(id, patch) {
   const cur = await getPostById(id);
   if (!cur) return null;
   // First-publish pe hi published_at set karo (re-publish pe original date rakho).
-  let publishedAt = cur.publishedAt;
-  if (patch.status === 'published' && !cur.publishedAt) publishedAt = new Date().toISOString();
+  let publishedAt = patch.publishedAt || cur.publishedAt;
+  if (patch.status === 'published' && !publishedAt) publishedAt = new Date().toISOString();
   const res = await pool.query(
     `UPDATE posts SET
        title=$2, excerpt=$3, cover_image=$4, content=$5, category=$6, status=$7,

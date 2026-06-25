@@ -199,8 +199,9 @@ async function deleteNotInCatalog() { return 0; /* no-op */ }
 // ---- Posts (news/blog) ----
 async function listPublishedPosts({ limit = 50, offset = 0 } = {}) {
   load();
+  const nowIso = new Date().toISOString();
   return cache.posts
-    .filter((p) => p.status === 'published')
+    .filter((p) => p.status === 'published' && (!p.publishedAt || p.publishedAt <= nowIso))
     .sort((a, b) => {
       const ad = a.publishedAt || a.createdAt || '';
       const bd = b.publishedAt || b.createdAt || '';
@@ -240,7 +241,7 @@ async function createPost(p) {
     status: p.status || 'draft',
     lang: p.lang || 'hinglish',
     translationGroup: p.translationGroup || null,
-    publishedAt: p.status === 'published' ? now : null,
+    publishedAt: p.publishedAt || (p.status === 'published' ? now : null),
     createdAt: now,
     updatedAt: now,
   };
@@ -252,8 +253,10 @@ async function createPost(p) {
 async function listTranslations(translationGroup, excludeSlug) {
   load();
   if (!translationGroup) return [];
+  const nowIso = new Date().toISOString();
   return cache.posts
-    .filter((p) => p.translationGroup === translationGroup && p.status === 'published' && p.slug !== excludeSlug)
+    .filter((p) => p.translationGroup === translationGroup && p.status === 'published'
+      && (!p.publishedAt || p.publishedAt <= nowIso) && p.slug !== excludeSlug)
     .map((p) => ({ slug: p.slug, title: p.title, lang: p.lang || 'hinglish' }));
 }
 
@@ -268,6 +271,7 @@ async function updatePost(id, patch) {
   if (patch.category !== undefined) p.category = patch.category;
   if (patch.lang !== undefined) p.lang = patch.lang;
   if (patch.translationGroup !== undefined) p.translationGroup = patch.translationGroup;
+  if (patch.publishedAt) p.publishedAt = patch.publishedAt; // reschedule
   if (patch.status !== undefined) {
     p.status = patch.status;
     if (patch.status === 'published' && !p.publishedAt) p.publishedAt = new Date().toISOString();

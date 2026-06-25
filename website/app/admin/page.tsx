@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import AdminGate from "@/components/AdminGate";
 import AdminsManager from "@/components/admin/AdminsManager";
-import { adminListPosts } from "@/lib/admin-api";
+import { adminListPosts, schedulePosts } from "@/lib/admin-api";
 import { adminGetOffers, adminUpdateOffer, type Offer } from "@/lib/offers-api";
 import { authedFetch } from "@/lib/auth";
 import { formatDate, type Post } from "@/lib/posts";
@@ -97,22 +97,109 @@ function EmailTestCard() {
 function NewsTab() {
   const [posts, setPosts] = useState<Post[] | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [showSched, setShowSched] = useState(false);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [startAt, setStartAt] = useState("");
+  const [gapHours, setGapHours] = useState(24);
+  const [scheduling, setScheduling] = useState(false);
+  const [schedMsg, setSchedMsg] = useState("");
 
-  useEffect(() => {
-    adminListPosts()
+  function reload() {
+    return adminListPosts()
       .then(setPosts)
       .catch((e) => setErr(e instanceof Error ? e.message : "Failed to load"));
-  }, []);
+  }
+  useEffect(() => { reload(); }, []);
+
+  const drafts = (posts ?? []).filter((p) => p.status === "draft");
+
+  function toggle(id: string) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }
+
+  async function runSchedule() {
+    setSchedMsg("");
+    if (selected.size === 0) return setSchedMsg("Select at least one draft below.");
+    if (!startAt) return setSchedMsg("Pick a start date & time.");
+    setScheduling(true);
+    try {
+      const ids = drafts.filter((d) => selected.has(d.id)).map((d) => d.id); // top-to-bottom order
+      const r = await schedulePosts(ids, new Date(startAt).toISOString(), gapHours);
+      setSchedMsg(`✅ Scheduled ${r.scheduled} — one every ${gapHours}h from ${new Date(startAt).toLocaleString("en-IN")}.`);
+      setSelected(new Set());
+      await reload();
+    } catch (e) {
+      setSchedMsg(e instanceof Error ? e.message : "Schedule failed");
+    } finally {
+      setScheduling(false);
+    }
+  }
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-2">
         <h2 className="text-lg font-extrabold">News Posts</h2>
-        <Link href="/admin/new"
-          className="rounded-xl bg-accent px-4 py-2 text-sm font-bold text-onaccent transition-colors hover:bg-blue">
-          + New post
-        </Link>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowSched((v) => !v)}
+            className="rounded-xl border border-border px-4 py-2 text-sm font-bold text-accent transition-colors hover:border-accent"
+          >
+            ⏰ Schedule drafts
+          </button>
+          <Link href="/admin/new"
+            className="rounded-xl bg-accent px-4 py-2 text-sm font-bold text-onaccent transition-colors hover:bg-blue">
+            + New post
+          </Link>
+        </div>
       </div>
+
+      {/* Bulk scheduler — drip drafts out automatically (no cron; they auto-go-live) */}
+      {showSched && (
+        <div className="space-y-3 rounded-2xl border border-accent/40 bg-surface2 p-4">
+          <div className="text-sm font-bold">⏰ Bulk schedule — drip your drafts out</div>
+          <p className="text-xs text-muted">
+            Write many posts as <b>drafts</b>, then select them here, pick a start time + gap, and they publish
+            one-by-one (top-to-bottom) automatically. Gap 24h = one per day.
+          </p>
+          <div className="flex flex-wrap items-end gap-3">
+            <div>
+              <label className="mb-1 block text-[11px] font-semibold text-subtle">Start at</label>
+              <input type="datetime-local" value={startAt} onChange={(e) => setStartAt(e.target.value)}
+                className="rounded-lg border border-border bg-surface px-3 py-2 text-sm text-fg" />
+            </div>
+            <div>
+              <label className="mb-1 block text-[11px] font-semibold text-subtle">Gap (hours)</label>
+              <input type="number" min={1} value={gapHours}
+                onChange={(e) => setGapHours(Math.max(1, Number(e.target.value) || 24))}
+                className="w-24 rounded-lg border border-border bg-surface px-3 py-2 text-sm text-fg" />
+            </div>
+            <button onClick={runSchedule} disabled={scheduling}
+              className="rounded-xl bg-accent px-5 py-2 text-sm font-bold text-onaccent transition-colors hover:bg-blue disabled:opacity-50">
+              {scheduling ? "Scheduling…" : `Schedule ${selected.size} draft${selected.size === 1 ? "" : "s"}`}
+            </button>
+          </div>
+          {schedMsg && <p className="text-xs text-subtle">{schedMsg}</p>}
+
+          <div className="max-h-64 overflow-y-auto rounded-xl border border-border">
+            {drafts.length === 0 ? (
+              <p className="p-3 text-xs text-muted">No drafts to schedule — create posts with “Save draft” first.</p>
+            ) : (
+              drafts.map((d) => (
+                <label key={d.id}
+                  className="flex cursor-pointer items-center gap-2 border-b border-border px-3 py-2 text-sm last:border-0 hover:bg-surface">
+                  <input type="checkbox" checked={selected.has(d.id)} onChange={() => toggle(d.id)} />
+                  <span className="truncate">{d.title || "(untitled)"}</span>
+                  <span className="ml-auto shrink-0 text-[10px] uppercase text-muted">{d.lang}</span>
+                </label>
+              ))
+            )}
+          </div>
+        </div>
+      )}
 
       <div className="rounded-2xl border border-border bg-surface2 p-2">
         {err && <p className="p-4 text-sm text-pink">{err}</p>}
@@ -128,11 +215,18 @@ function NewsTab() {
                 {p.category && <> · {p.category}</>}
               </div>
             </div>
-            <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
-              p.status === "published" ? "bg-green/20 text-green" : "border border-border text-muted"
-            }`}>
-              {p.status === "published" ? "PUBLISHED" : "DRAFT"}
-            </span>
+            {(() => {
+              const sched = p.status === "published" && !!p.publishedAt && new Date(p.publishedAt) > new Date();
+              return (
+                <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-bold ${
+                  sched ? "bg-yellow/20 text-yellow"
+                    : p.status === "published" ? "bg-green/20 text-green"
+                    : "border border-border text-muted"
+                }`}>
+                  {sched ? "⏰ SCHEDULED" : p.status === "published" ? "PUBLISHED" : "DRAFT"}
+                </span>
+              );
+            })()}
           </Link>
         ))}
       </div>

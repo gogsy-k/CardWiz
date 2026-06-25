@@ -40,6 +40,14 @@ const cap = (s, n) => (typeof s === 'string' ? s.slice(0, n) : s);
 
 const LANGS = ['en', 'hinglish', 'hi'];
 
+// Validate a scheduled publish time → ISO string, or null. A future value schedules
+// the post; the public list hides it until that time (no cron — pure query filter).
+function validIso(v) {
+  if (!v) return null;
+  const d = new Date(v);
+  return isNaN(d.getTime()) ? null : d.toISOString();
+}
+
 function cleanPostInput(body) {
   return {
     title: cap((body.title || '').trim(), 200),
@@ -50,6 +58,7 @@ function cleanPostInput(body) {
     status: body.status === 'published' ? 'published' : 'draft',
     lang: LANGS.includes(body.lang) ? body.lang : 'hinglish',
     translationGroup: cap((body.translationGroup || '').trim(), 80) || null,
+    publishedAt: validIso(body.publishedAt),
   };
 }
 
@@ -79,6 +88,24 @@ router.post('/posts', requireAdmin, async (req, res) => {
     fireWatchlistNotifications(post).catch(console.error);
   }
   res.json({ post });
+});
+
+// Bulk-schedule existing drafts → publish one every `intervalHours` from `startAt`.
+// Each post becomes 'published' with a future published_at; it auto-appears at that time.
+router.post('/posts/schedule', requireAdmin, async (req, res) => {
+  const { ids, startAt, intervalHours } = req.body || {};
+  if (!Array.isArray(ids) || ids.length === 0) return res.status(400).json({ error: 'ids[] required' });
+  const start = new Date(startAt);
+  if (isNaN(start.getTime())) return res.status(400).json({ error: 'valid startAt required' });
+  const stepMs = (Number(intervalHours) > 0 ? Number(intervalHours) : 24) * 3600 * 1000;
+  const out = [];
+  for (let i = 0; i < ids.length; i += 1) {
+    const when = new Date(start.getTime() + i * stepMs).toISOString();
+    // eslint-disable-next-line no-await-in-loop
+    const post = await db.posts.update(ids[i], { status: 'published', publishedAt: when });
+    if (post) out.push({ id: post.id, slug: post.slug, title: post.title, publishedAt: post.publishedAt });
+  }
+  res.json({ scheduled: out.length, posts: out });
 });
 
 router.put('/posts/:id', requireAdmin, async (req, res) => {

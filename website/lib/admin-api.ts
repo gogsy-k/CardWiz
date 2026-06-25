@@ -15,6 +15,13 @@ export type AdminPostInput = {
   slug?: string;
   lang?: PostLang;
   translationGroup?: string;
+  /** ISO timestamp. Future value = scheduled (auto-goes-live at that time). */
+  publishedAt?: string | null;
+};
+
+export type ScheduleResult = {
+  scheduled: number;
+  posts: { id: string; slug: string; title: string; publishedAt: string }[];
 };
 
 export type AdminListResponse = {
@@ -55,6 +62,20 @@ export async function adminUpdatePost(id: string, input: AdminPostInput): Promis
 
 export async function adminDeletePost(id: string): Promise<void> {
   await jsonOrThrow(await authedFetch(`/admin/posts/${id}`, { method: "DELETE" }));
+}
+
+/** Bulk-schedule drafts → publish one every `intervalHours` starting at `startAt` (ISO). */
+export async function schedulePosts(
+  ids: string[],
+  startAt: string,
+  intervalHours = 24,
+): Promise<ScheduleResult> {
+  return jsonOrThrow(
+    await authedFetch("/admin/posts/schedule", {
+      method: "POST",
+      body: JSON.stringify({ ids, startAt, intervalHours }),
+    })
+  );
 }
 
 // ---- Admin allowlist (super-admin only) ----
