@@ -3,35 +3,16 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLang } from "@/contexts/LangContext";
 import { isPaid } from "@/lib/auth";
 import PortfolioScoreWidget from "@/components/PortfolioScoreWidget";
 import { getEmailPrefs, updateEmailPrefs } from "@/lib/account-api";
 
 const LIVE_FEATURES = [
-  {
-    emoji: "📋",
-    title: "My Transactions",
-    desc: "Log your spends to power the Missed Savings analysis.",
-    href: "/account/transactions",
-  },
-  {
-    emoji: "💸",
-    title: "Missed Savings",
-    desc: "See how much you left on the table — and which card you should have used.",
-    href: "/account/savings",
-  },
-  {
-    emoji: "📄",
-    title: "Upload Statement",
-    desc: "Import transactions from a PDF bank statement automatically. Premium only.",
-    href: "/account/upload",
-  },
-  {
-    emoji: "⭐",
-    title: "Card Reviews",
-    desc: "Rate & review cards you own — your reviews help other CardWiz users pick better.",
-    href: "/cards",
-  },
+  { emoji: "📋", titleKey: "acc_feat_txn_t", descKey: "acc_feat_txn_d", href: "/account/transactions" },
+  { emoji: "💸", titleKey: "acc_feat_missed_t", descKey: "acc_feat_missed_d", href: "/account/savings" },
+  { emoji: "📄", titleKey: "acc_feat_upload_t", descKey: "acc_feat_upload_d", href: "/account/upload" },
+  { emoji: "⭐", titleKey: "acc_feat_reviews_t", descKey: "acc_feat_reviews_d", href: "/cards" },
 ];
 
 // Card Reviews shipped — nothing pending here right now.
@@ -39,6 +20,7 @@ const COMING_SOON: { emoji: string; title: string; desc: string }[] = [];
 
 // ── Email Prefs Toggle ───────────────────────────────────────────────────────
 function EmailPrefsToggle({ isPremium }: { isPremium: boolean }) {
+  const { t } = useLang();
   const [enabled, setEnabled] = useState(false);
   const [saving, setSaving] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -69,13 +51,13 @@ function EmailPrefsToggle({ isPremium }: { isPremium: boolean }) {
         <span className="text-2xl opacity-50">📧</span>
         <div className="flex-1 min-w-0 opacity-60">
           <div className="text-sm font-bold flex items-center gap-2">
-            Monthly Report Email
-            <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold text-accent">Premium</span>
+            {t("acc_email_t")}
+            <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold text-accent">{t("acc_email_premium")}</span>
           </div>
-          <p className="text-xs text-muted mt-0.5">Opt-in monthly email with your savings summary.</p>
+          <p className="text-xs text-muted mt-0.5">{t("acc_email_locked_d")}</p>
         </div>
         <Link href="/pricing" className="shrink-0 rounded-lg bg-accent px-3 py-1.5 text-xs font-bold text-onaccent transition-colors hover:bg-blue">
-          Upgrade →
+          {t("acc_upgrade")}
         </Link>
       </div>
     );
@@ -85,11 +67,8 @@ function EmailPrefsToggle({ isPremium }: { isPremium: boolean }) {
     <div className="rounded-xl border border-border bg-surface2 p-4 flex items-center gap-4">
       <span className="text-2xl">📧</span>
       <div className="flex-1 min-w-0">
-        <div className="text-sm font-bold">Monthly Report Email</div>
-        <p className="text-xs text-muted mt-0.5 leading-relaxed">
-          Receive a monthly email with total spend, rewards earned, and missed savings summary.
-          Sent on the 1st of every month.
-        </p>
+        <div className="text-sm font-bold">{t("acc_email_t")}</div>
+        <p className="text-xs text-muted mt-0.5 leading-relaxed">{t("acc_email_d")}</p>
       </div>
       <button
         onClick={toggle}
@@ -112,6 +91,7 @@ function EmailPrefsToggle({ isPremium }: { isPremium: boolean }) {
 // ── Main Page ────────────────────────────────────────────────────────────────
 export default function AccountPage() {
   const { user } = useAuth();
+  const { t } = useLang();
   if (!user) return null; // layout handles the auth guard
 
   const isPremium = isPaid(user.plan);
@@ -148,7 +128,7 @@ export default function AccountPage() {
                 : "border border-border text-subtle"
             }`}
           >
-            {isPremium ? "✨ Premium" : "Free plan"}
+            {isPremium ? t("acc_badge_premium") : t("acc_badge_free")}
           </span>
         </div>
 
@@ -157,7 +137,7 @@ export default function AccountPage() {
             href="/pricing"
             className="shrink-0 rounded-xl bg-accent px-4 py-2 text-sm font-bold text-onaccent transition-colors hover:bg-blue"
           >
-            Upgrade →
+            {t("acc_upgrade")}
           </Link>
         )}
       </div>
@@ -169,37 +149,36 @@ export default function AccountPage() {
       {!isPremium && (
         <div className="rounded-2xl border border-accent/30 bg-accent/5 p-6 text-center">
           <div className="mb-2 text-3xl">💎</div>
-          <div className="mb-1 text-base font-bold">Unlock CardWiz Premium</div>
+          <div className="mb-1 text-base font-bold">{t("acc_unlock_h")}</div>
           <p className="mx-auto mb-5 max-w-md text-sm text-muted leading-relaxed">
-            Missed Savings Report, Portfolio Score, Statement Upload, Manual Transactions
-            and more — starting at just ₹49/month.
+            {t("acc_unlock_p")}
           </p>
           <Link
             href="/pricing"
             className="inline-block rounded-xl bg-accent px-6 py-2.5 text-sm font-bold text-onaccent transition-colors hover:bg-blue"
           >
-            See all plans →
+            {t("acc_see_plans")}
           </Link>
         </div>
       )}
 
       {/* ── Live account features ── */}
       <div>
-        <h2 className="mb-4 text-lg font-black">Account features</h2>
+        <h2 className="mb-4 text-lg font-black">{t("acc_features_h")}</h2>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           {LIVE_FEATURES.map((f) => (
             <a
-              key={f.title}
+              key={f.titleKey}
               href={f.href}
               className="flex gap-3 rounded-xl border border-border bg-surface2 p-4 transition-colors hover:border-accent"
             >
               <span className="mt-0.5 text-2xl leading-none">{f.emoji}</span>
               <div className="min-w-0">
                 <div className="flex items-center gap-2 text-sm font-bold">
-                  {f.title}
-                  <span className="rounded-full bg-green/15 px-2 py-0.5 text-[10px] font-bold text-green">Live</span>
+                  {t(f.titleKey)}
+                  <span className="rounded-full bg-green/15 px-2 py-0.5 text-[10px] font-bold text-green">{t("acc_live")}</span>
                 </div>
-                <p className="mt-1 text-xs leading-relaxed text-muted">{f.desc}</p>
+                <p className="mt-1 text-xs leading-relaxed text-muted">{t(f.descKey)}</p>
               </div>
             </a>
           ))}
