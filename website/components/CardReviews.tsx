@@ -63,8 +63,10 @@ function ReviewCard({ review, onDelete }: { review: Review; onDelete?: () => voi
           </span>
         )}
         <span className="text-sm font-semibold truncate">{review.userName || "Anonymous"}</span>
-        {review.userPlan === "premium" && (
-          <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold text-accent">✨ Premium</span>
+        {(review.userPlan === "premium" || review.userPlan === "pro") && (
+          <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold text-accent">
+            ✨ {review.userPlan === "pro" ? "Pro" : "Premium"}
+          </span>
         )}
         <span className="ml-auto text-xs text-muted shrink-0">{ago}</span>
       </div>

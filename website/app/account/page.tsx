@@ -63,16 +63,17 @@ function EmailPrefsToggle({ isPremium }: { isPremium: boolean }) {
 
   if (!isPremium) {
     return (
-      <div className="rounded-xl border border-border bg-surface2 p-4 flex items-center gap-4 opacity-60">
-        <span className="text-2xl">📧</span>
-        <div className="flex-1 min-w-0">
+      <div className="rounded-xl border border-border bg-surface2 p-4 flex items-center gap-4">
+        {/* Dim only the locked feature, NOT the Upgrade CTA (which is a live link). */}
+        <span className="text-2xl opacity-50">📧</span>
+        <div className="flex-1 min-w-0 opacity-60">
           <div className="text-sm font-bold flex items-center gap-2">
             Monthly Report Email
             <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-bold text-accent">Premium</span>
           </div>
           <p className="text-xs text-muted mt-0.5">Opt-in monthly email with your savings summary.</p>
         </div>
-        <Link href="/pricing" className="shrink-0 rounded-lg bg-accent px-3 py-1.5 text-xs font-bold text-onaccent">
+        <Link href="/pricing" className="shrink-0 rounded-lg bg-accent px-3 py-1.5 text-xs font-bold text-onaccent transition-colors hover:bg-blue">
           Upgrade →
         </Link>
       </div>
