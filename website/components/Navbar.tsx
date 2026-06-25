@@ -3,14 +3,14 @@
 import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
+import { motion } from "motion/react";
 import { useLang } from "@/contexts/LangContext";
 import { useAuth } from "@/contexts/AuthContext";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import AuthButton from "@/components/AuthButton";
 import { EXTENSION_PUBLISHED, CHROME_STORE_URL, INSTALL_CTA_KEY } from "@/lib/constants";
 
-// Secondary CTA: when unpublished, link to the hero notify form (one primary lives there);
-// when published, link straight to the store.
+// Secondary CTA: when unpublished, link to the hero notify form; else straight to the store.
 const NAV_CTA_HREF = EXTENSION_PUBLISHED ? CHROME_STORE_URL : "/#notify";
 
 export default function Navbar() {
@@ -29,74 +29,82 @@ export default function Navbar() {
     { href: "/pricing", key: "nav_pricing" },
   ];
 
-  // Active link: "/" exact, baaki nested routes ke liye prefix match.
+  // Active link: "/" exact, nested routes ke liye prefix match.
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(href + "/");
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-bg/80 backdrop-blur-md">
-      <nav className="flex w-full items-center justify-between px-5 py-3.5 sm:px-8">
-        <Link href="/" className="text-xl font-extrabold tracking-tight text-accent">
-          💳 CardWiz
+    <header className="sticky top-0 z-50 border-b border-border/70 bg-bg/70 backdrop-blur-xl">
+      <nav className="flex w-full items-center justify-between gap-4 px-5 py-3 sm:px-8">
+        {/* Logo */}
+        <Link href="/" className="flex shrink-0 items-center gap-1.5 text-lg font-black tracking-tight">
+          <span className="text-xl leading-none">💳</span>
+          <span className="text-accent">CardWiz</span>
         </Link>
 
-        {/* Desktop links */}
-        <div className="hidden items-center gap-5 md:flex">
-          {links.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              aria-current={isActive(l.href) ? "page" : undefined}
-              className={`text-sm transition-colors ${
-                isActive(l.href)
-                  ? "font-bold text-accent"
-                  : "font-medium text-subtle hover:text-fg"
-              }`}
-            >
-              {t(l.key)}
-            </Link>
-          ))}
-          {user && (
-            <Link href="/account" className="text-sm font-medium text-accent transition-colors hover:text-accent/80">
-              {t("nav_account")}
-            </Link>
-          )}
-          {user?.isAdmin && (
-            <Link href="/admin" className="text-sm font-bold text-pink transition-colors hover:text-pink/80">
-              {t("nav_admin")}
-            </Link>
-          )}
+        {/* Desktop nav — segmented pill with a sliding active indicator */}
+        <div className="hidden items-center gap-0.5 rounded-full border border-border/60 bg-surface2/60 p-1 lg:flex">
+          {links.map((l) => {
+            const active = isActive(l.href);
+            return (
+              <Link
+                key={l.href}
+                href={l.href}
+                aria-current={active ? "page" : undefined}
+                className={`relative rounded-full px-3.5 py-1.5 text-sm transition-colors ${
+                  active ? "font-bold text-accent" : "font-medium text-subtle hover:text-fg"
+                }`}
+              >
+                {active && (
+                  <motion.span
+                    layoutId="nav-pill"
+                    className="absolute inset-0 rounded-full bg-surface shadow-sm"
+                    transition={{ type: "spring", stiffness: 380, damping: 32 }}
+                  />
+                )}
+                <span className="relative z-10">{t(l.key)}</span>
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Right cluster */}
+        <div className="hidden shrink-0 items-center gap-2.5 lg:flex">
           <LanguageSwitcher compact />
           <AuthButton />
           <Link
             href={NAV_CTA_HREF}
-            className="rounded-lg border border-border px-4 py-2 text-sm font-bold text-accent transition-colors hover:border-accent"
+            className="rounded-full bg-accent px-4 py-2 text-sm font-bold text-onaccent transition-colors hover:bg-blue"
           >
             {t(INSTALL_CTA_KEY)}
           </Link>
         </div>
 
-        {/* Mobile toggle */}
-        <button
-          onClick={() => setOpen((v) => !v)}
-          className="text-2xl text-subtle md:hidden"
-          aria-label="Menu"
-        >
-          {open ? "✕" : "☰"}
-        </button>
+        {/* Mobile: avatar + hamburger */}
+        <div className="flex shrink-0 items-center gap-2 lg:hidden">
+          <AuthButton />
+          <button
+            onClick={() => setOpen((v) => !v)}
+            className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-lg text-subtle transition-colors hover:border-accent hover:text-fg"
+            aria-label="Menu"
+            aria-expanded={open}
+          >
+            {open ? "✕" : "☰"}
+          </button>
+        </div>
       </nav>
 
       {/* Mobile menu */}
       {open && (
-        <div className="flex flex-col gap-1 border-t border-border px-5 py-3 md:hidden">
+        <div className="flex flex-col gap-1 border-t border-border bg-bg/95 px-5 py-3 lg:hidden">
           {links.map((l) => (
             <Link
               key={l.href}
               href={l.href}
               onClick={() => setOpen(false)}
               aria-current={isActive(l.href) ? "page" : undefined}
-              className={`rounded-lg px-2 py-2 text-sm hover:bg-surface ${
-                isActive(l.href) ? "font-bold text-accent" : "font-medium text-subtle hover:text-fg"
+              className={`rounded-lg px-3 py-2.5 text-sm transition-colors ${
+                isActive(l.href) ? "bg-surface font-bold text-accent" : "font-medium text-subtle hover:bg-surface hover:text-fg"
               }`}
             >
               {t(l.key)}
@@ -106,7 +114,10 @@ export default function Navbar() {
             <Link
               href="/account"
               onClick={() => setOpen(false)}
-              className="rounded-lg px-2 py-2 text-sm font-medium text-accent hover:bg-surface"
+              aria-current={isActive("/account") ? "page" : undefined}
+              className={`rounded-lg px-3 py-2.5 text-sm transition-colors ${
+                isActive("/account") ? "bg-surface font-bold text-accent" : "font-medium text-subtle hover:bg-surface hover:text-fg"
+              }`}
             >
               {t("nav_account")}
             </Link>
@@ -115,22 +126,21 @@ export default function Navbar() {
             <Link
               href="/admin"
               onClick={() => setOpen(false)}
-              className="rounded-lg px-2 py-2 text-sm font-bold text-pink hover:bg-surface"
+              className="rounded-lg px-3 py-2.5 text-sm font-bold text-pink hover:bg-surface"
             >
               {t("nav_admin")}
             </Link>
           )}
-          <div className="mt-2 flex items-center justify-between px-2">
+          <div className="mt-2 flex items-center justify-between gap-3 border-t border-border px-1 pt-3">
             <LanguageSwitcher />
-            <AuthButton />
+            <Link
+              href={NAV_CTA_HREF}
+              onClick={() => setOpen(false)}
+              className="rounded-full bg-accent px-4 py-2 text-center text-sm font-bold text-onaccent"
+            >
+              {t(INSTALL_CTA_KEY)}
+            </Link>
           </div>
-          <Link
-            href={NAV_CTA_HREF}
-            onClick={() => setOpen(false)}
-            className="mt-1 rounded-lg border border-border px-4 py-2 text-center text-sm font-bold text-accent"
-          >
-            {t(INSTALL_CTA_KEY)}
-          </Link>
         </div>
       )}
     </header>

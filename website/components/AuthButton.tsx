@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLang } from "@/contexts/LangContext";
 import GoogleSignIn from "@/components/GoogleSignIn";
@@ -49,12 +50,33 @@ export default function AuthButton() {
               <div className="mt-2.5">
                 <PlanPill plan={user.plan} label={planLabel(user.plan)} />
               </div>
+
+              {/* Account navigation (moved here from the navbar) */}
+              <div className="mt-3 space-y-0.5 border-t border-border pt-2">
+                <Link
+                  href="/account"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2 rounded-lg px-2.5 py-2 text-sm font-semibold text-fg transition-colors hover:bg-surface"
+                >
+                  <span>👤</span> {t("nav_account")}
+                </Link>
+                {user.isAdmin && (
+                  <Link
+                    href="/admin"
+                    onClick={() => setOpen(false)}
+                    className="flex items-center gap-2 rounded-lg px-2.5 py-2 text-sm font-semibold text-pink transition-colors hover:bg-surface"
+                  >
+                    <span>🛠️</span> {t("nav_admin")}
+                  </Link>
+                )}
+              </div>
+
               <button
                 onClick={() => {
                   signOut();
                   setOpen(false);
                 }}
-                className="mt-3 w-full rounded-lg border border-border py-2 text-sm font-semibold text-pink transition-colors hover:border-pink/50"
+                className="mt-1.5 w-full rounded-lg border border-border py-2 text-sm font-semibold text-pink transition-colors hover:border-pink/50"
               >
                 {t("auth_signout")}
               </button>
