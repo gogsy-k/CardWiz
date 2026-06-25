@@ -83,6 +83,7 @@ const I18N = {
     tr_bonus_done: '✅ Target reached!', tr_bonus_expired: 'Bonus period ended',
     tr_used_lounge: '{u} / {t} used this year', tr_used_movie: '{u} / {t} used this month',
     tr_edit_count: 'Edit count',
+    pop_cap_khatam: 'cap reached', pop_due_range: 'Due date must be between 1–31 (or leave blank).', pop_auth_fail: 'Auth module did not load.',
   },
   hinglish: {
     nav_best: '🏆 Top Cards', nav_mycards: '💼 Mere Cards', nav_suggest: '💡 Suggest', nav_more: '⭐ More',
@@ -150,6 +151,7 @@ const I18N = {
     tr_bonus_done: '✅ Target poora!', tr_bonus_expired: 'Bonus period khatam',
     tr_used_lounge: '{u} / {t} is saal', tr_used_movie: '{u} / {t} is mahine',
     tr_edit_count: 'Count change karo',
+    pop_cap_khatam: 'cap khatam', pop_due_range: 'Due date 1 se 31 ke beech hona chahiye (ya khaali chhodo).', pop_auth_fail: 'Auth module load nahi hua.',
   },
   hi: {
     nav_best: '🏆 टॉप कार्ड', nav_mycards: '💼 मेरे कार्ड', nav_suggest: '💡 सुझाव', nav_more: '⭐ और',
@@ -217,6 +219,7 @@ const I18N = {
     tr_bonus_done: '✅ लक्ष्य पूरा!', tr_bonus_expired: 'बोनस अवधि समाप्त',
     tr_used_lounge: '{u} / {t} इस वर्ष', tr_used_movie: '{u} / {t} इस माह',
     tr_edit_count: 'संख्या बदलें',
+    pop_cap_khatam: 'cap खत्म', pop_due_range: 'Due date 1 से 31 के बीच होना चाहिए (या खाली छोड़ो)।', pop_auth_fail: 'Auth module load नहीं हुआ।',
   },
 };
 

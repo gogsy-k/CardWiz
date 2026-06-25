@@ -345,7 +345,7 @@ function renderAccount() {
   const box = els.accountBox;
   if (!box) return;
   if (typeof CardWizAuth === 'undefined') {
-    box.innerHTML = '<div class="more-sub">Auth module load nahi hua.</div>';
+    box.innerHTML = '<div class="more-sub">' + CardWizI18n.t('pop_auth_fail') + '</div>';
     return;
   }
 
@@ -1202,7 +1202,7 @@ function saveCard() {
   if (dueDayRaw) {
     const d = parseInt(dueDayRaw, 10);
     if (isNaN(d) || d < 1 || d > 31) {
-      els.formErr.textContent = 'Due date 1 se 31 ke beech hona chahiye (ya khaali chhodo).';
+      els.formErr.textContent = CardWizI18n.t('pop_due_range');
       return;
     }
     dueDay = d;
@@ -1446,7 +1446,7 @@ function renderResults(ranked) {
     const save = document.createElement('div');
     save.className = 'save';
     let badge = '';
-    if (r.capExhausted) badge = '<span class="badge khatam">cap khatam</span>';
+    if (r.capExhausted) badge = '<span class="badge khatam">' + CardWizI18n.t('pop_cap_khatam') + '</span>';
     else if (r.capped) badge = '<span class="badge">cap</span>';
     save.innerHTML = r.savings > 0 ? `₹${r.savings}${badge}` : '—';
     const rate = document.createElement('div');
