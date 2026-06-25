@@ -111,7 +111,7 @@ export default function AiPage() {
       } else {
         setMessages((prev) => [
           ...prev,
-          { role: "assistant", text: "Kuch issue aaya. Thodi der baad dobara try karo.", error: true },
+          { role: "assistant", text: t("ai_err"), error: true },
         ]);
       }
     } finally {
@@ -143,7 +143,7 @@ export default function AiPage() {
         {!isPremium && remaining !== null && (
           <div className="text-xs text-muted text-right">
             <div className="font-bold">{remaining}/{dailyMax}</div>
-            <div>queries today</div>
+            <div>{t("ai_queries_today")}</div>
           </div>
         )}
       </div>
@@ -168,10 +168,10 @@ export default function AiPage() {
           })}
           {!user && (
             <div className="rounded-xl border border-accent/30 bg-accent/5 p-4 text-center text-sm mt-4">
-              <div className="font-bold mb-1">Sign in for more queries</div>
-              <p className="text-xs text-subtle mb-3">Guests: 3/day · Free: 5/day · Premium: unlimited</p>
+              <div className="font-bold mb-1">{t("ai_signin_h")}</div>
+              <p className="text-xs text-subtle mb-3">{t("ai_signin_p")}</p>
               <Link href="/sign-in" className="inline-block rounded-lg bg-accent px-4 py-2 text-xs font-bold text-onaccent">
-                Sign in →
+                {t("ai_signin_btn")}
               </Link>
             </div>
           )}
@@ -192,7 +192,7 @@ export default function AiPage() {
                   <span className="h-2 w-2 rounded-full bg-accent animate-bounce" style={{ animationDelay: "300ms" }} />
                 </div>
                 {slowHint && (
-                  <p className="mt-2 text-xs text-subtle">Pehli request thodi slow ho sakti hai — server wake ho raha hai…</p>
+                  <p className="mt-2 text-xs text-subtle">{t("ai_slow")}</p>
                 )}
               </div>
             </div>
@@ -204,7 +204,7 @@ export default function AiPage() {
                 onClick={() => send(lastQuery)}
                 className="rounded-lg border border-border px-4 py-1.5 text-xs font-bold text-accent transition-colors hover:border-accent"
               >
-                ↻ Retry
+                {t("ai_retry")}
               </button>
             </div>
           )}
@@ -215,10 +215,10 @@ export default function AiPage() {
       {/* Rate limit upsell */}
       {rateLimited && !isPremium && (
         <div className="rounded-xl border border-accent/30 bg-accent/5 p-4 text-center">
-          <div className="font-bold mb-1">💎 Unlimited AI queries chahiye?</div>
-          <p className="text-xs text-subtle mb-3">Premium pe upgrade karo — unlimited queries + full Missed Savings Report</p>
+          <div className="font-bold mb-1">{t("ai_rl_h")}</div>
+          <p className="text-xs text-subtle mb-3">{t("ai_rl_p")}</p>
           <Link href="/pricing" className="inline-block rounded-lg bg-accent px-5 py-2 text-xs font-bold text-onaccent">
-            Upgrade to Premium →
+            {t("sav_gate_cta")}
           </Link>
         </div>
       )}
@@ -231,7 +231,7 @@ export default function AiPage() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Kaunsa card use karoon… (Enter to send)"
+            placeholder={t("ai_input_ph")}
             rows={1}
             disabled={loading || rateLimited}
             autoFocus

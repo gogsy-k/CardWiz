@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { track } from "@vercel/analytics";
 import { type Card, TYPE_LABEL } from "@/lib/cards";
 import { rateForCategory } from "@/lib/best-cards";
+import { useLang } from "@/contexts/LangContext";
 import AnimatedNumber from "@/components/motion/AnimatedNumber";
 
 const PLATFORMS: { category: string; label: string; icon: string }[] = [
@@ -23,6 +24,7 @@ const MAX = 50000;
 const fmt = (n: number) => "₹" + Math.round(n).toLocaleString("en-IN");
 
 export default function SavingsCalculator({ cards }: { cards: Card[] }) {
+  const { t } = useLang();
   const [category, setCategory] = useState("amazon");
   const [amount, setAmount] = useState(10000);
 
@@ -43,8 +45,8 @@ export default function SavingsCalculator({ cards }: { cards: Card[] }) {
   return (
     <div className="mx-auto w-full max-w-sm rounded-2xl border border-border bg-surface2 p-5 text-left shadow-2xl">
       <div className="flex items-center justify-between">
-        <span className="text-sm font-bold text-accent">💳 Savings Calculator</span>
-        <span className="rounded-full bg-green/15 px-2 py-0.5 text-[10px] font-bold text-green">live</span>
+        <span className="text-sm font-bold text-accent">{t("sc_h")}</span>
+        <span className="rounded-full bg-green/15 px-2 py-0.5 text-[10px] font-bold text-green">{t("sc_live")}</span>
       </div>
 
       {/* Platform chips */}
@@ -126,20 +128,21 @@ export default function SavingsCalculator({ cards }: { cards: Card[] }) {
 
       {top && delta > 0 && (
         <p className="mt-3 text-xs text-subtle">
-          <span className="font-bold text-green">{top.card.name.split(" ").slice(0, 2).join(" ")}</span> se{" "}
-          <span className="font-bold text-green">+{fmt(delta)}</span> zyada — har {fmt(amount)} pe.
+          {t("sc_more", {
+            card: top.card.name.split(" ").slice(0, 2).join(" "),
+            amt: fmt(delta),
+            spend: fmt(amount),
+          })}
         </p>
       )}
 
-      <p className="mt-2 text-[10px] text-muted">
-        Estimate — actual rewards card terms pe depend karte hain.
-      </p>
+      <p className="mt-2 text-[10px] text-muted">{t("sc_estimate")}</p>
 
       <Link
         href="/cards"
         className="mt-3 block rounded-lg bg-accent px-4 py-2 text-center text-xs font-bold text-onaccent transition-colors hover:bg-blue"
       >
-        Sabhi 195+ cards compare karo →
+        {t("sc_compare_all")}
       </Link>
     </div>
   );

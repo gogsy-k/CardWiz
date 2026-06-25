@@ -35,20 +35,20 @@ function FreePlanCta() {
 
 // Feature × plan matrix for the expandable comparison (mirrors plan pros).
 // Value: true = included, false = not, string = qualifier.
-const FEATURE_MATRIX: { label: string; free: boolean | string; premium: boolean | string; pro: boolean | string }[] = [
-  { label: "Best card at checkout", free: true, premium: true, pro: true },
-  { label: "Compare 195+ cards", free: true, premium: true, pro: true },
-  { label: "AI Card Assistant", free: "5/day", premium: "Unlimited", pro: "Unlimited" },
-  { label: "Cards in wallet", free: "3", premium: "Unlimited", pro: "Unlimited" },
-  { label: "Cloud sync (multi-device)", free: false, premium: true, pro: true },
-  { label: "Portfolio Score + gap tips", free: false, premium: true, pro: true },
-  { label: "Fee / Welcome / Benefits trackers", free: false, premium: true, pro: true },
-  { label: "Missed Savings report", free: false, premium: true, pro: true },
-  { label: "PDF statement upload", free: false, premium: true, pro: true },
-  { label: "Monthly report email", free: false, premium: true, pro: true },
-  { label: "Offer watchlist", free: false, premium: true, pro: true },
-  { label: "Priority support", free: false, premium: false, pro: true },
-  { label: "Export transactions (CSV)", free: false, premium: false, pro: true },
+const FEATURE_MATRIX: { labelKey: string; free: boolean | string; premium: boolean | string; pro: boolean | string }[] = [
+  { labelKey: "pm_checkout", free: true, premium: true, pro: true },
+  { labelKey: "pm_compare", free: true, premium: true, pro: true },
+  { labelKey: "pm_ai", free: "5/day", premium: "Unlimited", pro: "Unlimited" },
+  { labelKey: "pm_wallet", free: "3", premium: "Unlimited", pro: "Unlimited" },
+  { labelKey: "pm_sync", free: false, premium: true, pro: true },
+  { labelKey: "pm_portfolio", free: false, premium: true, pro: true },
+  { labelKey: "pm_trackers", free: false, premium: true, pro: true },
+  { labelKey: "pm_missed", free: false, premium: true, pro: true },
+  { labelKey: "pm_pdf", free: false, premium: true, pro: true },
+  { labelKey: "pm_report", free: false, premium: true, pro: true },
+  { labelKey: "pm_watchlist", free: false, premium: true, pro: true },
+  { labelKey: "pm_priority", free: false, premium: false, pro: true },
+  { labelKey: "pm_csv", free: false, premium: false, pro: true },
 ];
 
 function MatrixCell({ v }: { v: boolean | string }) {
@@ -186,7 +186,7 @@ export default function PricingPlans() {
           <table className="w-full border-collapse">
             <thead>
               <tr className="border-b border-border bg-surface2">
-                <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wide text-muted">Feature</th>
+                <th className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wide text-muted">{t("pm_feature")}</th>
                 <th className="px-4 py-3 text-center text-sm font-black">Free</th>
                 <th className="px-4 py-3 text-center text-sm font-black text-accent">Premium</th>
                 <th className="px-4 py-3 text-center text-sm font-black">Pro</th>
@@ -194,8 +194,8 @@ export default function PricingPlans() {
             </thead>
             <tbody>
               {FEATURE_MATRIX.map((f, i) => (
-                <tr key={f.label} className={i % 2 ? "bg-surface2/40" : ""}>
-                  <td className="px-4 py-2.5 text-sm text-subtle">{f.label}</td>
+                <tr key={f.labelKey} className={i % 2 ? "bg-surface2/40" : ""}>
+                  <td className="px-4 py-2.5 text-sm text-subtle">{t(f.labelKey)}</td>
                   <td className="px-4 py-2.5 text-center"><MatrixCell v={f.free} /></td>
                   <td className="px-4 py-2.5 text-center"><MatrixCell v={f.premium} /></td>
                   <td className="px-4 py-2.5 text-center"><MatrixCell v={f.pro} /></td>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useLang } from "@/contexts/LangContext";
 import { authedFetch } from "@/lib/auth";
 import { getCards } from "@/lib/cards";
 import {
@@ -13,6 +14,7 @@ import {
 } from "@/lib/portfolio-score";
 
 export default function PortfolioScoreWidget({ isPremium }: { isPremium: boolean }) {
+  const { t } = useLang();
   const [result, setResult] = useState<PortfolioScoreResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [empty, setEmpty] = useState(false);
@@ -50,10 +52,10 @@ export default function PortfolioScoreWidget({ isPremium }: { isPremium: boolean
       <div className="rounded-2xl border border-border bg-surface2 p-6">
         <div className="flex items-center gap-2 mb-1">
           <span className="text-xl">🏆</span>
-          <span className="font-black">Portfolio Score</span>
+          <span className="font-black">{t("ps_h")}</span>
         </div>
         <p className="text-sm text-muted mt-2">
-          No wallet cards synced yet. Add your cards in the CardWiz extension, then your score will appear here.
+          {t("ps_empty")}
         </p>
       </div>
     );
@@ -69,7 +71,7 @@ export default function PortfolioScoreWidget({ isPremium }: { isPremium: boolean
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-xl">🏆</span>
-            <span className="font-black text-base">Portfolio Score</span>
+            <span className="font-black text-base">{t("ps_h")}</span>
           </div>
           <p className="text-xs text-muted">{scoreLabel(score)}</p>
         </div>
@@ -109,11 +111,11 @@ export default function PortfolioScoreWidget({ isPremium }: { isPremium: boolean
         <div>
           {isPremium ? (
             <div className="space-y-2">
-              <div className="text-xs font-bold text-muted uppercase tracking-wide">Fill these gaps</div>
+              <div className="text-xs font-bold text-muted uppercase tracking-wide">{t("ps_gaps")}</div>
               {suggestions.map((s) => (
                 <div key={s.cardId} className="flex items-center justify-between gap-3 rounded-lg border border-border bg-surface p-3">
                   <div className="min-w-0">
-                    <div className="text-xs text-muted">Gap: {s.forGapLabel}</div>
+                    <div className="text-xs text-muted">{t("ps_gap", { label: s.forGapLabel })}</div>
                     <div className="text-sm font-bold truncate">{s.name}</div>
                     <div className="text-xs text-muted">{s.bank}</div>
                   </div>
@@ -121,7 +123,7 @@ export default function PortfolioScoreWidget({ isPremium }: { isPremium: boolean
                     href={`/go/${s.cardId}`}
                     className="shrink-0 rounded-lg bg-accent px-3 py-1.5 text-xs font-bold text-onaccent"
                   >
-                    View →
+                    {t("sav_view")}
                   </Link>
                 </div>
               ))}
@@ -129,16 +131,16 @@ export default function PortfolioScoreWidget({ isPremium }: { isPremium: boolean
           ) : (
             <div className="rounded-xl border border-accent/25 bg-accent/5 p-4 text-center">
               <div className="text-sm font-bold mb-1">
-                {gaps.length} gap{gaps.length !== 1 ? "s" : ""} found
+                {t("ps_gaps_found", { n: gaps.length })}
               </div>
               <p className="text-xs text-muted mb-3">
-                Upgrade to Premium to see which cards fix your gaps (with direct links).
+                {t("ps_gate_p")}
               </p>
               <Link
                 href="/pricing"
                 className="inline-block rounded-lg bg-accent px-4 py-1.5 text-xs font-bold text-onaccent"
               >
-                Upgrade →
+                {t("acc_upgrade")}
               </Link>
             </div>
           )}
