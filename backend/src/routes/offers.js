@@ -11,6 +11,7 @@
 const express = require('express');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
 const db = require('../db');
+const rewards = require('../lib/rewards');
 
 const router = express.Router();
 const DAILY_LIMIT = 3;
@@ -95,6 +96,10 @@ router.patch('/admin/:id', requireAdmin, async (req, res) => {
   try {
     const offer = await db.offers.updateStatus(req.params.id, status);
     if (!offer) return res.status(404).json({ error: 'Not found' });
+    // Reward the submitter when their offer is approved (+points, once per offer).
+    if (status === 'approved' && offer.submittedBy) {
+      rewards.award(offer.submittedBy, 'offer', offer.id);
+    }
     res.json({ offer });
   } catch (err) {
     console.error('[offers/admin PATCH]', err.message);

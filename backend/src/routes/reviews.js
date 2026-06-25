@@ -14,6 +14,7 @@
 const express = require('express');
 const { requireAuth } = require('../middleware/auth');
 const db = require('../db');
+const rewards = require('../lib/rewards');
 
 const router = express.Router();
 
@@ -63,6 +64,7 @@ router.post('/', requireAuth, async (req, res) => {
       title: title ? String(title).slice(0, 120) : null,
       body: body ? String(body).slice(0, 1000) : null,
     });
+    rewards.award(req.user.id, 'review', cardId); // +points (once per card)
     res.json({ review });
   } catch (err) {
     console.error('[reviews/post]', err.message);

@@ -14,6 +14,7 @@ const express = require('express');
 const { requireAuth } = require('../middleware/auth');
 const db = require('../db');
 const { hasPremium } = require('../config');
+const rewards = require('../lib/rewards');
 
 const router = express.Router();
 const FREE_LIMIT = 3;
@@ -60,6 +61,7 @@ router.post('/', requireAuth, async (req, res) => {
       category: String(category),
       source: source || 'manual',
     });
+    rewards.award(req.user.id, 'transaction', txn.id); // +points (once per txn; bulk PDF import excluded)
     res.json({ transaction: txn });
   } catch (err) {
     console.error('[txn/create]', err.message);

@@ -167,6 +167,25 @@ async function init(databaseUrl) {
     CREATE INDEX IF NOT EXISTS reviews_card_idx ON reviews (card_id, created_at DESC);
   `);
 
+  // CardWiz Rewards — points ledger. Balance = SUM(delta). Each (user, reason, ref_id)
+  // awards once (idempotent) so the same review/txn/offer can't double-credit.
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS points_ledger (
+      id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      delta       INTEGER NOT NULL,
+      reason      TEXT NOT NULL,
+      ref_id      TEXT,
+      created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
+    );
+  `);
+  await pool.query(`
+    CREATE UNIQUE INDEX IF NOT EXISTS points_dedupe ON points_ledger (user_id, reason, ref_id) WHERE ref_id IS NOT NULL;
+  `);
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS points_user_idx ON points_ledger (user_id, created_at DESC);
+  `);
+
   // Manual transactions — spend log for Missed Savings engine.
   // source = 'manual' | 'pdf'. card_id = catalog card id (e.g. 'hdfc-millennia').
   await pool.query(`
@@ -642,6 +661,30 @@ async function removeReview(cardId, userId) {
   return res.rowCount > 0;
 }
 
+// ---- Rewards (points ledger) ----
+async function awardPoints(userId, { delta, reason, refId = null }) {
+  // ON CONFLICT DO NOTHING → idempotent per (user, reason, ref_id) via the partial index.
+  const res = await pool.query(
+    `INSERT INTO points_ledger (user_id, delta, reason, ref_id) VALUES ($1,$2,$3,$4)
+     ON CONFLICT DO NOTHING RETURNING id`,
+    [userId, delta, reason, refId]
+  );
+  return res.rowCount > 0; // true = awarded, false = already credited
+}
+
+async function pointsBalance(userId) {
+  const res = await pool.query('SELECT COALESCE(SUM(delta),0)::int AS bal FROM points_ledger WHERE user_id=$1', [userId]);
+  return res.rows[0].bal;
+}
+
+async function pointsHistory(userId, limit = 30) {
+  const res = await pool.query(
+    'SELECT delta, reason, ref_id, created_at FROM points_ledger WHERE user_id=$1 ORDER BY created_at DESC LIMIT $2',
+    [userId, Math.min(Number(limit) || 30, 100)]
+  );
+  return res.rows.map((r) => ({ delta: r.delta, reason: r.reason, refId: r.ref_id, createdAt: r.created_at }));
+}
+
 // ---- Transactions ----
 function rowToTxn(r) {
   return {
@@ -817,6 +860,7 @@ module.exports = {
   listPublishedPosts, listAllPosts, getPostBySlug, getPostById, createPost, updatePost, deletePost, listTranslations,
   listAdmins, hasAdmin, addAdmin, removeAdmin,
   listReviewsForCard, listRecentReviews, upsertReview, removeReview,
+  awardPoints, pointsBalance, pointsHistory,
   createTransaction, listTransactions, countTransactions, deleteTransaction,
   createOffer, listOffers, updateOfferStatus, countOffersByUser,
   addWatchword, removeWatchword, listWatchwords, countWatchwords, listAllWatchwords,

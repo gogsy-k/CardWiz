@@ -9,6 +9,7 @@ import PortfolioScoreWidget from "@/components/PortfolioScoreWidget";
 import { getEmailPrefs, updateEmailPrefs } from "@/lib/account-api";
 
 const LIVE_FEATURES = [
+  { emoji: "🪙", titleKey: "acc_feat_rewards_t", descKey: "acc_feat_rewards_d", href: "/account/rewards" },
   { emoji: "📋", titleKey: "acc_feat_txn_t", descKey: "acc_feat_txn_d", href: "/account/transactions" },
   { emoji: "💸", titleKey: "acc_feat_missed_t", descKey: "acc_feat_missed_d", href: "/account/savings" },
   { emoji: "📄", titleKey: "acc_feat_upload_t", descKey: "acc_feat_upload_d", href: "/account/upload" },

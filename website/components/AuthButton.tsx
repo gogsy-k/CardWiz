@@ -60,6 +60,13 @@ export default function AuthButton() {
                 >
                   <span>👤</span> {t("nav_account")}
                 </Link>
+                <Link
+                  href="/account/rewards"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2 rounded-lg px-2.5 py-2 text-sm font-semibold text-fg transition-colors hover:bg-surface"
+                >
+                  <span>🪙</span> {t("rw_h")}
+                </Link>
                 {user.isAdmin && (
                   <Link
                     href="/admin"

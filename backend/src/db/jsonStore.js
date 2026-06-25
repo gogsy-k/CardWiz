@@ -31,6 +31,7 @@ function load() {
   if (!Array.isArray(cache.posts)) cache.posts = [];
   if (!Array.isArray(cache.admins)) cache.admins = [];
   if (!Array.isArray(cache.reviews)) cache.reviews = [];
+  if (!Array.isArray(cache.pointsLedger)) cache.pointsLedger = [];
   if (!Array.isArray(cache.transactions)) cache.transactions = [];
   if (!Array.isArray(cache.offers))            cache.offers = [];
   if (!Array.isArray(cache.watchlist))         cache.watchlist = [];
@@ -361,6 +362,30 @@ async function removeReview(cardId, userId) {
   return true;
 }
 
+// ---- Rewards (points ledger) ----
+async function awardPoints(userId, { delta, reason, refId = null }) {
+  load();
+  if (refId != null && cache.pointsLedger.some((p) => p.userId === userId && p.reason === reason && p.refId === refId)) {
+    return false; // already credited (idempotent)
+  }
+  cache.pointsLedger.push({ userId, delta, reason, refId, createdAt: new Date().toISOString() });
+  persist();
+  return true;
+}
+
+async function pointsBalance(userId) {
+  load();
+  return cache.pointsLedger.filter((p) => p.userId === userId).reduce((s, p) => s + p.delta, 0);
+}
+
+async function pointsHistory(userId, limit = 30) {
+  load();
+  return cache.pointsLedger
+    .filter((p) => p.userId === userId)
+    .sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1))
+    .slice(0, Math.min(Number(limit) || 30, 100));
+}
+
 // ---- Transactions ----
 async function createTransaction({ userId, cardId, date, merchant, amount, category, source }) {
   load();
@@ -533,6 +558,7 @@ module.exports = {
   listPublishedPosts, listAllPosts, getPostBySlug, getPostById, createPost, updatePost, deletePost, listTranslations,
   listAdmins, hasAdmin, addAdmin, removeAdmin,
   listReviewsForCard, listRecentReviews, upsertReview, removeReview,
+  awardPoints, pointsBalance, pointsHistory,
   createTransaction, listTransactions, countTransactions, deleteTransaction,
   createOffer, listOffers, updateOfferStatus, countOffersByUser,
   addWatchword, removeWatchword, listWatchwords, countWatchwords, listAllWatchwords,

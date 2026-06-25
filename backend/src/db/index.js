@@ -78,6 +78,12 @@ const reviews = {
   remove:      (...a) => driver.removeReview(...a),
 };
 
+const points = {
+  award:   (...a) => driver.awardPoints(...a),
+  balance: (...a) => driver.pointsBalance(...a),
+  history: (...a) => driver.pointsHistory(...a),
+};
+
 const transactions = {
   create: (...a) => driver.createTransaction(...a),
   list:   (...a) => driver.listTransactions(...a),
@@ -111,4 +117,4 @@ const launch = {
   count:     (...a) => driver.countLaunchSubscribers(...a),
 };
 
-module.exports = { init, users, cards, payments, subscriptions, catalog, posts, admins, reviews, transactions, offers, watchlist, notifications, launch, get kind() { return driver && driver.kind; } };
+module.exports = { init, users, cards, payments, subscriptions, catalog, posts, admins, reviews, points, transactions, offers, watchlist, notifications, launch, get kind() { return driver && driver.kind; } };
