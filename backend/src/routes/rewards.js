@@ -10,7 +10,7 @@ const express = require('express');
 const { requireAuth } = require('../middleware/auth');
 const db = require('../db');
 const {
-  POINTS, STREAK_BONUS, REDEEM_OPTIONS, REASON_LABEL, istDateStr, computeStreak,
+  POINTS, STREAK_BONUS, REDEEM_OPTIONS, REASON_LABEL, istDateStr, computeStreak, notifyReward,
 } = require('../lib/rewards');
 
 const router = express.Router();
@@ -61,6 +61,7 @@ router.post('/checkin', requireAuth, async (req, res) => {
     const gotBonus = awarded && streak > 0 && streak % 7 === 0;
     if (gotBonus) {
       await db.points.award(req.user.id, { delta: STREAK_BONUS, reason: 'streak', refId: `streak-${streak}` });
+      await notifyReward(req.user.id, 'streak', STREAK_BONUS);
     }
     const points = await db.points.balance(req.user.id);
     res.json({ awarded, points, streak, checkedInToday: true, gotBonus });

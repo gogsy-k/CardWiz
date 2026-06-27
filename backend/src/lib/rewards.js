@@ -52,15 +52,30 @@ function computeStreak(dates) {
   return streak;
 }
 
+// Reasons that earn an in-app notification (pleasant / passive events). Per-transaction
+// and self-initiated check-ins are excluded to avoid bell spam.
+const NOTIFY = new Set(['review', 'offer', 'referral']);
+
+// Notifications are stored as a structured token (__rw:<reason>:<n>) so the bell can
+// localize them at render time instead of freezing one language at creation.
+async function notifyReward(userId, reason, delta) {
+  try {
+    await db.notifications.create(userId, `__rw:${reason}:${delta}`, '/account/rewards');
+  } catch (err) {
+    console.error('[rewards/notify]', err.message);
+  }
+}
+
 // Fire-and-forget award. Never throws into the request path.
 async function award(userId, reason, refId = null) {
   const delta = POINTS[reason];
   if (!userId || !delta) return;
   try {
-    await db.points.award(userId, { delta, reason, refId });
+    const inserted = await db.points.award(userId, { delta, reason, refId });
+    if (inserted && NOTIFY.has(reason)) await notifyReward(userId, reason, delta);
   } catch (err) {
     console.error('[rewards/award]', reason, err.message);
   }
 }
 
-module.exports = { POINTS, STREAK_BONUS, REDEEM_OPTIONS, REASON_LABEL, award, istDateStr, computeStreak };
+module.exports = { POINTS, STREAK_BONUS, REDEEM_OPTIONS, REASON_LABEL, award, notifyReward, istDateStr, computeStreak };

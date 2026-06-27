@@ -8,6 +8,7 @@ import { useLang } from "@/contexts/LangContext";
 import { useAuth } from "@/contexts/AuthContext";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import AuthButton from "@/components/AuthButton";
+import NotificationBell from "@/components/NotificationBell";
 import { EXTENSION_PUBLISHED, CHROME_STORE_URL, INSTALL_CTA_KEY } from "@/lib/constants";
 
 // Secondary CTA: when unpublished, link to the hero notify form; else straight to the store.
@@ -71,6 +72,7 @@ export default function Navbar() {
         {/* Right cluster */}
         <div className="hidden shrink-0 items-center gap-2.5 lg:flex">
           <LanguageSwitcher compact />
+          <NotificationBell />
           <AuthButton />
           <Link
             href={NAV_CTA_HREF}
@@ -82,6 +84,7 @@ export default function Navbar() {
 
         {/* Mobile: avatar + hamburger */}
         <div className="flex shrink-0 items-center gap-2 lg:hidden">
+          <NotificationBell />
           <AuthButton />
           <button
             onClick={() => setOpen((v) => !v)}
