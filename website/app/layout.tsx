@@ -22,6 +22,17 @@ const SITE_LD = {
       description:
         "CardWiz helps Indians pick the credit or debit card that gives the most rewards at checkout — compare 195+ Indian cards, understand bank offers, and never overpay.",
       areaServed: "IN",
+      knowsAbout: [
+        "credit cards",
+        "debit cards",
+        "cashback",
+        "reward points",
+        "credit card offers",
+        "Indian banks",
+        "UPI",
+        "RuPay",
+        "card comparison",
+      ],
     },
     {
       "@type": "WebSite",

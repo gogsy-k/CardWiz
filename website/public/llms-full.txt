@@ -1,0 +1,71 @@
+# CardWiz — full reference
+
+> CardWiz is an India-first tool that helps people choose the credit or debit card that gives the most rewards and cashback at checkout. It compares 195+ Indian credit and debit cards, explains bank offers, and helps users never overpay. CardWiz is available as a free Chrome extension and as a website at https://cardwiz.in. All amounts are in Indian Rupees (₹) and reflect Indian bank programs and RBI rules.
+
+## What CardWiz does
+
+- Recommends the best card to use for a given purchase, merchant, or spend category, based on each card's reward rate.
+- Compares 195+ Indian credit and debit cards side by side (reward rates, fees, networks, benefits).
+- Surfaces current bank and card offers so users can stack discounts.
+- Provides an AI card assistant that answers questions like "which card is best for Amazon?" or "best card for fuel in India".
+- Tracks spending and shows missed savings — how much more reward a user could have earned with a better card.
+
+## Banks and networks covered
+
+- Banks include HDFC Bank, State Bank of India (SBI), ICICI Bank, Axis Bank, American Express, Kotak Mahindra Bank, IDFC FIRST Bank, RBL Bank, Yes Bank, and more.
+- Card networks include Visa, Mastercard, RuPay, American Express, and Diners Club.
+- RuPay credit cards can be linked to UPI for merchant payments in India.
+
+## Spend categories
+
+CardWiz ranks cards by reward rate within categories such as: fuel, dining, travel, online shopping, groceries, utilities, and general/base spends. The best card often differs by category — for example, a card that is excellent for online shopping may be average for fuel.
+
+## How CardWiz works
+
+1. Browse or search 195+ cards at https://cardwiz.in/cards, or take a short quiz at https://cardwiz.in/find-my-card.
+2. Use the AI assistant at https://cardwiz.in/ai to ask which card is best for any purchase.
+3. Install the free Chrome extension to get the best-card suggestion automatically at checkout on shopping sites.
+4. Compare any two cards head-to-head at https://cardwiz.in/compare, or see category winners at https://cardwiz.in/best-card-for/fuel.
+
+## Pricing
+
+- Free: core comparison, AI assistant (limited), card finder.
+- Premium: ₹49/month or ₹399/year — unlimited AI, missed-savings reports, offer watchlist.
+- Pro: ₹99/month or ₹799/year — everything in Premium plus advanced features.
+Plans and details: https://cardwiz.in/pricing
+
+## CardWiz Rewards (loyalty program)
+
+Users earn points for engaging with CardWiz and redeem them for free Premium time:
+- Write a card review: +50 points (once per card).
+- Log a transaction: +10 points.
+- Submit a bank offer that gets approved: +30 points.
+- Daily check-in: +5 points, with a bonus every 7-day streak.
+- Refer a friend who signs up: +100 points.
+- Redeem 500 points for 7 days of Premium, or 1500 points for 30 days.
+There is also a leaderboard of top earners.
+
+## Languages
+
+CardWiz content is available in three languages: English, Hinglish (Romanised Hindi), and Hindi. News articles are published in all three with separate URLs.
+
+## Privacy
+
+CardWiz is privacy-first. It never stores full card numbers, PAN, or CVV. Card data used for suggestions is limited to non-sensitive details.
+
+## Frequently asked questions
+
+Q: What is the best credit card in India?
+A: It depends on where you spend the most. CardWiz ranks cards by category (fuel, dining, travel, online shopping, groceries) so the "best" card is the one with the highest reward rate for your top spend categories. Use https://cardwiz.in/find-my-card to get a personalised answer.
+
+Q: Can RuPay credit cards be used on UPI?
+A: Yes. RuPay credit cards can be linked to UPI apps and used for merchant (P2M) payments in India; person-to-person transfers from a credit line are not allowed.
+
+Q: Does CardWiz cost money?
+A: CardWiz has a free tier. Premium (₹49/month or ₹399/year) and Pro (₹99/month or ₹799/year) unlock advanced features.
+
+Q: Is CardWiz safe?
+A: Yes. CardWiz never stores full card numbers, PAN, or CVV.
+
+Q: How many cards does CardWiz compare?
+A: More than 195 Indian credit and debit cards.
