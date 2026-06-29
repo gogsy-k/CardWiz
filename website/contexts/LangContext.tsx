@@ -19,14 +19,16 @@ type LangCtx = {
 };
 
 const LangContext = createContext<LangCtx>({
-  lang: "hinglish",
+  lang: "en",
   setLang: () => {},
   t: (key) => key,
   ready: false,
 });
 
 export function LangProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<LangCode>("hinglish");
+  // First-time visitors default to English (also what crawlers see in SSR). Once the
+  // user picks a language it's saved to localStorage and restored on every return visit.
+  const [lang, setLangState] = useState<LangCode>("en");
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
