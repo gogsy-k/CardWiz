@@ -89,8 +89,6 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${spaceGrotesk.variable} h-full antialiased`}>
       <head>
-        {/* Sitewide structured data */}
-        <JsonLd data={SITE_LD} />
         {/* Google AdSense */}
         <script
           async
@@ -99,6 +97,9 @@ export default function RootLayout({
         />
       </head>
       <body className="flex min-h-full flex-col">
+        {/* Sitewide structured data — in <body> so AdSense's head-script injection
+            can't shift it and break hydration. JSON-LD is valid anywhere in the doc. */}
+        <JsonLd data={SITE_LD} />
         <LangProvider>
           <AuthProvider>
             <Navbar />
