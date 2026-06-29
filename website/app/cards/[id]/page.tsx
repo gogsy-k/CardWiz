@@ -15,6 +15,7 @@ import NotifyCTA from "@/components/NotifyCTA";
 import CardDetailHeader from "@/components/CardDetailHeader";
 import Reveal from "@/components/motion/Reveal";
 import JsonLd from "@/components/JsonLd";
+import { cardApplyUrl } from "@/lib/affiliate";
 
 export async function generateStaticParams() {
   const cards = await getCards();
@@ -47,6 +48,8 @@ export default async function CardDetail(props: PageProps<"/cards/[id]">) {
     { value: TYPE_LABEL[card.type], label: "Reward type" },
     { value: card.network, label: "Network" },
   ];
+
+  const applyHref = cardApplyUrl(card.bank);
 
   return (
     <div className="mx-auto max-w-4xl px-5 py-10">
@@ -87,6 +90,19 @@ export default async function CardDetail(props: PageProps<"/cards/[id]">) {
         stats={stats}
         feeWaiverSpend={card.feeWaiverSpend}
       />
+
+      {/* Apply CTA — links to the bank's official page; affiliate-tracked once a
+          network link-wrap base is configured in lib/affiliate.ts. */}
+      {applyHref && (
+        <a
+          href={applyHref}
+          target="_blank"
+          rel="sponsored noopener noreferrer"
+          className="mt-6 flex items-center justify-center gap-2 rounded-xl bg-accent px-5 py-3 text-sm font-bold text-onaccent transition-colors hover:bg-blue"
+        >
+          Apply for this card ↗
+        </a>
+      )}
 
       {/* Reward rules */}
       <h2 className="mt-10 text-xl font-extrabold">Reward rates</h2>
