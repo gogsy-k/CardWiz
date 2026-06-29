@@ -1,0 +1,20 @@
+# CardWiz
+
+> CardWiz is an India-first tool that helps people choose the credit or debit card that gives the most rewards and cashback at checkout. Compare 195+ Indian credit & debit cards, understand bank offers, and never overpay. Available as a free Chrome extension and a website.
+
+CardWiz covers Indian cards across HDFC, SBI, ICICI, Axis, American Express, Kotak, IDFC FIRST, RBL and more — with reward rates broken down by spend category (fuel, dining, travel, online shopping, groceries, utilities). All amounts are in Indian Rupees (₹) and reflect Indian bank programs and RBI rules.
+
+## Key pages
+- [All cards](https://cardwiz.in/cards): Browse and compare 195+ Indian credit and debit cards.
+- [Find my card](https://cardwiz.in/find-my-card): A short quiz that recommends the best card for your spending.
+- [AI card assistant](https://cardwiz.in/ai): Ask which card is best for any purchase or category.
+- [Card comparisons](https://cardwiz.in/compare): Head-to-head comparisons between two cards.
+- [Best card by category](https://cardwiz.in/best-card-for/fuel): Best cards for fuel, dining, travel, online shopping, groceries and more.
+- [Bank offers](https://cardwiz.in/offers): Current credit and debit card offers, by bank.
+- [News](https://cardwiz.in/news): Latest Indian credit-card news and RBI updates, in English, Hinglish and Hindi.
+- [Pricing](https://cardwiz.in/pricing): Free, Premium and Pro plans.
+
+## Notes
+- Scope is India-only: Indian cards, Indian bank offers, ₹ amounts, RBI regulations.
+- Content is available in three languages: English, Hinglish (Romanised Hindi) and Hindi.
+- Privacy-first: CardWiz never stores full card numbers, PAN or CVV.

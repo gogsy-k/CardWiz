@@ -14,6 +14,7 @@ import CardOffers from "@/components/CardOffers";
 import NotifyCTA from "@/components/NotifyCTA";
 import CardDetailHeader from "@/components/CardDetailHeader";
 import Reveal from "@/components/motion/Reveal";
+import JsonLd from "@/components/JsonLd";
 
 export async function generateStaticParams() {
   const cards = await getCards();
@@ -49,6 +50,30 @@ export default async function CardDetail(props: PageProps<"/cards/[id]">) {
 
   return (
     <div className="mx-auto max-w-4xl px-5 py-10">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "CreditCard",
+          name: card.name,
+          url: `https://cardwiz.in/cards/${card.id}`,
+          provider: { "@type": "BankOrCreditUnion", name: card.bank },
+          description: `${card.name} by ${card.bank} — top ${topRate(card)}% reward rate, annual fee ${formatFee(card)}. ${TYPE_LABEL[card.type]} card on ${card.network}.`,
+          feesAndCommissionsSpecification: `Annual fee: ${formatFee(card)}`,
+          category: TYPE_LABEL[card.type],
+          areaServed: "IN",
+        }}
+      />
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: "https://cardwiz.in/" },
+            { "@type": "ListItem", position: 2, name: "Cards", item: "https://cardwiz.in/cards" },
+            { "@type": "ListItem", position: 3, name: card.name, item: `https://cardwiz.in/cards/${card.id}` },
+          ],
+        }}
+      />
       <Link href="/cards" className="text-sm text-muted hover:text-subtle">
         ← All cards
       </Link>

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getPost, getPosts, formatDate, HREFLANG, LANG_LABEL } from "@/lib/posts";
 import PostBody from "@/components/PostBody";
 import ArticleLangBar from "@/components/ArticleLangBar";
+import JsonLd from "@/components/JsonLd";
 
 export const revalidate = 300;
 
@@ -44,6 +45,24 @@ export default async function NewsDetail({ params }: Params) {
 
   return (
     <article className="mx-auto max-w-2xl px-5 py-10">
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "NewsArticle",
+          headline: post.title,
+          description: post.excerpt || post.title,
+          inLanguage: HREFLANG[post.lang],
+          ...(post.publishedAt ? { datePublished: new Date(post.publishedAt).toISOString() } : {}),
+          author: { "@type": post.authorName ? "Person" : "Organization", name: post.authorName || "CardWiz" },
+          publisher: {
+            "@type": "Organization",
+            name: "CardWiz",
+            logo: { "@type": "ImageObject", url: "https://cardwiz.in/opengraph-image" },
+          },
+          mainEntityOfPage: `https://cardwiz.in/news/${post.slug}`,
+          ...(post.coverImage ? { image: [post.coverImage] } : {}),
+        }}
+      />
       <Link href="/news" className="text-sm text-muted hover:text-subtle">
         ← All news
       </Link>

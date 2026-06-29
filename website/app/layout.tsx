@@ -7,6 +7,32 @@ import Footer from "@/components/Footer";
 import ConditionalAIButton from "@/components/ConditionalAIButton";
 import { LangProvider } from "@/contexts/LangContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import JsonLd from "@/components/JsonLd";
+
+// Sitewide structured data — Organization + WebSite (knowledge graph + GEO/AI engines).
+const SITE_LD = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://cardwiz.in/#org",
+      name: "CardWiz",
+      url: "https://cardwiz.in",
+      logo: "https://cardwiz.in/opengraph-image",
+      description:
+        "CardWiz helps Indians pick the credit or debit card that gives the most rewards at checkout — compare 195+ Indian cards, understand bank offers, and never overpay.",
+      areaServed: "IN",
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://cardwiz.in/#website",
+      url: "https://cardwiz.in",
+      name: "CardWiz",
+      inLanguage: "en-IN",
+      publisher: { "@id": "https://cardwiz.in/#org" },
+    },
+  ],
+};
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -63,6 +89,8 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${spaceGrotesk.variable} h-full antialiased`}>
       <head>
+        {/* Sitewide structured data */}
+        <JsonLd data={SITE_LD} />
         {/* Google AdSense */}
         <script
           async
