@@ -20,6 +20,18 @@ export const LINK_WRAP_BASE = "";
 // Fill once you have an approved CPA campaign (e.g. CRED / Cheq via a network).
 export const BILL_PAY_PARTNERS: { label: string; url: string }[] = [];
 
+// "Shop & earn" store links (website). Amazon = Associates tag; rest = EarnKaro
+// converted deeplinks. Users pick their best card here, then shop → we earn commission.
+export const SHOP_LINKS: { name: string; emoji: string; url: string }[] = [
+  { name: "Amazon", emoji: "📦", url: "https://www.amazon.in/?tag=gogsy-21" },
+  { name: "Flipkart", emoji: "🛒", url: "https://fktr.in/IIyS1ly" },
+  { name: "Myntra", emoji: "👗", url: "https://myntr.it/zPuyfNe" },
+  { name: "Ajio", emoji: "👕", url: "https://ajiio.in/T7czxq6" },
+  { name: "Tata CLiQ", emoji: "🛍️", url: "https://bitli.in/fb1ggEV" },
+  { name: "MakeMyTrip", emoji: "✈️", url: "https://bitli.in/X5Q4uhp" },
+  { name: "Cleartrip", emoji: "🧳", url: "https://bitli.in/G9rfjrt" },
+];
+
 // Official credit-card pages per bank (the destination an "Apply" button points to).
 // Keys must match the catalog's `bank` field exactly.
 const BANK_APPLY: Record<string, string> = {

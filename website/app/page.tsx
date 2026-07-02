@@ -1,6 +1,7 @@
 import { getCards, type Card } from "@/lib/cards";
 import { getPosts } from "@/lib/posts";
 import HomeContent from "@/components/HomeContent";
+import ShopAndEarn from "@/components/ShopAndEarn";
 
 // Popular cards powering the homepage Savings Calculator (kept small — not all 195).
 const CALC_CARD_IDS = [
@@ -31,12 +32,15 @@ export default async function Home() {
   }).filter((c): c is Card => Boolean(c));
 
   return (
-    <HomeContent
-      total={total}
-      credit={credit}
-      banks={banks}
-      posts={posts.slice(0, 15)}
-      calcCards={calcCards}
-    />
+    <>
+      <HomeContent
+        total={total}
+        credit={credit}
+        banks={banks}
+        posts={posts.slice(0, 15)}
+        calcCards={calcCards}
+      />
+      <ShopAndEarn />
+    </>
   );
 }
