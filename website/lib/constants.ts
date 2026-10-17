@@ -7,7 +7,7 @@
  * Until then all "Add to Chrome" buttons go to the launch-notify (mailto) — no
  * dead store link.
  */
-export const EXTENSION_PUBLISHED = false;
+export const EXTENSION_PUBLISHED = true;
 
 // Real store URL (item-id path redirects to the canonical slug URL once live).
 export const CHROME_STORE_URL =
