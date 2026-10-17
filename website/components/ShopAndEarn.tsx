@@ -1,5 +1,6 @@
 "use client";
 
+import { track } from "@vercel/analytics";
 import { useLang } from "@/contexts/LangContext";
 import { SHOP_LINKS } from "@/lib/affiliate";
 
@@ -19,6 +20,7 @@ export default function ShopAndEarn() {
               href={s.url}
               target="_blank"
               rel="sponsored noopener noreferrer"
+              onClick={() => track("shop_earn_click", { merchant: s.name })}
               className="flex items-center gap-2.5 rounded-xl border border-border bg-bg px-4 py-3 text-sm font-bold transition-colors hover:border-accent hover:text-accent"
             >
               <span className="text-lg">{s.emoji}</span>

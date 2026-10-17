@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { motion } from "motion/react";
+import { track } from "@vercel/analytics";
 import { Menu, X } from "lucide-react";
 import BrandMark from "@/components/BrandMark";
 import { useLang } from "@/contexts/LangContext";
@@ -95,6 +96,7 @@ export default function Navbar() {
           <AuthButton />
           <Link
             href={NAV_CTA_HREF}
+            onClick={() => track("install_click", { location: "navbar_desktop", path: pathname })}
             className="rounded-full bg-accent px-4 py-2 text-sm font-bold text-onaccent transition-colors hover:bg-blue"
           >
             {t(INSTALL_CTA_KEY)}
@@ -157,7 +159,10 @@ export default function Navbar() {
             <LanguageSwitcher />
             <Link
               href={NAV_CTA_HREF}
-              onClick={() => setOpen(false)}
+              onClick={() => {
+                track("install_click", { location: "navbar_mobile", path: pathname });
+                setOpen(false);
+              }}
               className="rounded-full bg-accent px-4 py-2 text-center text-sm font-bold text-onaccent"
             >
               {t(INSTALL_CTA_KEY)}

@@ -15,6 +15,7 @@ import NotifyCTA from "@/components/NotifyCTA";
 import CardDetailHeader from "@/components/CardDetailHeader";
 import Reveal from "@/components/motion/Reveal";
 import JsonLd from "@/components/JsonLd";
+import TrackedLink from "@/components/TrackedLink";
 import { cardApplyUrl } from "@/lib/affiliate";
 
 export async function generateStaticParams() {
@@ -29,6 +30,7 @@ export async function generateMetadata(props: PageProps<"/cards/[id]">): Promise
   return {
     title: `${card.name} — rewards, fees & benefits`,
     description: `${card.name} (${card.bank}) ki poori detail — top ${topRate(card)}% reward, annual fee ${formatFee(card)}, ${TYPE_LABEL[card.type]}. Categories aur reward rates compare karo CardWiz pe.`,
+    alternates: { canonical: `/cards/${id}` },
   };
 }
 
@@ -94,14 +96,16 @@ export default async function CardDetail(props: PageProps<"/cards/[id]">) {
       {/* Apply CTA — links to the bank's official page; affiliate-tracked once a
           network link-wrap base is configured in lib/affiliate.ts. */}
       {applyHref && (
-        <a
+        <TrackedLink
+          event="card_apply_click"
+          data={{ cardId: card.id, bank: card.bank }}
           href={applyHref}
           target="_blank"
           rel="sponsored noopener noreferrer"
           className="mt-6 flex items-center justify-center gap-2 rounded-xl bg-accent px-5 py-3 text-sm font-bold text-onaccent transition-colors hover:bg-blue"
         >
           Apply for this card ↗
-        </a>
+        </TrackedLink>
       )}
 
       {/* Reward rules */}
