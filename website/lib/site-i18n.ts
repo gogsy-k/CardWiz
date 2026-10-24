@@ -491,6 +491,7 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
     acc_feat_rewards_t: "CardWiz Rewards",
     acc_feat_rewards_d: "Earn points for reviews, transactions & offers — redeem for Premium.",
     pay_refresh: "Refresh",
+    pay_install_hint: "Install the extension to start seeing the best card at checkout.",
     plan_note:
       "Premium is live — pay securely via Razorpay (UPI / cards / netbanking). Pro launching soon. Prices in INR.",
 
@@ -1086,6 +1087,7 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
     pm_priority: "Priority support",
     pm_csv: "Transactions export (CSV)",
     pay_refresh: "Refresh",
+    pay_install_hint: "Extension install karo — tabhi checkout pe best card dikhega.",
     plan_note:
       "Premium live hai — Razorpay se secure pay karo (UPI / cards / netbanking). Pro jald aa raha. Prices INR mein.",
 
@@ -1681,6 +1683,7 @@ const SITE_I18N: Record<LangCode, Record<string, string>> = {
     pm_priority: "Priority support",
     pm_csv: "Transactions export (CSV)",
     pay_refresh: "Refresh",
+    pay_install_hint: "Extension install करो — तभी checkout पे best card दिखेगा।",
     plan_note:
       "Premium live है — Razorpay से secure pay करें (UPI / cards / netbanking)। Pro जल्द आ रहा। कीमतें INR में।",
 

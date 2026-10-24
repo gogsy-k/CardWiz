@@ -6,6 +6,9 @@ import { track } from "@vercel/analytics";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLang } from "@/contexts/LangContext";
 import { startSubscription, verifySubscription } from "@/lib/payment-api";
+import { EXTENSION_PUBLISHED, CHROME_STORE_URL, INSTALL_CTA_KEY } from "@/lib/constants";
+
+const INSTALL_HREF = EXTENSION_PUBLISHED ? CHROME_STORE_URL : "/#notify";
 
 type State = "idle" | "starting" | "waiting" | "done" | "error";
 
@@ -107,11 +110,21 @@ export default function UpgradeButton({
 
   if (state === "done") {
     return (
-      <div className={`${base} border border-green/40 bg-green/10 text-green ${className}`}>
-        🎉 {t("pay_done")}{" "}
-        <button onClick={() => window.location.reload()} className="underline">
-          {t("pay_refresh")}
-        </button>
+      <div className={className}>
+        <div className={`${base} border border-green/40 bg-green/10 text-green`}>
+          🎉 {t("pay_done")}{" "}
+          <button onClick={() => window.location.reload()} className="underline">
+            {t("pay_refresh")}
+          </button>
+        </div>
+        <Link
+          href={INSTALL_HREF}
+          onClick={() => track("install_click", { location: "payment_success" })}
+          className={`${base} mt-2 bg-accent text-onaccent hover:bg-blue`}
+        >
+          📥 {t(INSTALL_CTA_KEY)}
+        </Link>
+        <p className="mt-1.5 text-center text-xs text-muted">{t("pay_install_hint")}</p>
       </div>
     );
   }

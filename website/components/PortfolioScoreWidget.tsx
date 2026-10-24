@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { track } from "@vercel/analytics";
 import { useLang } from "@/contexts/LangContext";
 import { authedFetch } from "@/lib/auth";
 import { getCards } from "@/lib/cards";
+import { EXTENSION_PUBLISHED, CHROME_STORE_URL, INSTALL_CTA_KEY } from "@/lib/constants";
 import {
   portfolioScore,
   scoreColor,
@@ -12,6 +14,8 @@ import {
   type PortfolioScoreResult,
   type WalletEntry,
 } from "@/lib/portfolio-score";
+
+const INSTALL_HREF = EXTENSION_PUBLISHED ? CHROME_STORE_URL : "/#notify";
 
 export default function PortfolioScoreWidget({ isPremium }: { isPremium: boolean }) {
   const { t } = useLang();
@@ -57,6 +61,13 @@ export default function PortfolioScoreWidget({ isPremium }: { isPremium: boolean
         <p className="text-sm text-muted mt-2">
           {t("ps_empty")}
         </p>
+        <Link
+          href={INSTALL_HREF}
+          onClick={() => track("install_click", { location: "portfolio_score_empty" })}
+          className="mt-4 inline-block rounded-xl bg-accent px-4 py-2 text-sm font-bold text-onaccent transition-colors hover:bg-blue"
+        >
+          {t(INSTALL_CTA_KEY)}
+        </Link>
       </div>
     );
   }
